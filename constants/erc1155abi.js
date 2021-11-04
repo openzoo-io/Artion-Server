@@ -1,6 +1,6 @@
 const ERC1155ABI = {
-  RPC: 'https://rpc.ftm.tools/',
-  CHAINID: 250,
+  RPC: 'https://gwan-ssl.wandevs.org:46891',
+  CHAINID: 999,
   ABI: [
     {
       anonymous: false,
