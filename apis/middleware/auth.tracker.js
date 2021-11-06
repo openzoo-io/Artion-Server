@@ -9,7 +9,7 @@ const tracker_ip5 = process.env.TRACKER_IP5;
 
 const service_auth = (req, res, next) => {
   let request_ip = requestIP.getClientIp(req);
-
+  console.log('request_ip', request_ip);
   if (
     request_ip == tracker_ip1 ||
     request_ip == tracker_ip2 ||
@@ -20,7 +20,7 @@ const service_auth = (req, res, next) => {
   } else
     return res.status(400).json({
       status: "failed",
-      data: "you are not supposed to call this api endpoint",
+      data: "you are not supposed to call this api endpoint, from ip:" + request_ip,
     });
 };
 
