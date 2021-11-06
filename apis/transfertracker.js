@@ -455,16 +455,24 @@ router.post('/handle1155BatchTransfer', service_auth, async (req, res) => {
 
 router.get('/getTrackable721Contracts', service_auth, async (req, res) => {
   try {
+    console.log('getTrackable721Contracts 0');
     let contracts = await ERC721CONTRACT.find({ isAppropriate: true });
+    console.log('getTrackable721Contracts 1');
+
     let trackable_scs = [];
     contracts.map((contract) => {
       trackable_scs.push(contract.address);
     });
+
+    console.log('getTrackable721Contracts 2');
+
     return res.json({
       status: 'success',
       data: trackable_scs
     });
   } catch (error) {
+    console.log('getTrackable721Contracts 3', error);
+
     Logger.error(error);
     return res.json({
       status: 'failed',
