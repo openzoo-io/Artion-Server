@@ -67,9 +67,13 @@ router.post("/itemListed", service_auth, async (req, res) => {
     const { args, blockNumber, transactionHash } = req.body;
     const [ ownerC, nftC, tokenIdBN, quantityBN, paytokenC, pricePerItemBN, startingTimeBN ] = args;
 
+    console.log('args', args);
+
     const owner = ownerC.toLowerCase();
     const nft = nftC.toLowerCase();
     const itemPayToken = [...PAYTOKENS, ...DISABLED_PAYTOKENS].find((token) => token.address.toLowerCase() === paytokenC.toLowerCase());
+    console.log('itemPayToken', itemPayToken);
+
     const pricePerItem = ethers.utils.formatUnits(ethers.BigNumber.from(pricePerItemBN.hex), itemPayToken.decimals);
     const tokenId = parseInt(tokenIdBN.hex);
     const quantity = parseInt(quantityBN.hex);
