@@ -289,7 +289,11 @@ const handle1155SingleTransfer = async (
           holding.holderAddress = to;
           holding.supplyPerHolder = toSupply;
           await holding.save();
+          Logger.info(`handle1155SingleTransfer save finish`)
+
         } catch (error) {
+          Logger.error('handle1155SingleTransfer 2');
+
           Logger.error(error);
         }
       }
