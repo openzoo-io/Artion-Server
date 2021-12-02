@@ -125,22 +125,35 @@ const handle1155SingleTransfer = async (
   tokenID,
   value
 ) => {
+  Logger.info(`handle1155SingleTransfer ${from} ${to} ${contractAddress} ${tokenID} ${value}`)
   try {
     let tk = await NFTITEM.findOne({
       contractAddress: contractAddress,
       tokenID: tokenID
     });
+
+    Logger.info(`handle1155SingleTransfer tk ${tk}`)
+
     let fromSupply = await getSupply(contractAddress, tokenID, from);
+
+    Logger.info(`handle1155SingleTransfer fromSupply ${fromSupply}`)
+
     let db_fromSupply = await ERC1155HOLDING.findOne({
       contractAddress: contractAddress,
       tokenID: tokenID,
       holderAddress: from
     });
+
+    Logger.info(`handle1155SingleTransfer db_fromSupply ${db_fromSupply}`)
+
     if (!db_fromSupply) {
     }
     db_fromSupply = parseInt(db_fromSupply.supplyPerHolder);
     if (db_fromSupply == fromSupply) {
     }
+
+    Logger.info(`handle1155SingleTransfer validatorAddress ${validatorAddress}`)
+
     if (to == validatorAddress) {
       // burn -- only when token already exists
       if (tk) {
@@ -167,6 +180,9 @@ const handle1155SingleTransfer = async (
             tokenID: tokenID,
             holderAddress: from
           });
+
+        Logger.info(`handle1155SingleTransfer holding ${holding}`)
+
           holding = parseInt(holding.supplyPerHolder) - value;
           await holding.save();
         }
@@ -181,6 +197,8 @@ const handle1155SingleTransfer = async (
         tokenID: tokenID,
         holderAddress: to
       });
+      Logger.info(`handle1155SingleTransfer db_toSupply ${db_toSupply}`)
+
       if (db_toSupply) {
         if (db_toSupply.supplyPerHolder != toSupply) {
           db_toSupply.supplyPerHolder = toSupply;
@@ -276,6 +294,7 @@ const handle1155SingleTransfer = async (
       }
     }
   } catch (error) {
+    Logger.error('handle1155SingleTransfer');
     Logger.error(error);
   }
 };
