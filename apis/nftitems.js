@@ -65,8 +65,10 @@ router.post('/increaseViews', async (req, res) => {
       contractAddress: contractAddress,
       tokenID: tokenID
     });
-    token.viewed = token.viewed + 1;
-    let _token = await token.save();
+    if (token) {
+      token.viewed = token.viewed + 1;
+      let _token = await token.save();
+    }
     return res.json({
       status: 'success',
       data: _token.viewed
