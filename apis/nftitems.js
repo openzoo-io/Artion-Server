@@ -68,11 +68,16 @@ router.post('/increaseViews', async (req, res) => {
     if (token) {
       token.viewed = token.viewed + 1;
       let _token = await token.save();
+      return res.json({
+        status: 'success',
+        data: _token.viewed
+      });
+    } else {
+      return res.json({
+        status: 'success',
+        data: 0
+      });
     }
-    return res.json({
-      status: 'success',
-      data: _token.viewed
-    });
   } catch (error) {
     Logger.error(error);
     return res.status(400).json({
