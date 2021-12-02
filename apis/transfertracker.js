@@ -147,9 +147,10 @@ const handle1155SingleTransfer = async (
     Logger.info(`handle1155SingleTransfer db_fromSupply ${db_fromSupply}`)
 
     if (!db_fromSupply) {
+      db_fromSupply = parseInt(db_fromSupply.supplyPerHolder);
     }
-    db_fromSupply = parseInt(db_fromSupply.supplyPerHolder);
     if (db_fromSupply == fromSupply) {
+
     }
 
     Logger.info(`handle1155SingleTransfer validatorAddress ${validatorAddress}`)
