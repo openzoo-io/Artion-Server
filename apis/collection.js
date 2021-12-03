@@ -163,10 +163,11 @@ router.post('/collectiondetails', auth, async (req, res) => {
       category.type = 1155;
       await category.save();
     } else {
-      // need to add a new erc721 contract
+      // check existing deployed ERC721 contract //
       let ifExists = await ERC721CONTRACT.findOne({
         address: erc721Address
       });
+	  // Existed Contract //
       if (!ifExists) {
         let sc_721 = new ERC721CONTRACT();
         sc_721.address = erc721Address;
@@ -177,7 +178,9 @@ router.post('/collectiondetails', auth, async (req, res) => {
         sc_721.isAppropriate = true;
         await sc_721.save();
       }
-
+	   
+	   
+	  // Category checking ... //
       let categoryExists = await Category.findOne({
         minterAddress: erc721Address
       });
@@ -222,7 +225,7 @@ router.post('/collectiondetails', auth, async (req, res) => {
 
     let newCollection = await _collection.save();
     if (newCollection) {
-      // notify admin about a new app
+      // notify admin about a new External contract
       if (!isInternal[0]) {
         applicationMailer.notifyAdminForNewCollectionApplication(); //notify admin
         applicationMailer.notifyInternalCollectionDeployment(
@@ -471,7 +474,7 @@ router.post('/getCollectionInfo', async (req, res) => {
   if (collection)
     return res.json({
       status: 'success',
-      data: { ...minifyCollection(collection), isVerified: true }
+      data: { ...minifyCollection(collection)}//, isVerified: true }
     });
   collection = await ERC721CONTRACT.findOne({
     address: address
