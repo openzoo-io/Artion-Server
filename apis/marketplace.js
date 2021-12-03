@@ -179,7 +179,7 @@ router.post("/itemSold", service_auth, async (req, res) => {
       });
       if (token) {
         token.price = 0;
-        token.paymentToken = "ftm";
+        token.paymentToken = "wan";
         token.priceInUSD = 0;
         token.lastSalePrice = pricePerItem;
         token.lastSalePricePaymentToken = itemPayToken.address;
