@@ -154,7 +154,7 @@ router.post('/collectiondetails', auth, async (req, res) => {
       let symbol = await getSymbol(erc721Address);
       Logger.debug('symbol is', symbol);
       sc_1155.symbol = symbol || 'Symbol';
-      sc_1155.isVerified = true;
+      sc_1155.isVerified = false;
       sc_1155.isAppropriate = true;
       await sc_1155.save();
       // save new category
@@ -173,7 +173,7 @@ router.post('/collectiondetails', auth, async (req, res) => {
         sc_721.name = collectionName;
         let symbol = await getSymbol(erc721Address);
         sc_721.symbol = symbol || 'Symbol';
-        sc_721.isVerified = true;
+        sc_721.isVerified = false;
         sc_721.isAppropriate = true;
         await sc_721.save();
       }
