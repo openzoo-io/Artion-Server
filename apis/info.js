@@ -77,7 +77,7 @@ router.get('/getCollections', async (_, res) => {
       twitterHandle: collection.twitterHandle,
       mediumHandle: collection.mediumHandle,
       telegram: collection.telegram,
-      isVerified: true,
+      isVerified: collection.isVerified,
       isVisible: true,
       isInternal: collection.isInternal,
       isOwnerble: collection.isOwnerble
