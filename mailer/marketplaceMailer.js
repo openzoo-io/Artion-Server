@@ -16,6 +16,9 @@ const getNFTThumbnailPath = async (nft, tokenID) => {
       contractAddress: toLowerCase(nft),
       tokenID: tokenID,
     });
+	
+	console.log(token.imageURL);
+	
     if (token) return token.imageURL;
     else return null;
   } catch (error) {
