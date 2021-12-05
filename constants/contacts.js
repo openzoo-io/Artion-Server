@@ -7,7 +7,7 @@ const FantomContacts = {
   artionUnsubscribe: `https://${
     process.env.RUNTIME ? "testnet." : ""
   }openzoo.io/settings/notification`,
-  email: "noreply@openzoo.io",
+  email: "notification@openzoo.io",
 };
 
 module.exports = FantomContacts;
