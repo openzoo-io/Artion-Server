@@ -72,7 +72,7 @@ const createMessage = async (data) => {
           let title = "Offer Created!";
           let content = `Congratulations! Someone sent you an offer for ${name}.`;
           let image = await getNFTThumbnailPath(data.nftAddress, data.tokenID);
-		  console.log(image, data.nftAddress, data.tokenID);
+
           image = `${image}`;
           let link = `${app_url}explore/${data.nftAddress}/${data.tokenID}`;
           message = messageUtils.createNFTItemMessage({
