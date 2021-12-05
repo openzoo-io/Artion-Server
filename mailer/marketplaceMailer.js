@@ -16,9 +16,7 @@ const getNFTThumbnailPath = async (nft, tokenID) => {
       contractAddress: toLowerCase(nft),
       tokenID: tokenID,
     });
-	
-	console.log(token.imageURL);
-	
+
     if (token) return token.imageURL;
     else return null;
   } catch (error) {
@@ -74,6 +72,7 @@ const createMessage = async (data) => {
           let title = "Offer Created!";
           let content = `Congratulations! Someone sent you an offer for ${name}.`;
           let image = await getNFTThumbnailPath(data.nftAddress, data.tokenID);
+		  console.log(image);
           image = `${image}`;
           let link = `${app_url}explore/${data.nftAddress}/${data.tokenID}`;
           message = messageUtils.createNFTItemMessage({
