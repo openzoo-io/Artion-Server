@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const NFTITEM = mongoose.model("NFTITEM");
 const messageUtils = require("./message.utils");
 const sgMail = require("@sendgrid/mail");
+const toLowerCase = require("../utils/utils");
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const app_url = process.env.APP_URL;
