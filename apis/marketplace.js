@@ -527,12 +527,14 @@ router.post("/offerCanceled", service_auth, async (req, res) => {
             address: tokenOwner.owner,
           });
           if (owner && ns.sNftOfferCancel) {
+            /*
             let isNotifiable = await isOfferCancelNotifiable(
               owner.address,
               nft,
               tokenId
             );
             if (!isNotifiable) return;
+            */
             let alias = await getUserAlias(owner.address);
             let tokenName = await getNFTItemName(nft, tokenId);
             let creatorAlias = await getUserAlias(creator);
