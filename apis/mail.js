@@ -6,22 +6,20 @@ const SendGridTemplates = require("../constants/mail_template_id");
 router.get("/mailTest", async (req, res) => {
   try {
     let msg = {
-      from: "jason.kwon@fantom.foundation",
+      from: "noreply@openzoo.io",
       templateId: SendGridTemplates.nftitem,
       personalizations: [
         {
           to: [
-            "fortune.onchain@gmail.com",
-            "jason.k0427@gmail.com",
-            "danxin.ni0119@gmail.com",
-            "mk@fantom.foundation",
+            "fennec@zookeeper.finance"
+           
           ],
           dynamic_template_data: {
-            title: "Jason Test",
+            title: "OpenZoo Mail Testing",
             content:
               "I am testing email template please let me know if you like this.",
             image: "https://storage.artion.io/image/1629994367734.png",
-            name: "From Ethereum to Fantom",
+            name: "From Ethereum to Wanchain",
             link: "https://artion.io/explore/0x7f6a67065fa3d2e42383a27f1a7537c2ab88318b/4",
           },
           // dynamic_template_data: {
