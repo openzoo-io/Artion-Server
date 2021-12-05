@@ -551,11 +551,12 @@ router.post("/offerCanceled", service_auth, async (req, res) => {
               nftAddress: nft,
             };
             if (creatorAlias != alias) await sendEmail(data);
-          }
+          } 
         } else if (category == 1155) {
         }
       }
     } catch (error) {
+      console.log(error);
       Logger.error("[OfferCanceled] Failed to notify owner ", error.message)
     }
 
