@@ -58,7 +58,7 @@ const runPriceFeed = async () => {
   }
   setTimeout(async () => {
     await runPriceFeed();
-  }, 1000 * 5);
+  }, 1000 * 60 * 5); // Every 5 mins
 };
 
 // a background service to get names & symbols for erc20 tokens
