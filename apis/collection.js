@@ -490,10 +490,10 @@ router.post('/getCollectionStatistic', async (req, res) => {
       $facet: { totalCount: [{ $count: 'ownerCount' }] }
     }
   ]);
-  console.log(countOwner);
+  console.log(countOwner[0].totalCount[0].ownerCount);
   return res.json({
     status: 'success',
-    data: {countNFT,countNFT, countOwner: countOwner.totalCount[0].ownerCount }
+    data: {countNFT,countNFT, countOwner: countOwner[0].totalCount[0].ownerCount }
   });
 });
 
