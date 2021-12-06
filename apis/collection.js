@@ -473,10 +473,11 @@ router.post('/getCollectionStatistic', async (req, res) => {
       data: 'NFT Contract Address Invalid'
     });
 
-  // Count NFT //
+  
   const NFTITEM = mongoose.model('NFTITEM');
+  // Count NFT //
   let countNFT = await NFTITEM.countDocuments({ contractAddress: address })
-
+// Count Owner //
   let countOwner = await NFTITEM.aggregate([
     {
       $match: { contractAddress: address }
@@ -490,10 +491,22 @@ router.post('/getCollectionStatistic', async (req, res) => {
       $facet: { totalCount: [{ $count: 'ownerCount' }] }
     }
   ]);
-  console.log(countOwner[0].totalCount[0].ownerCount);
+  // Floor Price //
+  let floorPriceNFT = await NFTITEM.find({contractAddress:address,priceInUSD:{$gt:0}}).sort({priceInUSD:1}).limit(1)
+  if (floorPriceNFT.length == 0)
+  {
+    floorPriceNFT = 0
+  }
+  else
+  {
+    floorPriceNFT = floorPriceNFT.priceInUSD;
+  }
+
+
+  //console.log(countOwner[0].totalCount[0].ownerCount);
   return res.json({
     status: 'success',
-    data: {countNFT,countNFT, countOwner: countOwner[0].totalCount[0].ownerCount }
+    data: {countNFT,countNFT, countOwner: countOwner[0].totalCount[0].ownerCount,floorPriceNFT }
   });
 });
 
