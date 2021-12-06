@@ -491,18 +491,31 @@ router.post('/getCollectionStatistic', async (req, res) => {
       $facet: { totalCount: [{ $count: 'ownerCount' }] }
     }
   ]);
+  if (countOwner.length > 0)
+  {
+    countOwner = countOwner[0].totalCount[0].ownerCount;
+  }
+  else
+  {
+    countOwner = 0;
+  }
+
+
   // Floor Price //
   let floorPriceNFT = await NFTITEM.find({contractAddress:address,priceInUSD:{$gt:0}}).sort({priceInUSD:1}).limit(1)
-  console.log(floorPriceNFT);
- 
-
+  console.log(floorPriceNFT[0].priceInUSD);
+  let floorPrice=0;
+  if (floorPriceNFT.length > 0)
+  {
+    floorPrice = floorPriceNFT[0].priceInUSD;
+  }
 
   //console.log(countOwner[0].totalCount[0].ownerCount);
   return res.json({
     status: 'success',
     data: {countNFT:countNFT, 
       countOwner: countOwner[0].totalCount[0].ownerCount,
-      floorPrice: floorPriceNFT.priceInUSD }
+      floorPrice: floorPrice }
   });
 });
 
