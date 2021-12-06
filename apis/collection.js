@@ -523,6 +523,11 @@ router.post('/getCollectionStatistic', async (req, res) => {
       },
     }
   ]);
+  let voltraded=0;
+  if (volumeTraded.length > 0)
+  {
+    voltraded = volumeTraded[0].sum;
+  }
 
   //console.log(countOwner[0].totalCount[0].ownerCount);
   return res.json({
@@ -530,7 +535,7 @@ router.post('/getCollectionStatistic', async (req, res) => {
     data: {countNFT:countNFT, 
       countOwner: countOwner,
       floorPrice: floorPrice,
-      volumeTraded, volumeTraded
+      volumeTraded, voltraded
     }
   });
 });
