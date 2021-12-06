@@ -3,7 +3,7 @@ const ethers = require("ethers");
 
 const mongoose = require("mongoose");
 const PayToken = mongoose.model("PayToken");
-
+const { PAYTOKENS, DISABLED_PAYTOKENS } = require('../constants/tokens');
 // price store
 const priceStore = new Map();
 // decimal store
@@ -32,7 +32,7 @@ const provider = new ethers.providers.JsonRpcProvider(
 const runPriceFeed = async () => {
   try {
     console.log('Run Price Feed');
-    let paymentTokens = await PayToken.find({});
+    let paymentTokens = PAYTOKENS;
     console.log(paymentTokens);
     paymentTokens.map(async (token) => {
       try {
