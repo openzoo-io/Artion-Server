@@ -315,7 +315,7 @@ router.post("/itemUpdated", service_auth, async (req, res) => {
       if (token) {
         token.price = newPricePerItem;
         token.paymentToken = itemPayToken.address;
-        token.priceInUSD = priceInUSD;
+        token.priceInUSD = newPriceInUSD;
         await token.save();
       }
     }
