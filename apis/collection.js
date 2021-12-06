@@ -503,7 +503,7 @@ router.post('/getCollectionStatistic', async (req, res) => {
 
   // Floor Price //
   let floorPriceNFT = await NFTITEM.find({contractAddress:address,priceInUSD:{$gt:0}}).sort({priceInUSD:1}).limit(1)
-  console.log(floorPriceNFT[0].priceInUSD);
+  //console.log(floorPriceNFT[0].priceInUSD);
   let floorPrice=0;
   if (floorPriceNFT.length > 0)
   {
