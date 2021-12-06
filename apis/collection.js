@@ -510,12 +510,28 @@ router.post('/getCollectionStatistic', async (req, res) => {
     floorPrice = floorPriceNFT[0].priceInUSD;
   }
 
+  // Vol traded //
+  db.tradehistories.aggregate([{$match:{collectionAddress:"0x35b0b5c350b62ddee9be102b7567c4dabe52cf4f"}},{$group:{_id:null,sum: {$sum:"$priceInUSD"}}}])
+  const TradeHistory = mongoose.model('TradeHistory');
+  let volumeTraded = await TradeHistory.aggregate([
+    {
+      $match: { contractAddress: address }
+    },
+    {
+      $group: {
+        _id: null, sum: {$sum:"$priceInUSD"}
+      },
+    }
+  ]);
+
   //console.log(countOwner[0].totalCount[0].ownerCount);
   return res.json({
     status: 'success',
     data: {countNFT:countNFT, 
       countOwner: countOwner,
-      floorPrice: floorPrice }
+      floorPrice: floorPrice,
+      volumeTraded, volumeTraded
+    }
   });
 });
 
