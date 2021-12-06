@@ -487,13 +487,13 @@ router.post('/getCollectionStatistic', async (req, res) => {
       },
     },
     {
-      $facet: { totalCount: [{ $count: 'count' }] }
+      $facet: { totalCount: [{ $count: 'ownerCount' }] }
     }
   ]);
 
   return res.json({
     status: 'success',
-    data: {countNFT,countNFT, countOwner: countOwner.totalCount[0].count }
+    data: {countNFT,countNFT, countOwner: countOwner.totalCount[0].ownerCount }
   });
 });
 
