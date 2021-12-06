@@ -33,6 +33,7 @@ const runPriceFeed = async () => {
   try {
     console.log('Run Price Feed');
     let paymentTokens = await PayToken.find({});
+    console.log(paymentTokens);
     paymentTokens.map(async (token) => {
       try {
         let proxy = chainLinkContracts.get(token.address);
