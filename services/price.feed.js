@@ -36,18 +36,16 @@ const runPriceFeed = async () => {
     console.log(paymentTokens);
     paymentTokens.map(async (token) => {
       try {
-        let proxy = chainLinkContracts.get(token.address);
-        if (proxy) {
-        } else {
-          proxy = new ethers.Contract(
-            "0x2f5e32eC8d9A298063F7FFA14aF515Fa8fEb71Eb",
-            ChainLinkFeedABI,
-            provider
-          );
-          chainLinkContracts.set(token, proxy);
-        }
+
+        proxy = new ethers.Contract(
+          "0x2f5e32eC8d9A298063F7FFA14aF515Fa8fEb71Eb",
+          ChainLinkFeedABI,
+          provider
+        );
+        //chainLinkContracts.set(token, proxy);
+
         let priceFeed = await proxy.getPrice(token.address);
-        
+
         priceFeed = parseFloat(_price.toString()) / 10 ** 18;
         console.log(token.address, priceFeed)
         priceStore.set(token.address, priceFeed);
