@@ -47,16 +47,17 @@ const runPriceFeed = async () => {
           chainLinkContracts.set(token, proxy);
         }
         let priceFeed = await proxy.getPrice(token.address);
+        console.log(token.address);
         priceFeed =
           ethers.utils.formatEther(priceFeed.answer) *
           10 ** (18 - token.decimals);
         priceStore.set(token.address, priceFeed);
       } catch (error) {
-        console.log(error);
+        //console.log(error);
       }
     });
   } catch (error) {
-    console.log(error);
+    //console.log(error);
   }
   setTimeout(async () => {
     await runPriceFeed();
