@@ -49,7 +49,7 @@ const runPriceFeed = async () => {
         let priceFeed = await proxy.getPrice(token.address);
         
         priceFeed = parseFloat(_price.toString()) / 10 ** 18;
-          
+        console.log(token.address, priceFeed)
         priceStore.set(token.address, priceFeed);
       } catch (error) {
         //console.log(error);
