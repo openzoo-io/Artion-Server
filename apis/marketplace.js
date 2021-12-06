@@ -79,7 +79,7 @@ router.post("/itemListed", service_auth, async (req, res) => {
     const quantity = parseInt(quantityBN.hex);
     const startingTime = parseInt(startingTimeBN.hex) * 1000;
     const priceInUSD = pricePerItem * getPrice(itemPayToken.address);
-    console.log('LIST ITEMED WITH PRICE', princeInUSD);
+    console.log('LIST ITEMED WITH PRICE', priceInUSD);
     // first update the token price
     let category = await Category.findOne({ minterAddress: nft });
     if (category) {
