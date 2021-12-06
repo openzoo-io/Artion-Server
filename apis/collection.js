@@ -511,7 +511,7 @@ router.post('/getCollectionStatistic', async (req, res) => {
   }
 
   // Vol traded //
-  db.tradehistories.aggregate([{$match:{collectionAddress:"0x35b0b5c350b62ddee9be102b7567c4dabe52cf4f"}},{$group:{_id:null,sum: {$sum:"$priceInUSD"}}}])
+  //db.tradehistories.aggregate([{$match:{collectionAddress:"0x35b0b5c350b62ddee9be102b7567c4dabe52cf4f"}},{$group:{_id:null,sum: {$sum:"$priceInUSD"}}}])
   const TradeHistory = mongoose.model('TradeHistory');
   let volumeTraded = await TradeHistory.aggregate([
     {
