@@ -56,9 +56,12 @@ const runPriceFeed = async () => {
   } catch (error) {
     //console.log(error);
   }
+
+  console.log('WWAN PRICE',getPrice("0x916283cc60fdaf05069796466af164876e35d21f"));
+
   setTimeout(async () => {
     await runPriceFeed();
-  }, 1000 * 60 * 5); // Every 5 mins
+  }, 1000 * 5); // Every 5 mins
 };
 
 // a background service to get names & symbols for erc20 tokens
