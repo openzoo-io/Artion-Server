@@ -515,7 +515,7 @@ router.post('/getCollectionStatistic', async (req, res) => {
   const TradeHistory = mongoose.model('TradeHistory');
   let volumeTraded = await TradeHistory.aggregate([
     {
-      $match: { contractAddress: address }
+      $match: { collectionAddress: address }
     },
     {
       $group: {
@@ -529,7 +529,7 @@ router.post('/getCollectionStatistic', async (req, res) => {
     voltraded = volumeTraded[0].sum;
   }
 
-  console.log(volumeTraded);
+  //console.log(volumeTraded);
 
   //console.log(countOwner[0].totalCount[0].ownerCount);
   return res.json({
