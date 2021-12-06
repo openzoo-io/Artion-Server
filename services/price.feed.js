@@ -31,6 +31,7 @@ const provider = new ethers.providers.JsonRpcProvider(
 
 const runPriceFeed = async () => {
   try {
+    console.log('Run Price Feed');
     let paymentTokens = await PayToken.find({});
     paymentTokens.map(async (token) => {
       try {
