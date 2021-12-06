@@ -50,7 +50,9 @@ const runPriceFeed = async () => {
           ethers.utils.formatEther(priceFeed.answer) *
           10 ** (18 - token.decimals);
         priceStore.set(token.address, priceFeed);
-      } catch (error) {}
+      } catch (error) {
+        console.log(error);
+      }
     });
   } catch (error) {
     console.log(error);
