@@ -475,7 +475,7 @@ router.post('/getCollectionStatistic', async (req, res) => {
 
   // Count NFT //
   const NFTITEM = mongoose.model('NFTITEM');
-  let countNFT = await NFTITEM.count({ contractAddress: address })
+  let countNFT = await NFTITEM.countDocuments({ contractAddress: address })
 
   let countOwner = await NFTITEM.aggregate([
     {
