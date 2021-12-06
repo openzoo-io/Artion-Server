@@ -79,7 +79,7 @@ router.post("/itemListed", service_auth, async (req, res) => {
     const quantity = parseInt(quantityBN.hex);
     const startingTime = parseInt(startingTimeBN.hex) * 1000;
     const priceInUSD = pricePerItem * getPrice(itemPayToken.address);
-    console.log('LIST ITEMED WITH PRICE', priceInUSD);
+    //console.log('LIST ITEMED WITH PRICE', priceInUSD);
     // first update the token price
     let category = await Category.findOne({ minterAddress: nft });
     if (category) {
@@ -91,6 +91,7 @@ router.post("/itemListed", service_auth, async (req, res) => {
       if (token) {
         token.price = pricePerItem;
         token.paymentToken = itemPayToken.address;
+        token.priceInUSD = priceInUSD;
         token.listedAt = new Date(); // set listed date
         token.blockNumber = blockNumber;
         await token.save();
