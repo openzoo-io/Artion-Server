@@ -50,7 +50,7 @@ const runPriceFeed = async () => {
         console.log(token.address, priceFeed)
         priceStore.set(token.address, priceFeed);
       } catch (error) {
-        //console.log(error);
+        console.log(error);
       }
     });
   } catch (error) {
