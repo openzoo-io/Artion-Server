@@ -514,7 +514,7 @@ router.post('/getCollectionStatistic', async (req, res) => {
   return res.json({
     status: 'success',
     data: {countNFT:countNFT, 
-      countOwner: countOwner[0].totalCount[0].ownerCount,
+      countOwner: countOwner,
       floorPrice: floorPrice }
   });
 });
