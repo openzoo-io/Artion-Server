@@ -473,16 +473,7 @@ router.post('/getCollectionStatistic', async (req, res) => {
       data: 'NFT Contract Address Invalid'
     });
   
-  // Count NFT //
-  const NFTITEM = mongoose.model('NFTITEM');
-  let countNFT = await NFTITEM.count({ contractAddress: address })
-  console.log(countNFT);
-  /*
-  return res.json({
-    status: 'success',
-    data: {  countNFT : countNFT }
-  });
-  */
+  
 });
 
 router.post('/getCollectionInfo', async (req, res) => {
