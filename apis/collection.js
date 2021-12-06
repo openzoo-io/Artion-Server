@@ -40,6 +40,7 @@ const marketplaceSC = new ethers.Contract(
   ownerWallet
 );
 
+
 router.post('/collectiondetails', auth, async (req, res) => {
   let erc721Address = req.body.erc721Address;
   erc721Address = toLowerCase(erc721Address);
@@ -460,6 +461,24 @@ router.get('/fetchAllCollections', auth, async (req, res) => {
   return res.json({
     status: 'success',
     data: all
+  });
+});
+
+
+router.post('/getCollectionStatistic', async (req, res) => {
+  let address = toLowerCase(req.body.contractAddress);
+  if (!ethers.utils.isAddress(address))
+    return res.json({
+      status: 'failed',
+      data: 'NFT Contract Address Invalid'
+    });
+  
+  // Count NFT //
+  const NFTITEM = mongoose.model('NFTITEM');
+  let countNFT = await NFTITEM.count({ contractAddress: address })
+  return res.json({
+    status: 'success',
+    data: {  CountNFT : countNFT }
   });
 });
 
