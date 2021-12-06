@@ -44,7 +44,7 @@ const runPriceFeed = async () => {
         );
         //chainLinkContracts.set(token, proxy);
 
-        let priceFeed = await proxy.getPrice(token.address);
+        let _price = await proxy.getPrice(token.address);
 
         priceFeed = parseFloat(_price.toString()) / 10 ** 18;
         console.log(token.address, priceFeed)
