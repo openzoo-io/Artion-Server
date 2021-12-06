@@ -506,7 +506,7 @@ router.post('/getCollectionStatistic', async (req, res) => {
   //console.log(countOwner[0].totalCount[0].ownerCount);
   return res.json({
     status: 'success',
-    data: {countNFT,countNFT, countOwner: countOwner[0].totalCount[0].ownerCount,floorPriceNFT }
+    data: {countNFT,countNFT, countOwner: countOwner[0].totalCount[0].ownerCount,floorPrice: floorPriceNFT }
   });
 });
 
