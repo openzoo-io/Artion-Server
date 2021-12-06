@@ -38,20 +38,22 @@ const runPriceFeed = async () => {
         if (proxy) {
         } else {
           proxy = new ethers.Contract(
-            token.chainlinkProxyAddress,
+            "0x2f5e32eC8d9A298063F7FFA14aF515Fa8fEb71Eb",
             ChainLinkFeedABI,
             provider
           );
           chainLinkContracts.set(token, proxy);
         }
-        let priceFeed = await proxy.latestRoundData();
+        let priceFeed = await proxy.getPrice(token.address);
         priceFeed =
           ethers.utils.formatEther(priceFeed.answer) *
           10 ** (18 - token.decimals);
         priceStore.set(token.address, priceFeed);
       } catch (error) {}
     });
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+  }
   setTimeout(async () => {
     await runPriceFeed();
   }, 1000 * 60 * 5);
