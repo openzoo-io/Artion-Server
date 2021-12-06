@@ -273,7 +273,7 @@ router.post("/uploadImage2Server", auth, async (req, res) => {
                 recipient: address,
                 IP_Rights: xtraUrl,
                 createdAt: currentTime,
-                collection: "Fantom Powered NFT Collection",
+                collection: "OpenZoo NFT Collection",
               },
             };
 
