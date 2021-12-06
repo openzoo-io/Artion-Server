@@ -168,7 +168,7 @@ router.post('/collectiondetails', auth, async (req, res) => {
       let ifExists = await ERC721CONTRACT.findOne({
         address: erc721Address
       });
-	  // Existed Contract //
+      // Existed Contract //
       if (!ifExists) {
         let sc_721 = new ERC721CONTRACT();
         sc_721.address = erc721Address;
@@ -179,9 +179,9 @@ router.post('/collectiondetails', auth, async (req, res) => {
         sc_721.isAppropriate = true;
         await sc_721.save();
       }
-	   
-	   
-	  // Category checking ... //
+
+
+      // Category checking ... //
       let categoryExists = await Category.findOne({
         minterAddress: erc721Address
       });
@@ -401,7 +401,7 @@ router.post('/reviewApplication', admin_auth, async (req, res) => {
           },
           { isAppropriate: true }
         );
-      } catch (error) {}
+      } catch (error) { }
       try {
         await ERC1155CONTRACT.updateOne(
           {
@@ -409,7 +409,7 @@ router.post('/reviewApplication', admin_auth, async (req, res) => {
           },
           { isAppropriate: true }
         );
-      } catch (error) {}
+      } catch (error) { }
       // send email
       applicationMailer.sendApplicationReviewedEmail({
         to: email,
@@ -472,15 +472,19 @@ router.post('/getCollectionStatistic', async (req, res) => {
       status: 'failed',
       data: 'NFT Contract Address Invalid'
     });
-  
+
   // Count NFT //
   const NFTITEM = mongoose.model('NFTITEM');
   let countNFT = await NFTITEM.count({ contractAddress: address })
-  console.log(countNFT);
-  return res.json({
-    status: 'success',
-    data: {  countNFT : countNFT }
-  });
+  
+  let countOwner = await NFTITEM.aggregate([
+    { $match: { contractAddress: address } },
+     { "$group": { _id: "$owner", count: { $sum: 1 } } }]);
+
+     return res.json({
+      status: 'success',
+      data: { countOwner: countOwner.length }
+    });
 });
 
 router.post('/getCollectionInfo', async (req, res) => {
@@ -494,7 +498,7 @@ router.post('/getCollectionInfo', async (req, res) => {
   if (collection)
     return res.json({
       status: 'success',
-      data: { ...minifyCollection(collection)}//, isVerified: true }
+      data: { ...minifyCollection(collection) }//, isVerified: true }
     });
   collection = await ERC721CONTRACT.findOne({
     address: address
