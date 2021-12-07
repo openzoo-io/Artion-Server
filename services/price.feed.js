@@ -38,7 +38,7 @@ const runPriceFeed = async () => {
       try {
 
         proxy = new ethers.Contract(
-          "0x2f5e32eC8d9A298063F7FFA14aF515Fa8fEb71Eb",
+          process.env.PRICEFEED,
           ChainLinkFeedABI,
           provider
         );
