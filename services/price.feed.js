@@ -48,7 +48,7 @@ const runPriceFeed = async () => {
 
         let priceFeed = parseFloat(_price.toString()) / 10 ** 18;
         console.log(token.address, priceFeed)
-        priceStore.set(token.address, priceFeed);
+        priceStore.set(toLowerCase(token.address), priceFeed);
       } catch (error) {
         console.log(error);
       }
