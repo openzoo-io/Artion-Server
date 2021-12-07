@@ -913,7 +913,6 @@ router.post('/getSingleItemDetails', async (req, res) => {
     });
     if (!nft)
     {
-      console.log('failed nft fetching');
       return res.json({
         status: 'failed'
       });
@@ -1061,7 +1060,6 @@ router.post('/getSingleItemDetails', async (req, res) => {
     });
   } catch (error) {
     Logger.error(error);
-    console.log('failed fetching', error);
     return res.json({
       status: 'failed'
     });
