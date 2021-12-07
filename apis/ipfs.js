@@ -250,6 +250,7 @@ router.post("/uploadImage2Server", auth, async (req, res) => {
               name,
               symbol,
               royalty,
+              animation_url,
               xtraUrl
             );
 
