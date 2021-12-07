@@ -222,7 +222,6 @@ const handle1155SingleTransfer = async (
             newTk.tokenURI = tokenUri ? tokenUri : 'https://';
             newTk.tokenType = 1155;
             let isBanned = await is1155CollectionBanned(contractAddress);
-            console.log('Is BAN:'+isBanned);
             newTk.isAppropriate = !isBanned;
             await newTk.save();
           } catch (error) {
