@@ -220,7 +220,7 @@ router.post("/uploadImage2Server", auth, async (req, res) => {
         let description = fields.description;
         let symbol = fields.symbol;
         let royalty = fields.royalty;
-
+        let animation_url = fields.animation_url;
         let xtraUrl = fields.xtra;
         if (xtraUrl && !validUrl.isUri(xtraUrl)) {
           return res.status(400).json({
@@ -265,6 +265,7 @@ router.post("/uploadImage2Server", auth, async (req, res) => {
             let metaData = {
               name: name,
               image: ipfsUri + filePinStatus.IpfsHash,
+              animation_url: animation_url,
               description: description,
               properties: {
                 symbol: symbol,
@@ -273,7 +274,7 @@ router.post("/uploadImage2Server", auth, async (req, res) => {
                 recipient: address,
                 IP_Rights: xtraUrl,
                 createdAt: currentTime,
-                collection: "OpenZoo NFT Collection",
+                collection: "OpenZoo.io NFT Collection",
               },
             };
 
