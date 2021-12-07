@@ -42,12 +42,12 @@ const loadContract = (contractAddress, tokenType) => {
 const getTokenUri = async (contractAddress, tokenID) => {
   let sc = loadedContracts.get(contractAddress);
   if (sc) {
-    let uri = await sc.uri(tokenID);
+    let uri = await sc.URI(tokenID);
     return uri;
   } else {
     sc = new ethers.Contract(contractAddress, SimplifiedERC1155ABI, provider);
     loadedContracts.set(contractAddress, sc);
-    let uri = await sc.uri(tokenID);
+    let uri = await sc.URI(tokenID);
     return uri;
   }
 };
