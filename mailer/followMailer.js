@@ -5,10 +5,10 @@ const mailingListEmail = "noreply-artion@fantom.foundation";
 const messageUtils = require("./message.utils");
 
 const app_url = process.env.APP_URL;
-const storage_url = process.env.RUNTIME
-  ? "https://storage.testnet.artion.io/image/"
-  : "https://storage.artion.io/image/";
-
+// const storage_url = process.env.RUNTIME
+//   ? "https://storage.testnet.artion.io/image/"
+//   : "https://storage.artion.io/image/";
+  const storage_url = '';
 const mongoose = require("mongoose");
 const toLowerCase = require("../utils/utils");
 const Account = mongoose.model("Account");
@@ -38,15 +38,18 @@ const getNFTItemName = async (nft, tokenID) => {
     return tokenID;
   }
 };
+
 const getNFTThumbnailPath = async (nft, tokenID) => {
   try {
     let token = await NFTITEM.findOne({
       contractAddress: toLowerCase(nft),
       tokenID: tokenID,
     });
-    if (token) return token.thumbnailPath;
+	console.log(nft,tokenID,token);
+    if (token) return token.imageURL;
     else return null;
   } catch (error) {
+    console.log(error);
     return null;
   }
 };
