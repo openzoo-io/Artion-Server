@@ -840,7 +840,7 @@ router.post('/fetchTokens', async (req, res) => {
       ? { lastSalePrice: sr.lastSalePrice }
       : {}),
     ...(sr.lastSalePricePaymentToken != null &&
-    sr.lastSalePricePaymentToken != undefined
+      sr.lastSalePricePaymentToken != undefined
       ? { lastSalePricePaymentToken: sr.lastSalePricePaymentToken }
       : {}),
     ...(sr.lastSalePriceInUSD != null && sr.lastSalePriceInUSD != undefined
@@ -911,8 +911,7 @@ router.post('/getSingleItemDetails', async (req, res) => {
       tokenID: tokenID,
       isAppropriate: true
     });
-    if (!nft)
-    {
+    if (!nft) {
       return res.json({
         status: 'failed'
       });
