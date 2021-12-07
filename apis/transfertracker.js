@@ -369,7 +369,9 @@ router.post(
             let uri = tokenURI.split('//')[1];
             metadataURI = `https://openzoo.mypinata.cloud/ipfs/${uri}`;
           }
+          console.log('metaDataURI',metadataURI);
           metadata = await axios.get(metadataURI);
+          console.log('metadata',metadata);
           try {
             tokenName = metadata.data.name;
             imageURL = metadata.data.image;
