@@ -531,7 +531,7 @@ router.post("/uploadMedia2Server", auth, async (req, res) => {
       }
       return res.json({
         status: "success",
-        data: ipfsUri + filePinStatus.IpfsHash,
+        data: ipfsUri + filePinStatus.IpfsHash +'/'+imageFileName,
       });
     }
   });
