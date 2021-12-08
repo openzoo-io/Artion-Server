@@ -9,11 +9,7 @@ const port = process.env.PORT || 5001;
 const Logger = require('./services/logger');
 const morganMiddleware = require('./apis/middleware/morgan');
 
-app.use(
-  bodyParser.urlencoded({
-    extended: false,
-  })
-);
+
 
 require("./models/abi");
 require("./models/account");
@@ -54,7 +50,8 @@ require("./models/paytoken");
 require("./models/unlockable");
 require("./models/disabledExplorerCollection");
 
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit: '50mb'})); 
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 app.use(express.json());
 app.use(
   cors()
