@@ -8,7 +8,7 @@ const port = process.env.PORT || 5001;
 
 const Logger = require('./services/logger');
 const morganMiddleware = require('./apis/middleware/morgan');
-app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+
 app.use(
   bodyParser.urlencoded({
     extended: false,
@@ -62,6 +62,9 @@ app.use(
 app.options("*", cors()); // include before other routes
 
 app.use(morganMiddleware);
+
+app.use(express.limit('4M'));
+
 app.use(require("./apis"));
 
 const priceFeed = require("./services/price.feed");
