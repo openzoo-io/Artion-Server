@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 require("dotenv").config();
 const mongoose = require("mongoose");
-const bodyParser = require("body-parser");
+//const bodyParser = require("body-parser");
 const cors = require("cors");
 const port = process.env.PORT || 5001;
 
@@ -50,7 +50,7 @@ require("./models/paytoken");
 require("./models/unlockable");
 require("./models/disabledExplorerCollection");
 
-app.use(bodyParser.json()); 
+//app.use(bodyParser.json()); 
 
 app.use(express.urlencoded({limit: '50mb', extended: true})); 
 app.use(express.json());
