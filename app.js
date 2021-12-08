@@ -10,7 +10,11 @@ const Logger = require('./services/logger');
 const morganMiddleware = require('./apis/middleware/morgan');
 
 
-
+app.use(
+  bodyParser.urlencoded({
+    extended: false,
+  })
+);
 require("./models/abi");
 require("./models/account");
 require("./models/bid");
