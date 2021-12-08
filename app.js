@@ -63,7 +63,6 @@ app.options("*", cors()); // include before other routes
 
 app.use(morganMiddleware);
 
-app.use(express.limit('4M'));
 
 app.use(require("./apis"));
 
