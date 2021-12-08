@@ -106,10 +106,10 @@ const pinBannerFileToIPFS = async (fileName, address) => {
 };
 
 // pin media image
-const pinMediaFileToIPFS = async (fileName, linkname) => {
+const pinMediaFileToIPFS = async (fileName, address) => {
   const options = {
     pinataMetadata: {
-      name: linkname,
+      name: address,
       keyvalues: {},
     },
     pinataOptions: {
@@ -528,11 +528,11 @@ router.post("/uploadMedia2Server", auth, async (req, res) => {
       let mediaData = fields.media;
       let mediaExt = fields.mediaExt;
       /* change getting address from auth token */
-      let address = extractAddress(req, res);
+      //let address = extractAddress(req, res);
       let name = generateRandomName();
       const ipfsUri = ipfsUris[Math.floor(Math.random() * ipfsUris.length)];
      
-      let imageFileName = address + name.replace(" ", "") + "." + mediaExt;
+      let imageFileName = name.replace(" ", "") + "." + mediaExt;
       mediaData = mediaData.split("base64,")[1];
       fs.writeFile(uploadPath + imageFileName, mediaData, "base64", (err) => {
         if (err) {
@@ -544,7 +544,7 @@ router.post("/uploadMedia2Server", auth, async (req, res) => {
         }
       });
 
-      let filePinStatus = await pinMediaFileToIPFS(imageFileName, name.replace(" ", "") + "." + mediaExt);
+      let filePinStatus = await pinMediaFileToIPFS(imageFileName, name.replace(" ", ""));
       // remove file once pinned
 
       try {
@@ -554,7 +554,7 @@ router.post("/uploadMedia2Server", auth, async (req, res) => {
       }
       return res.json({
         status: "success",
-        data: ipfsUri + filePinStatus.IpfsHash +'/'+name.replace(" ", "") + "." + mediaExt,
+        data: ipfsUri + filePinStatus.IpfsHash +'/'+imageFileName,
       });
     }
   });
