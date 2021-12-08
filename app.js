@@ -50,9 +50,9 @@ require("./models/paytoken");
 require("./models/unlockable");
 require("./models/disabledExplorerCollection");
 
-app.use(bodyParser.json({limit: '50mb'})); 
-app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
-app.use(express.json({limit: '50mb'}));
+
+app.use(express.urlencoded({extended: true})); 
+app.use(express.json());
 app.use(
   cors()
 );
