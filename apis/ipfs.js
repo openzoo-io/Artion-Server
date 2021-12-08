@@ -114,6 +114,7 @@ const pinMediaFileToIPFS = async (fileName, linkname) => {
     },
     pinataOptions: {
       cidVersion: 0,
+      wrapWithDirectory: true
     },
   };
   const readableStreamForFile = fs.createReadStream(uploadPath + fileName);
@@ -553,7 +554,7 @@ router.post("/uploadMedia2Server", auth, async (req, res) => {
       }
       return res.json({
         status: "success",
-        data: ipfsUri + filePinStatus.IpfsHash,
+        data: ipfsUri + filePinStatus.IpfsHash +'/'+name.replace(" ", "") + "." + mediaExt,
       });
     }
   });
