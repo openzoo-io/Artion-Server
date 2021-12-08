@@ -55,6 +55,10 @@ require("./models/unlockable");
 require("./models/disabledExplorerCollection");
 
 app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+  limit: '50mb',
+  extended: true
+  })); 
 app.use(express.json({limit: '50mb'}));
 app.use(
   cors()
