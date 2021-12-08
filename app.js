@@ -57,7 +57,7 @@ require("./models/disabledExplorerCollection");
 app.use(bodyParser.json());
 app.use(express.json());
 app.use(
-  //cors()
+  cors()
 );
 app.options("*", cors()); // include before other routes
 
