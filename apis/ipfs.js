@@ -105,6 +105,28 @@ const pinBannerFileToIPFS = async (fileName, address) => {
   }
 };
 
+// pin media image
+const pinMediaFileToIPFS = async (fileName, linkname) => {
+  const options = {
+    pinataMetadata: {
+      name: linkname,
+      keyvalues: {},
+    },
+    pinataOptions: {
+      cidVersion: 0,
+    },
+  };
+  const readableStreamForFile = fs.createReadStream(uploadPath + fileName);
+
+  try {
+    let result = await pinata.pinFileToIPFS(readableStreamForFile, options);
+    return result;
+  } catch (error) {
+    Logger.error(error);
+    return "failed to pin file to ipfs";
+  }
+};
+
 // pin image for collection
 const pinCollectionFileToIPFS = async (fileName, name, address) => {
   const options = {
@@ -521,7 +543,7 @@ router.post("/uploadMedia2Server", auth, async (req, res) => {
         }
       });
 
-      let filePinStatus = await pinBannerFileToIPFS(imageFileName, address);
+      let filePinStatus = await pinMediaFileToIPFS(imageFileName, name.replace(" ", "") + "." + mediaExt);
       // remove file once pinned
 
       try {
@@ -531,7 +553,7 @@ router.post("/uploadMedia2Server", auth, async (req, res) => {
       }
       return res.json({
         status: "success",
-        data: ipfsUri + filePinStatus.IpfsHash +'/'+imageFileName,
+        data: ipfsUri + filePinStatus.IpfsHash +'/'+name.replace(" ", "") + "." + mediaExt,
       });
     }
   });
