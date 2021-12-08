@@ -489,4 +489,49 @@ router.post("/uploadCollectionImage2Server", auth, async (req, res) => {
   });
 });
 
+// pin media
+router.post("/uploadMedia2Server", auth, async (req, res) => {
+  let form = new formidable.IncomingForm();
+  form.parse(req, async (err, fields, files) => {
+    if (err) {
+      Logger.error(err);
+      return res.status(400).json({
+        status: "failedParsingForm",
+      });
+    } else {
+      let mediaData = fields.media;
+      let mediaExt = fields.mediaExt;
+      /* change getting address from auth token */
+      let address = extractAddress(req, res);
+      let name = generateRandomName();
+
+     
+      let imageFileName = address + name.replace(" ", "") + "." + mediaExt;
+      mediaData = mediaData.split("base64,")[1];
+      fs.writeFile(uploadPath + imageFileName, mediaData, "base64", (err) => {
+        if (err) {
+          Logger.error(err);
+          return res.status(400).json({
+            status: "failed to save a media file",
+            err,
+          });
+        }
+      });
+
+      let filePinStatus = await pinBannerFileToIPFS(imageFileName, address);
+      // remove file once pinned
+
+      try {
+        fs.unlinkSync(uploadPath + imageFileName);
+      } catch (error) {
+        Logger.error(error);
+      }
+      return res.json({
+        status: "success",
+        data: ipfsUri + filePinStatus.IpfsHash,
+      });
+    }
+  });
+});
+
 module.exports = router;
