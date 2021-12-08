@@ -8,7 +8,7 @@ const port = process.env.PORT || 5001;
 
 const Logger = require('./services/logger');
 const morganMiddleware = require('./apis/middleware/morgan');
-app.use(express.limit('50M'));
+
 app.use(
   bodyParser.urlencoded({
     extended: false,
