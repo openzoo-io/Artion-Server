@@ -491,7 +491,10 @@ router.post("/uploadCollectionImage2Server", auth, async (req, res) => {
 
 // pin media
 router.post("/uploadMedia2Server", auth, async (req, res) => {
-  let form = new formidable.IncomingForm();
+  let form = new formidable.IncomingForm({
+    maxFileSize: 200 * 1024 * 1024,
+    maxFieldsSize: 300 * 1024 * 1024,
+  });
   form.parse(req, async (err, fields, files) => {
     if (err) {
       Logger.error(err);
