@@ -504,7 +504,7 @@ router.post("/uploadMedia2Server", auth, async (req, res) => {
       /* change getting address from auth token */
       let address = extractAddress(req, res);
       let name = generateRandomName();
-
+      const ipfsUri = ipfsUris[Math.floor(Math.random() * ipfsUris.length)];
      
       let imageFileName = address + name.replace(" ", "") + "." + mediaExt;
       mediaData = mediaData.split("base64,")[1];
