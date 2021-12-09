@@ -291,7 +291,7 @@ router.post("/uploadImage2Server", auth, async (req, res) => {
 
             let metaData = {
               name: name,
-              image: ipfsUri + filePinStatus.IpfsHash,
+              image: ipfsUri + filePinStatus.IpfsHash +'/'+imageFileName,
               animation_url: animation_url,
               description: description,
               properties: {
