@@ -259,8 +259,8 @@ router.post("/uploadImage2Server", auth, async (req, res) => {
 
         let imageFileName =
           address + "_" + name.replace(" ", "") + "_" + `${symbol ? symbol.replace(" ", "") : ""}` + "_" + Date.now() + "." + extension;
-        
-          imgData = imgData.replace(`data:image\/${extension};base64,`, "");
+
+        imgData = imgData.replace(`data:image\/${extension};base64,`, "");
 
         fs.writeFile(uploadPath + imageFileName, imgData, "base64", async (err) => {
           if (err) {
@@ -291,7 +291,7 @@ router.post("/uploadImage2Server", auth, async (req, res) => {
 
             let metaData = {
               name: name,
-              image: ipfsUri + filePinStatus.IpfsHash +'/'+imageFileName,
+              image: ipfsUri + filePinStatus.IpfsHash + '/' + imageFileName,
               animation_url: animation_url,
               description: description,
               properties: {
@@ -309,7 +309,7 @@ router.post("/uploadImage2Server", auth, async (req, res) => {
             return res.send({
               status: "success",
               uploadedCounts: 2,
-              fileHash: ipfsUri + filePinStatus.IpfsHash +'/'+imageFileName,
+              fileHash: ipfsUri + filePinStatus.IpfsHash + '/' + imageFileName,
               jsonHash: ipfsUri + jsonPinStatus.IpfsHash,
             });
           }
@@ -332,7 +332,7 @@ router.post("/uploadBundleImage2Server", auth, async (req, res) => {
         status: "failedParsingForm",
       });
     } else {
-      const ipfsUri = ipfsUris[Math.floor(Math.random()*ipfsUris.length)];
+      const ipfsUri = ipfsUris[Math.floor(Math.random() * ipfsUris.length)];
       let imgData = fields.imgData;
       let name = fields.name;
       let description = fields.description;
@@ -506,7 +506,7 @@ router.post("/uploadCollectionImage2Server", auth, async (req, res) => {
       // remove file once pinned
       try {
         fs.unlinkSync(uploadPath + imageFileName);
-      } catch (error) {}
+      } catch (error) { }
       return res.json({
         status: "success",
         data: filePinStatus.IpfsHash,
@@ -521,46 +521,53 @@ router.post("/uploadMedia2Server", auth, async (req, res) => {
     maxFileSize: 200 * 1024 * 1024,
     maxFieldsSize: 300 * 1024 * 1024,
   });
-  form.parse(req, async (err, fields, files) => {
-    if (err) {
-      Logger.error(err);
-      return res.status(400).json({
-        status: "failedParsingForm",
-      });
-    } else {
-      let mediaData = fields.media;
-      let mediaExt = fields.mediaExt;
-      /* change getting address from auth token */
-      let address = extractAddress(req, res);
-      let name = generateRandomName();
-      const ipfsUri = ipfsUris[Math.floor(Math.random() * ipfsUris.length)];
-     
-      let imageFileName = address + name.replace(" ", "") + "." + mediaExt;
-      mediaData = mediaData.split("base64,")[1];
-      fs.writeFile(uploadPath + imageFileName, mediaData, "base64", (err) => {
-        if (err) {
-          Logger.error(err);
-          return res.status(400).json({
-            status: "failed to save a media file",
-            err,
-          });
+  try {
+    form.parse(req, async (err, fields, files) => {
+      if (err) {
+        Logger.error(err);
+        return res.status(400).json({
+          status: "failedParsingForm",
+        });
+      } else {
+        let mediaData = fields.media;
+        let mediaExt = fields.mediaExt;
+        /* change getting address from auth token */
+        let address = extractAddress(req, res);
+        let name = generateRandomName();
+        const ipfsUri = ipfsUris[Math.floor(Math.random() * ipfsUris.length)];
+
+        let imageFileName = address + name.replace(" ", "") + "." + mediaExt;
+        mediaData = mediaData.split("base64,")[1];
+        fs.writeFile(uploadPath + imageFileName, mediaData, "base64", (err) => {
+          if (err) {
+            Logger.error(err);
+            return res.status(400).json({
+              status: "failed to save a media file",
+              err,
+            });
+          }
+        });
+
+        let filePinStatus = await pinMediaFileToIPFS(imageFileName, name.replace(" ", ""));
+        // remove file once pinned
+
+        try {
+          fs.unlinkSync(uploadPath + imageFileName);
+        } catch (error) {
+          Logger.error(error);
         }
-      });
-
-      let filePinStatus = await pinMediaFileToIPFS(imageFileName, name.replace(" ", ""));
-      // remove file once pinned
-
-      try {
-        fs.unlinkSync(uploadPath + imageFileName);
-      } catch (error) {
-        Logger.error(error);
+        return res.json({
+          status: "success",
+          data: ipfsUri + filePinStatus.IpfsHash + '/' + imageFileName,
+        });
       }
-      return res.json({
-        status: "success",
-        data: ipfsUri + filePinStatus.IpfsHash +'/'+imageFileName,
-      });
-    }
-  });
+    });
+  } catch (error) {
+    Logger.error(error);
+    return res.json({
+      status: "failed",
+    });
+  }
 });
 
 module.exports = router;
