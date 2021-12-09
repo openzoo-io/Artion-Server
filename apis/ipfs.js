@@ -256,9 +256,9 @@ router.post("/uploadImage2Server", auth, async (req, res) => {
           "data:image/".length,
           imgData.indexOf(";base64")
         );
-
+        let random = generateRandomName();
         let imageFileName =
-          address + "_" + name.replace(" ", "") + "_" + `${symbol ? symbol.replace(" ", "") : ""}` + "_" + Date.now() + "." + extension;
+          address + "_" + random + "_" + Date.now() + "." + extension;
 
         imgData = imgData.replace(`data:image\/${extension};base64,`, "");
 
@@ -536,7 +536,7 @@ router.post("/uploadMedia2Server", auth, async (req, res) => {
         let name = generateRandomName();
         const ipfsUri = ipfsUris[Math.floor(Math.random() * ipfsUris.length)];
 
-        let imageFileName = address + name.replace(" ", "") + "." + mediaExt;
+        let imageFileName = address + '_'+ name + "." + mediaExt;
         mediaData = mediaData.split("base64,")[1];
         fs.writeFile(uploadPath + imageFileName, mediaData, "base64", (err) => {
           if (err) {
