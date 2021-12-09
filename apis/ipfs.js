@@ -521,7 +521,7 @@ router.post("/uploadMedia2Server", auth, async (req, res) => {
     maxFileSize: 200 * 1024 * 1024,
     maxFieldsSize: 300 * 1024 * 1024,
   });
-  try {
+  
     form.parse(req, async (err, fields, files) => {
       if (err) {
         Logger.error(err);
@@ -562,12 +562,7 @@ router.post("/uploadMedia2Server", auth, async (req, res) => {
         });
       }
     });
-  } catch (error) {
-    Logger.error(error);
-    return res.json({
-      status: "failed",
-    });
-  }
+  
 });
 
 module.exports = router;
