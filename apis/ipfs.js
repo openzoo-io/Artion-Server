@@ -46,6 +46,7 @@ const pinFileToIPFS = async (
     },
     pinataOptions: {
       cidVersion: 0,
+      wrapWithDirectory: true
     },
   };
   const readableStreamForFile = fs.createReadStream(uploadPath + fileName);
@@ -258,7 +259,9 @@ router.post("/uploadImage2Server", auth, async (req, res) => {
 
         let imageFileName =
           address + "_" + name.replace(" ", "") + "_" + `${symbol ? symbol.replace(" ", "") : ""}` + "_" + Date.now() + "." + extension;
-        imgData = imgData.replace(`data:image\/${extension};base64,`, "");
+        
+          imgData = imgData.replace(`data:image\/${extension};base64,`, "");
+
         fs.writeFile(uploadPath + imageFileName, imgData, "base64", async (err) => {
           if (err) {
             Logger.error("uploadToIPFSerr: ", err);
@@ -306,7 +309,7 @@ router.post("/uploadImage2Server", auth, async (req, res) => {
             return res.send({
               status: "success",
               uploadedCounts: 2,
-              fileHash: ipfsUri + filePinStatus.IpfsHash,
+              fileHash: ipfsUri + filePinStatus.IpfsHash +'/'+imageFileName,
               jsonHash: ipfsUri + jsonPinStatus.IpfsHash,
             });
           }
@@ -528,11 +531,11 @@ router.post("/uploadMedia2Server", auth, async (req, res) => {
       let mediaData = fields.media;
       let mediaExt = fields.mediaExt;
       /* change getting address from auth token */
-      //let address = extractAddress(req, res);
+      let address = extractAddress(req, res);
       let name = generateRandomName();
       const ipfsUri = ipfsUris[Math.floor(Math.random() * ipfsUris.length)];
      
-      let imageFileName = name.replace(" ", "") + "." + mediaExt;
+      let imageFileName = address + name.replace(" ", "") + "." + mediaExt;
       mediaData = mediaData.split("base64,")[1];
       fs.writeFile(uploadPath + imageFileName, mediaData, "base64", (err) => {
         if (err) {
