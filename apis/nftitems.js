@@ -86,6 +86,39 @@ router.post('/increaseViews', async (req, res) => {
   }
 });
 
+router.post('/setContentType', async (req, res) => {
+  try {
+    let contractAddress = req.body.contractAddress;
+    contractAddress = toLowerCase(contractAddress);
+    let tokenID = parseInt(req.body.tokenID);
+    let contentType = toLowerCase(req.body.contentType);
+    let token = await NFTITEM.findOne({
+      contractAddress: contractAddress,
+      tokenID: tokenID
+    });
+    if (token) {
+      token.contentType = contentType;
+      let _token = await token.save();
+      return res.json({
+        status: 'success',
+        data: _token.contentType
+      });
+    } else {
+      return res.json({
+        status: 'success',
+        data: 0
+      });
+    }
+  } catch (error) {
+    Logger.error(error);
+    return res.status(400).json({
+      status: 'failed'
+    });
+  }
+});
+
+
+
 const sortItems = (_allTokens, sortby) => {
   let tmp = [];
   switch (sortby) {
