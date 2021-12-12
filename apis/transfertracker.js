@@ -382,6 +382,7 @@ router.post(
         let metadata;
         let tokenName = '';
         let imageURL = '';
+        let contentType = 'image';
         // now check if token uri is base64
         if (tokenURI.startsWith('data:application/json;base64,')) {
           tokenURI = tokenURI.split(',');
@@ -407,10 +408,26 @@ router.post(
           try {
             tokenName = metadata.data.name;
             imageURL = metadata.data.image;
+
+            // Get content Type //
+            if (metadata.data.animation_url)
+            {
+              let ext = metadata.data.animation_url ? metadata.data.animation_url.split('.').pop() : '';
+              switch(ext)
+              {
+                case 'mp4':contentType="video";break;
+                case 'mp3':contentType="sound";break;
+                case 'glb':contentType="model";break;
+              }
+            }
+
           } catch (error) {
             Logger.error(error);
           }
         }
+
+        
+
         if (to == validatorAddress) {
           return res.json();
         } else {
@@ -424,6 +441,7 @@ router.post(
           newTk.createdAt = Date.now();
           let isBanned = await is721CollectionBanned(address);
           newTk.isAppropriate = !isBanned;
+          newTk.contentType = contentType;
           await newTk.save();
           return res.json();
         }
