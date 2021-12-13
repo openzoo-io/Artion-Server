@@ -501,7 +501,7 @@ router.post('/verifyCollection', auth, async (req, res) => {
       if (is_verify.length) {
         return res.json({
           status: 'failed',
-          data: is_verify.isVerified
+          data: 'Already verified'
         });
       }
     } catch (error) {
