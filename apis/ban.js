@@ -439,7 +439,7 @@ router.post('/unverifyCollection', auth, async (req, res) => {
       let is_verify = await Collection.find(
         { erc721Address: contractAddress, isVerified: true }
       );
-      if (!is_verify)
+      if (!is_verify.length)
         return res.json({
           status: 'failed',
           data: 'Not Verified yet'
@@ -497,8 +497,8 @@ router.post('/verifyCollection', auth, async (req, res) => {
       let is_verify = await Collection.find(
         { erc721Address: contractAddress, isVerified:true }
       );
-      console.log(is_verify);
-      if (is_verify) {
+      
+      if (is_verify.length) {
         return res.json({
           status: 'failed',
           data: is_verify.isVerified
