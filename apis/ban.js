@@ -265,6 +265,8 @@ router.post('/banCollection', auth, async (req, res) => {
   }
 });
 
+
+
 router.post('/unbanCollection', auth, async (req, res) => {
   try {
     let adminAddress = extractAddress(req, res);
@@ -402,6 +404,96 @@ router.post('/boostCollection', auth, async (req, res) => {
     Logger.error(error);
     return res.status(400).json({
       status: 'failed'
+    });
+  }
+});
+
+
+
+router.post('/unverifyCollection', auth, async (req, res) => {
+  try {
+    let adminAddress = extractAddress(req, res);
+    if (!isAdmin(adminAddress))
+      return res.json({
+        status: 'failed',
+        data: 'Only Admin can unverify collection!'
+      });
+    let signature = req.body.signature;
+    let retrievedAddr = req.body.signatureAddress;
+    let isValidsignature = validateSignature(
+      adminAddress,
+      signature,
+      retrievedAddr
+    );
+    if (!isValidsignature)
+      return res.json({
+        status: 'failed',
+        data: 'Invalid Signature'
+      });
+
+    let contractAddress = toLowerCase(req.body.address);
+    
+    try {
+      await Collection.updateOne(
+        { erc721Address: contractAddress },
+        { $set: { isVerified: true } }
+      );
+    } catch (error) {
+      Logger.error(error);
+    }
+    return res.json({
+      status: 'success',
+      data: 'unverified'
+    });
+  } catch (error) {
+    Logger.error(error);
+    return res.json({
+      status: 'Failed to unverify a collection!'
+    });
+  }
+});
+
+router.post('/verifyCollection', auth, async (req, res) => {
+  try {
+    let adminAddress = extractAddress(req, res);
+    let isModOrAdmin = await isAllowedToBan(adminAddress);
+    if (!isModOrAdmin)
+      return res.json({
+        status: 'failed',
+        data: 'Only Admin or Mods can verify Collections!'
+      });
+    let signature = req.body.signature;
+    let retrievedAddr = req.body.signatureAddress;
+    let isValidsignature = validateSignature(
+      adminAddress,
+      signature,
+      retrievedAddr
+    );
+    if (!isValidsignature)
+      return res.json({
+        status: 'failed',
+        data: 'Invalid Signature'
+      });
+
+    let contractAddress = toLowerCase(req.body.address);
+    
+    try {
+      await Collection.updateOne(
+        { erc721Address: contractAddress },
+        { $set: { isVerified: true } }
+      );
+    } catch (error) {
+      Logger.error(error);
+    }
+
+    return res.json({
+      status: 'success',
+      data: 'verified'
+    });
+  } catch (error) {
+    Logger.error(error);
+    return res.json({
+      status: 'Failed to verify a collection!'
     });
   }
 });
