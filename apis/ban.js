@@ -299,13 +299,13 @@ router.post('/unbanCollection', auth, async (req, res) => {
         { address: contractAddress },
         { $set: { isAppropriate: true } }
       );
-    } catch (error) {}
+    } catch (error) { }
     try {
       await ERC1155CONTRACT.updateOne(
         { address: contractAddress },
         { $set: { isAppropriate: true } }
       );
-    } catch (error) {}
+    } catch (error) { }
     try {
       await Collection.updateOne(
         { erc721Address: contractAddress },
@@ -437,13 +437,13 @@ router.post('/unverifyCollection', auth, async (req, res) => {
     // Check already verify //
     try {
       let is_verify = await Collection.find(
-        { erc721Address: contractAddress, isVerified:true }
+        { erc721Address: contractAddress, isVerified: true }
       );
       if (!is_verify)
-      return res.json({
-        status: 'failed',
-        data: 'Not Verified yet'
-      });
+        return res.json({
+          status: 'failed',
+          data: 'Not Verified yet'
+        });
     } catch (error) {
       Logger.error(error);
     }
@@ -491,17 +491,18 @@ router.post('/verifyCollection', auth, async (req, res) => {
       });
 
     let contractAddress = toLowerCase(req.body.address);
-    
+
     // Check already verify //
     try {
       let is_verify = await Collection.find(
-        { erc721Address: contractAddress, isVerified:true }
+        { erc721Address: contractAddress, isVerified: true }
       );
-      if (is_verify)
-      return res.json({
-        status: 'failed',
-        data: 'Already verified'+is_verify
-      });
+      if (is_verify.isVerified) {
+        return res.json({
+          status: 'failed',
+          data: 'Already verified'
+        });
+      }
     } catch (error) {
       Logger.error(error);
     }
