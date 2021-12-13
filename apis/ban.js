@@ -495,9 +495,10 @@ router.post('/verifyCollection', auth, async (req, res) => {
     // Check already verify //
     try {
       let is_verify = await Collection.find(
-        { erc721Address: contractAddress, isVerified: true }
+        { erc721Address: contractAddress, isVerified:true }
       );
-      if (is_verify.isVerified) {
+      console.log(is_verify);
+      if (is_verify) {
         return res.json({
           status: 'failed',
           data: is_verify.isVerified
@@ -510,7 +511,7 @@ router.post('/verifyCollection', auth, async (req, res) => {
     try {
       await Collection.updateOne(
         { erc721Address: contractAddress },
-        { $set: { isVerified: true } }
+        { $set: { isVerified:true } }
       );
     } catch (error) {
       Logger.error(error);
