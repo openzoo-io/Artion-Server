@@ -555,6 +555,7 @@ router.post('/getCollectionInfo', async (req, res) => {
       status: 'success',
       data: { ...minifyCollection(collection) }//, isVerified: true }
     });
+    
   collection = await ERC721CONTRACT.findOne({
     address: address
   });

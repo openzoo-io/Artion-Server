@@ -834,6 +834,9 @@ router.post('/fetchTokens', async (req, res) => {
     ...(sr.contractAddress != null && sr.contractAddress != undefined
       ? { contractAddress: sr.contractAddress }
       : {}),
+      ...(sr.contentType != null && sr.contentType != undefined
+        ? { contentType: sr.contentType }
+        : {}),
     ...(sr.imageURL != null && sr.imageURL != undefined
       ? { imageURL: sr.imageURL }
       : {}),
