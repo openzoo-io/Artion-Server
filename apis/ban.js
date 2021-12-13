@@ -451,7 +451,7 @@ router.post('/unverifyCollection', auth, async (req, res) => {
     try {
       await Collection.updateOne(
         { erc721Address: contractAddress },
-        { $set: { isVerified: true } }
+        { $set: { isVerified: false } }
       );
     } catch (error) {
       Logger.error(error);
