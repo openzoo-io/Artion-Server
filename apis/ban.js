@@ -477,6 +477,19 @@ router.post('/verifyCollection', auth, async (req, res) => {
 
     let contractAddress = toLowerCase(req.body.address);
     
+    // Check already verify //
+    try {
+      let is_verify = await Collection.find(
+        { erc721Address: contractAddress, isVerified:true }
+      );
+      if (is_verify)
+      return res.json({
+        status: 'Already verified'
+      });
+    } catch (error) {
+      Logger.error(error);
+    }
+
     try {
       await Collection.updateOne(
         { erc721Address: contractAddress },
