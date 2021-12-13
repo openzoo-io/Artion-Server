@@ -437,9 +437,9 @@ router.post('/unverifyCollection', auth, async (req, res) => {
     // Check already verify //
     try {
       let is_verify = await Collection.find(
-        { erc721Address: contractAddress, isVerified:false }
+        { erc721Address: contractAddress, isVerified:true }
       );
-      if (is_verify)
+      if (!is_verify)
       return res.json({
         status: 'failed',
         data: 'Not Verified yet'
