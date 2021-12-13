@@ -222,6 +222,7 @@ const selectTokens = async (req, res) => {
     // create a sort by option
     const selectOption = [
       'contractAddress',
+      'contentType',
       'tokenID',
       'tokenURI',
       'tokenType',
