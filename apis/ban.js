@@ -413,10 +413,11 @@ router.post('/boostCollection', auth, async (req, res) => {
 router.post('/unverifyCollection', auth, async (req, res) => {
   try {
     let adminAddress = extractAddress(req, res);
-    if (!isAdmin(adminAddress))
+    let isModOrAdmin = await isAllowedToBan(adminAddress);
+    if (!isModOrAdmin)
       return res.json({
         status: 'failed',
-        data: 'Only Admin can unverify collection!'
+        data: 'Only Admin or Mods can unverify Collections!'
       });
     let signature = req.body.signature;
     let retrievedAddr = req.body.signatureAddress;
@@ -432,7 +433,21 @@ router.post('/unverifyCollection', auth, async (req, res) => {
       });
 
     let contractAddress = toLowerCase(req.body.address);
-    
+
+    // Check already verify //
+    try {
+      let is_verify = await Collection.find(
+        { erc721Address: contractAddress, isVerified:false }
+      );
+      if (is_verify)
+      return res.json({
+        status: 'failed',
+        data: 'Not Verified yet'
+      });
+    } catch (error) {
+      Logger.error(error);
+    }
+
     try {
       await Collection.updateOne(
         { erc721Address: contractAddress },
