@@ -890,7 +890,7 @@ router.post('/fetchTokens', async (req, res) => {
     ...(sr.isAppropriate != null && sr.isAppropriate != undefined
       ? { isAppropriate: sr.isAppropriate }
       : { isAppropriate: false }),
-      ownerAlias: getAccountInfo(sr.owner)
+      ownerAlias: await getAccountInfo(sr.owner)
   }));
 
   return res.json({
@@ -1268,7 +1268,6 @@ const getAccountInfo = async (address) => {
   try {
     
     let account = await Account.findOne({ address: address });
-    console.log(account);
     if (account) {
       return [account.alias, account.imageHash];
     } else {
