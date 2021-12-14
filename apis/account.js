@@ -199,8 +199,29 @@ router.get("/getaccountinfo", auth, async (req, res) => {
   }
 });
 
-// get account info by address
 
+// get account alias //
+router.post("/getuseraccountalias", async (req, res) => {
+  let address = req.body.address;
+  if (!ethers.utils.isAddress(address))
+    return res.json({
+      status: "failed",
+      data: "invalid frc20 address",
+    });
+  address = toLowerCase(address);
+  let account = await Account.findOne({ address: address });
+  if (account) {
+    return res.json({
+      status: "success",
+      data: {
+        address: account.address,
+        alias: account.alias,
+      },
+    });
+  }
+});
+
+// get account info by address
 router.post("/getuseraccountinfo", async (req, res) => {
   let address = req.body.address;
   if (!ethers.utils.isAddress(address))
