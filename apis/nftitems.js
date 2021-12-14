@@ -883,6 +883,9 @@ router.post('/fetchTokens', async (req, res) => {
     ...(sr.lastSalePriceInUSD != null && sr.lastSalePriceInUSD != undefined
       ? { lastSalePriceInUSD: sr.lastSalePriceInUSD }
       : {}),
+      ...(sr.owner != null && sr.owner != undefined
+        ? { owner: sr.owner }
+        : {}),
     ...(sr.isAppropriate != null && sr.isAppropriate != undefined
       ? { isAppropriate: sr.isAppropriate }
       : { isAppropriate: false })
