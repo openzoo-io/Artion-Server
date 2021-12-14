@@ -246,6 +246,7 @@ const selectTokens = async (req, res) => {
       'createdAt',
       'listedAt',
       'soldAt',
+      'owner',
       'viewed'
     ];
 
