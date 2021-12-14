@@ -832,7 +832,7 @@ router.post('/fetchTokens', async (req, res) => {
 
   let _searchResults = data.slice(from, from + count);
 
-  let searchResultsPromise = await _searchResults.map((sr) => ({
+  let searchResults = _searchResults.map(async (sr) => ({
     ...(sr.contractAddress != null && sr.contractAddress != undefined
       ? { contractAddress: sr.contractAddress }
       : {}),
@@ -892,8 +892,6 @@ router.post('/fetchTokens', async (req, res) => {
       : { isAppropriate: false }),
       ownerAlias: await getAccountInfo(sr.owner)
   }));
-
-  const searchResults = await Promise.all(searchResultsPromise);
 
   return res.json({
     status: 'success',
