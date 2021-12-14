@@ -1266,8 +1266,9 @@ const fetchTransferHistory1155 = async (address, id) => {
 
 const getAccountInfo = async (address) => {
   try {
-    console.log(address);
+    
     let account = await Account.findOne({ address: address });
+    console.log(account);
     if (account) {
       return [account.alias, account.imageHash];
     } else {
