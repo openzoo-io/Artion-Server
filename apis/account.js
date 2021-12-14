@@ -214,8 +214,15 @@ router.post("/getuseraccountalias", async (req, res) => {
     return res.json({
       status: "success",
       data: {
-        address: account.address,
         alias: account.alias,
+      },
+    });
+  }else
+  {
+    return res.json({
+      status: "failed",
+      data: {
+        alias: '',
       },
     });
   }
