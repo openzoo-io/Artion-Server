@@ -890,7 +890,7 @@ router.post('/fetchTokens', async (req, res) => {
     ...(sr.isAppropriate != null && sr.isAppropriate != undefined
       ? { isAppropriate: sr.isAppropriate }
       : { isAppropriate: false }),
-      ownerAlias: getAccountInfo(sr.owner)
+      ownerAlias: await getAccountInfo(sr.owner)
   }));
 
   const searchResults = await Promise.all(searchResultsPromise);
