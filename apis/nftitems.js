@@ -892,11 +892,11 @@ router.post('/fetchTokens', async (req, res) => {
       : { isAppropriate: false }),
       ownerAlias: await getAccountInfo(sr.owner)
   }));
-
+  const results = await Promise.all(searchResults);
   return res.json({
     status: 'success',
     data: {
-      tokens: searchResults,
+      tokens: results,
       total: data.length
     }
   });
