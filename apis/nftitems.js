@@ -1078,7 +1078,8 @@ router.post('/getSingleItemDetails', async (req, res) => {
         'lastSalePrice',
         'lastSalePricePaymentToken',
         'lastSalePriceInUSD',
-        'saleEndsAt'
+        'saleEndsAt',
+        'contentType',
       ]);
     let hasUnlockable = await UnlockableContents.findOne({
       contractAddress: contractAddress,
