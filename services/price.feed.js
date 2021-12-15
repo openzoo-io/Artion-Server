@@ -3,7 +3,7 @@ const ethers = require("ethers");
 
 const mongoose = require("mongoose");
 const PayToken = mongoose.model("PayToken");
-
+const { PAYTOKENS, DISABLED_PAYTOKENS } = require('../constants/tokens');
 // price store
 const priceStore = new Map();
 // decimal store
@@ -31,30 +31,37 @@ const provider = new ethers.providers.JsonRpcProvider(
 
 const runPriceFeed = async () => {
   try {
-    let paymentTokens = await PayToken.find({});
+    console.log('Run Price Feed');
+    let paymentTokens = PAYTOKENS;
+    console.log(paymentTokens);
     paymentTokens.map(async (token) => {
       try {
-        let proxy = chainLinkContracts.get(token.address);
-        if (proxy) {
-        } else {
-          proxy = new ethers.Contract(
-            token.chainlinkProxyAddress,
-            ChainLinkFeedABI,
-            provider
-          );
-          chainLinkContracts.set(token, proxy);
-        }
-        let priceFeed = await proxy.latestRoundData();
-        priceFeed =
-          ethers.utils.formatEther(priceFeed.answer) *
-          10 ** (18 - token.decimals);
-        priceStore.set(token.address, priceFeed);
-      } catch (error) {}
+
+        proxy = new ethers.Contract(
+          process.env.PRICEFEED,
+          ChainLinkFeedABI,
+          provider
+        );
+        //chainLinkContracts.set(token, proxy);
+
+        let _price = await proxy.getPrice(token.address);
+
+        let priceFeed = parseFloat(_price.toString()) / 10 ** 18;
+        console.log(token.address, priceFeed)
+        priceStore.set(toLowerCase(token.address), priceFeed);
+      } catch (error) {
+        console.log(error);
+      }
     });
-  } catch (error) {}
+  } catch (error) {
+    //console.log(error);
+  }
+
+  console.log('WWAN PRICE',getPrice("0x916283cc60fdaf05069796466af164876e35d21f"));
+
   setTimeout(async () => {
     await runPriceFeed();
-  }, 1000 * 60 * 5);
+  }, 1000 * 60 * 5); // Every 5 mins
 };
 
 // a background service to get names & symbols for erc20 tokens

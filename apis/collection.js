@@ -40,6 +40,7 @@ const marketplaceSC = new ethers.Contract(
   ownerWallet
 );
 
+
 router.post('/collectiondetails', auth, async (req, res) => {
   let erc721Address = req.body.erc721Address;
   erc721Address = toLowerCase(erc721Address);
@@ -163,10 +164,11 @@ router.post('/collectiondetails', auth, async (req, res) => {
       category.type = 1155;
       await category.save();
     } else {
-      // need to add a new erc721 contract
+      // check existing deployed ERC721 contract //
       let ifExists = await ERC721CONTRACT.findOne({
         address: erc721Address
       });
+      // Existed Contract //
       if (!ifExists) {
         let sc_721 = new ERC721CONTRACT();
         sc_721.address = erc721Address;
@@ -178,6 +180,8 @@ router.post('/collectiondetails', auth, async (req, res) => {
         await sc_721.save();
       }
 
+
+      // Category checking ... //
       let categoryExists = await Category.findOne({
         minterAddress: erc721Address
       });
@@ -222,7 +226,7 @@ router.post('/collectiondetails', auth, async (req, res) => {
 
     let newCollection = await _collection.save();
     if (newCollection) {
-      // notify admin about a new app
+      // notify admin about a new External contract
       if (!isInternal[0]) {
         applicationMailer.notifyAdminForNewCollectionApplication(); //notify admin
         applicationMailer.notifyInternalCollectionDeployment(
@@ -397,7 +401,7 @@ router.post('/reviewApplication', admin_auth, async (req, res) => {
           },
           { isAppropriate: true }
         );
-      } catch (error) {}
+      } catch (error) { }
       try {
         await ERC1155CONTRACT.updateOne(
           {
@@ -405,7 +409,7 @@ router.post('/reviewApplication', admin_auth, async (req, res) => {
           },
           { isAppropriate: true }
         );
-      } catch (error) {}
+      } catch (error) { }
       // send email
       applicationMailer.sendApplicationReviewedEmail({
         to: email,
@@ -460,6 +464,84 @@ router.get('/fetchAllCollections', auth, async (req, res) => {
   });
 });
 
+
+router.post('/getCollectionStatistic', async (req, res) => {
+  let address = toLowerCase(req.body.contractAddress);
+  if (!ethers.utils.isAddress(address))
+    return res.json({
+      status: 'failed',
+      data: 'NFT Contract Address Invalid'
+    });
+
+  
+  const NFTITEM = mongoose.model('NFTITEM');
+  // Count NFT //
+  let countNFT = await NFTITEM.countDocuments({ contractAddress: address })
+// Count Owner //
+  let countOwner = await NFTITEM.aggregate([
+    {
+      $match: { contractAddress: address }
+    },
+    {
+      $group: {
+        _id: "$owner", count: { $sum: 1 }
+      },
+    },
+    {
+      $facet: { totalCount: [{ $count: 'ownerCount' }] }
+    }
+  ]);
+  if (countOwner.length > 0)
+  {
+    countOwner = countOwner[0].totalCount[0].ownerCount;
+  }
+  else
+  {
+    countOwner = 0;
+  }
+
+
+  // Floor Price //
+  let floorPriceNFT = await NFTITEM.find({contractAddress:address,priceInUSD:{$gt:0}}).sort({priceInUSD:1}).limit(1)
+  //console.log(floorPriceNFT[0].priceInUSD);
+  let floorPrice=0;
+  if (floorPriceNFT.length > 0)
+  {
+    floorPrice = floorPriceNFT[0].priceInUSD;
+  }
+
+  // Vol traded //
+  //db.tradehistories.aggregate([{$match:{collectionAddress:"0x35b0b5c350b62ddee9be102b7567c4dabe52cf4f"}},{$group:{_id:null,sum: {$sum:"$priceInUSD"}}}])
+  const TradeHistory = mongoose.model('TradeHistory');
+  let volumeTraded = await TradeHistory.aggregate([
+    {
+      $match: { collectionAddress: address }
+    },
+    {
+      $group: {
+        _id: null, sum: {$sum:"$priceInUSD"}
+      },
+    }
+  ]);
+  let voltraded=0;
+  if (volumeTraded.length > 0)
+  {
+    voltraded = volumeTraded[0].sum;
+  }
+
+  //console.log(volumeTraded);
+
+  //console.log(countOwner[0].totalCount[0].ownerCount);
+  return res.json({
+    status: 'success',
+    data: {countNFT:countNFT, 
+      countOwner: countOwner,
+      floorPrice: floorPrice,
+      volumeTraded: voltraded
+    }
+  });
+});
+
 router.post('/getCollectionInfo', async (req, res) => {
   let address = toLowerCase(req.body.contractAddress);
   if (!ethers.utils.isAddress(address))
@@ -471,8 +553,9 @@ router.post('/getCollectionInfo', async (req, res) => {
   if (collection)
     return res.json({
       status: 'success',
-      data: { ...minifyCollection(collection), isVerified: true }
+      data: { ...minifyCollection(collection) }//, isVerified: true }
     });
+    
   collection = await ERC721CONTRACT.findOne({
     address: address
   });

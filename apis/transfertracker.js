@@ -182,7 +182,7 @@ const handle1155SingleTransfer = async (
             holderAddress: from
           });
 
-        Logger.info(`handle1155SingleTransfer holding ${holding}`)
+          Logger.info(`handle1155SingleTransfer holding ${holding}`)
 
           holding = parseInt(holding.supplyPerHolder) - value;
           await holding.save();
@@ -213,13 +213,47 @@ const handle1155SingleTransfer = async (
         });
         if (!tk) {
           try {
+
+            let imageURL = '';
+            let tokenURI = await getTokenUri(contractAddress, tokenID);
+            // now check if token uri is base64
+            if (tokenURI.startsWith('data:application/json;base64,')) {
+              tokenURI = tokenURI.split(',');
+              tokenURI = tokenURI[1];
+              let isBased64Encoded = isBase64(tokenURI);
+              if (isBased64Encoded) {
+                try {
+                  metadata = Buffer.from(tokenURI, 'base64').toString('utf8');
+                  metadata = JSON.parse(metadata);
+                  tokenName = metadata.name;
+                  imageURL = metadata.image;
+                } catch (error) {
+                  Logger.error(error);
+                }
+              }
+            } else {
+              let metadataURI = tokenURI;
+              if (tokenURI.includes('ipfs://')) {
+                let uri = tokenURI.split('//')[1];
+                metadataURI = `https://openzoo.mypinata.cloud/ipfs/${uri}`;
+              }
+              metadata = await axios.get(metadataURI);
+              try {
+                tokenName = metadata.data.name;
+                imageURL = metadata.data.image;
+              } catch (error) {
+                Logger.error(error);
+              }
+            }
+
+
             let newTk = new NFTITEM();
             newTk.contractAddress = contractAddress;
             newTk.tokenID = tokenID;
             newTk.supply = value;
             newTk.createdAt = new Date();
-            let tokenUri = await getTokenUri(contractAddress, tokenID);
-            newTk.tokenURI = tokenUri ? tokenUri : 'https://';
+            newTk.imageURL = imageURL;
+            newTk.tokenURI = tokenURI ? tokenURI : 'https://';
             newTk.tokenType = 1155;
             let isBanned = await is1155CollectionBanned(contractAddress);
             newTk.isAppropriate = !isBanned;
@@ -348,6 +382,7 @@ router.post(
         let metadata;
         let tokenName = '';
         let imageURL = '';
+        let contentType = 'image';
         // now check if token uri is base64
         if (tokenURI.startsWith('data:application/json;base64,')) {
           tokenURI = tokenURI.split(',');
@@ -367,16 +402,32 @@ router.post(
           let metadataURI = tokenURI;
           if (tokenURI.includes('ipfs://')) {
             let uri = tokenURI.split('//')[1];
-            metadataURI = `https://artion.mypinata.cloud/ipfs/${uri}`;
+            metadataURI = `https://openzoo.mypinata.cloud/ipfs/${uri}`;
           }
           metadata = await axios.get(metadataURI);
           try {
             tokenName = metadata.data.name;
             imageURL = metadata.data.image;
+
+            // Get content Type //
+            if (metadata.data.animation_url)
+            {
+              let ext = metadata.data.animation_url ? metadata.data.animation_url.split('.').pop() : '';
+              switch(ext)
+              {
+                case 'mp4':contentType="video";break;
+                case 'mp3':contentType="sound";break;
+                case 'glb':contentType="model";break;
+              }
+            }
+
           } catch (error) {
             Logger.error(error);
           }
         }
+
+        
+
         if (to == validatorAddress) {
           return res.json();
         } else {
@@ -390,6 +441,7 @@ router.post(
           newTk.createdAt = Date.now();
           let isBanned = await is721CollectionBanned(address);
           newTk.isAppropriate = !isBanned;
+          newTk.contentType = contentType;
           await newTk.save();
           return res.json();
         }

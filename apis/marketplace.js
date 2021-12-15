@@ -79,7 +79,7 @@ router.post("/itemListed", service_auth, async (req, res) => {
     const quantity = parseInt(quantityBN.hex);
     const startingTime = parseInt(startingTimeBN.hex) * 1000;
     const priceInUSD = pricePerItem * getPrice(itemPayToken.address);
-
+    //console.log('LIST ITEMED WITH PRICE', priceInUSD);
     // first update the token price
     let category = await Category.findOne({ minterAddress: nft });
     if (category) {
@@ -91,6 +91,7 @@ router.post("/itemListed", service_auth, async (req, res) => {
       if (token) {
         token.price = pricePerItem;
         token.paymentToken = itemPayToken.address;
+        token.priceInUSD = priceInUSD;
         token.listedAt = new Date(); // set listed date
         token.blockNumber = blockNumber;
         await token.save();
@@ -179,7 +180,7 @@ router.post("/itemSold", service_auth, async (req, res) => {
       });
       if (token) {
         token.price = 0;
-        token.paymentToken = "ftm";
+        token.paymentToken = "wan";
         token.priceInUSD = 0;
         token.lastSalePrice = pricePerItem;
         token.lastSalePricePaymentToken = itemPayToken.address;
@@ -314,6 +315,7 @@ router.post("/itemUpdated", service_auth, async (req, res) => {
       if (token) {
         token.price = newPricePerItem;
         token.paymentToken = itemPayToken.address;
+        token.priceInUSD = newPriceInUSD;
         await token.save();
       }
     }
@@ -367,7 +369,7 @@ router.post("/itemCanceled", service_auth, async (req, res) => {
       });
       if (token) {
         token.price = 0;
-        token.paymentToken = "ftm";
+        token.paymentToken = "wan";
         token.priceInUSD = 0;
         token.listedAt = new Date(0);
         await token.save();
@@ -527,12 +529,14 @@ router.post("/offerCanceled", service_auth, async (req, res) => {
             address: tokenOwner.owner,
           });
           if (owner && ns.sNftOfferCancel) {
+            /*
             let isNotifiable = await isOfferCancelNotifiable(
               owner.address,
               nft,
               tokenId
             );
             if (!isNotifiable) return;
+            */
             let alias = await getUserAlias(owner.address);
             let tokenName = await getNFTItemName(nft, tokenId);
             let creatorAlias = await getUserAlias(creator);
@@ -551,11 +555,12 @@ router.post("/offerCanceled", service_auth, async (req, res) => {
               nftAddress: nft,
             };
             if (creatorAlias != alias) await sendEmail(data);
-          }
+          } 
         } else if (category == 1155) {
         }
       }
     } catch (error) {
+      console.log(error);
       Logger.error("[OfferCanceled] Failed to notify owner ", error.message)
     }
 

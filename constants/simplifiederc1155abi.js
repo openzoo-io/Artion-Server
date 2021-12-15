@@ -338,6 +338,15 @@ const SimplifiedERC1155ABI = [
     name: "URI",
     type: "event",
   },
+  {
+    constant: true,
+    inputs: [{ internalType: 'uint256', name: '_id', type: 'uint256' }],
+    name: 'uri',
+    outputs: [{ internalType: 'string', name: '', type: 'string' }],
+    payable: false,
+    stateMutability: 'view',
+    type: 'function',
+  },
 ];
 
 module.exports = SimplifiedERC1155ABI;

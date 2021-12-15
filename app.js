@@ -2,18 +2,14 @@ const express = require("express");
 const app = express();
 require("dotenv").config();
 const mongoose = require("mongoose");
-const bodyParser = require("body-parser");
+//const bodyParser = require("body-parser");
 const cors = require("cors");
 const port = process.env.PORT || 5001;
 
 const Logger = require('./services/logger');
 const morganMiddleware = require('./apis/middleware/morgan');
 
-app.use(
-  bodyParser.urlencoded({
-    extended: false,
-  })
-);
+
 
 require("./models/abi");
 require("./models/account");
@@ -54,7 +50,9 @@ require("./models/paytoken");
 require("./models/unlockable");
 require("./models/disabledExplorerCollection");
 
-app.use(bodyParser.json());
+//app.use(bodyParser.json()); 
+
+app.use(express.urlencoded({limit: '50mb', extended: true})); 
 app.use(express.json());
 app.use(
   cors()
@@ -62,6 +60,8 @@ app.use(
 app.options("*", cors()); // include before other routes
 
 app.use(morganMiddleware);
+
+
 app.use(require("./apis"));
 
 const priceFeed = require("./services/price.feed");

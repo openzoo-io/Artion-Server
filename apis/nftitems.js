@@ -86,6 +86,39 @@ router.post('/increaseViews', async (req, res) => {
   }
 });
 
+router.post('/setContentType', async (req, res) => {
+  try {
+    let contractAddress = req.body.contractAddress;
+    contractAddress = toLowerCase(contractAddress);
+    let tokenID = parseInt(req.body.tokenID);
+    let contentType = toLowerCase(req.body.contentType);
+    let token = await NFTITEM.findOne({
+      contractAddress: contractAddress,
+      tokenID: tokenID
+    });
+    if (token) {
+      token.contentType = contentType;
+      let _token = await token.save();
+      return res.json({
+        status: 'success',
+        data: _token.contentType
+      });
+    } else {
+      return res.json({
+        status: 'success',
+        data: 0
+      });
+    }
+  } catch (error) {
+    Logger.error(error);
+    return res.status(400).json({
+      status: 'failed'
+    });
+  }
+});
+
+
+
 const sortItems = (_allTokens, sortby) => {
   let tmp = [];
   switch (sortby) {
@@ -189,6 +222,7 @@ const selectTokens = async (req, res) => {
     // create a sort by option
     const selectOption = [
       'contractAddress',
+      'contentType',
       'tokenID',
       'tokenURI',
       'tokenType',
@@ -212,6 +246,7 @@ const selectTokens = async (req, res) => {
       'createdAt',
       'listedAt',
       'soldAt',
+      'owner',
       'viewed'
     ];
 
@@ -797,10 +832,13 @@ router.post('/fetchTokens', async (req, res) => {
 
   let _searchResults = data.slice(from, from + count);
 
-  let searchResults = _searchResults.map((sr) => ({
+  let searchResults = _searchResults.map(async (sr) => ({
     ...(sr.contractAddress != null && sr.contractAddress != undefined
       ? { contractAddress: sr.contractAddress }
       : {}),
+      ...(sr.contentType != null && sr.contentType != undefined
+        ? { contentType: sr.contentType }
+        : {}),
     ...(sr.imageURL != null && sr.imageURL != undefined
       ? { imageURL: sr.imageURL }
       : {}),
@@ -840,21 +878,25 @@ router.post('/fetchTokens', async (req, res) => {
       ? { lastSalePrice: sr.lastSalePrice }
       : {}),
     ...(sr.lastSalePricePaymentToken != null &&
-    sr.lastSalePricePaymentToken != undefined
+      sr.lastSalePricePaymentToken != undefined
       ? { lastSalePricePaymentToken: sr.lastSalePricePaymentToken }
       : {}),
     ...(sr.lastSalePriceInUSD != null && sr.lastSalePriceInUSD != undefined
       ? { lastSalePriceInUSD: sr.lastSalePriceInUSD }
       : {}),
+      ...(sr.owner != null && sr.owner != undefined
+        ? { owner: sr.owner }
+        : {}),
     ...(sr.isAppropriate != null && sr.isAppropriate != undefined
       ? { isAppropriate: sr.isAppropriate }
-      : { isAppropriate: false })
+      : { isAppropriate: false }),
+      ownerAlias: await getAccountInfo(sr.owner)
   }));
-
+  const results = await Promise.all(searchResults);
   return res.json({
     status: 'success',
     data: {
-      tokens: searchResults,
+      tokens: results,
       total: data.length
     }
   });
@@ -911,10 +953,11 @@ router.post('/getSingleItemDetails', async (req, res) => {
       tokenID: tokenID,
       isAppropriate: true
     });
-    if (!nft)
+    if (!nft) {
       return res.json({
         status: 'failed'
       });
+    }
     // content type
     let contentType = nft.contentType;
     // likes count
@@ -1223,6 +1266,7 @@ const fetchTransferHistory1155 = async (address, id) => {
 
 const getAccountInfo = async (address) => {
   try {
+    
     let account = await Account.findOne({ address: address });
     if (account) {
       return [account.alias, account.imageHash];

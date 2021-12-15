@@ -46,6 +46,7 @@ const pinFileToIPFS = async (
     },
     pinataOptions: {
       cidVersion: 0,
+      wrapWithDirectory: true
     },
   };
   const readableStreamForFile = fs.createReadStream(uploadPath + fileName);
@@ -92,6 +93,29 @@ const pinBannerFileToIPFS = async (fileName, address) => {
     },
     pinataOptions: {
       cidVersion: 0,
+    },
+  };
+  const readableStreamForFile = fs.createReadStream(uploadPath + fileName);
+
+  try {
+    let result = await pinata.pinFileToIPFS(readableStreamForFile, options);
+    return result;
+  } catch (error) {
+    Logger.error(error);
+    return "failed to pin file to ipfs";
+  }
+};
+
+// pin media image
+const pinMediaFileToIPFS = async (fileName, address) => {
+  const options = {
+    pinataMetadata: {
+      name: address,
+      keyvalues: {},
+    },
+    pinataOptions: {
+      cidVersion: 0,
+      wrapWithDirectory: true
     },
   };
   const readableStreamForFile = fs.createReadStream(uploadPath + fileName);
@@ -220,7 +244,7 @@ router.post("/uploadImage2Server", auth, async (req, res) => {
         let description = fields.description;
         let symbol = fields.symbol;
         let royalty = fields.royalty;
-
+        let animation_url = fields.animation_url;
         let xtraUrl = fields.xtra;
         if (xtraUrl && !validUrl.isUri(xtraUrl)) {
           return res.status(400).json({
@@ -232,10 +256,12 @@ router.post("/uploadImage2Server", auth, async (req, res) => {
           "data:image/".length,
           imgData.indexOf(";base64")
         );
-
+        let random = generateRandomName();
         let imageFileName =
-          address + "_" + name.replace(" ", "") + "_" + `${symbol ? symbol.replace(" ", "") : ""}` + "_" + Date.now() + "." + extension;
+          address + "_" + random + "_" + Date.now() + "." + extension;
+
         imgData = imgData.replace(`data:image\/${extension};base64,`, "");
+
         fs.writeFile(uploadPath + imageFileName, imgData, "base64", async (err) => {
           if (err) {
             Logger.error("uploadToIPFSerr: ", err);
@@ -250,6 +276,7 @@ router.post("/uploadImage2Server", auth, async (req, res) => {
               name,
               symbol,
               royalty,
+              animation_url,
               xtraUrl
             );
 
@@ -264,7 +291,8 @@ router.post("/uploadImage2Server", auth, async (req, res) => {
 
             let metaData = {
               name: name,
-              image: ipfsUri + filePinStatus.IpfsHash,
+              image: ipfsUri + filePinStatus.IpfsHash + '/' + imageFileName,
+              animation_url: animation_url,
               description: description,
               properties: {
                 symbol: symbol,
@@ -273,7 +301,7 @@ router.post("/uploadImage2Server", auth, async (req, res) => {
                 recipient: address,
                 IP_Rights: xtraUrl,
                 createdAt: currentTime,
-                collection: "Fantom Powered NFT Collection",
+                collection: "OpenZoo.io NFT Collection",
               },
             };
 
@@ -281,7 +309,7 @@ router.post("/uploadImage2Server", auth, async (req, res) => {
             return res.send({
               status: "success",
               uploadedCounts: 2,
-              fileHash: ipfsUri + filePinStatus.IpfsHash,
+              fileHash: ipfsUri + filePinStatus.IpfsHash + '/' + imageFileName,
               jsonHash: ipfsUri + jsonPinStatus.IpfsHash,
             });
           }
@@ -304,7 +332,7 @@ router.post("/uploadBundleImage2Server", auth, async (req, res) => {
         status: "failedParsingForm",
       });
     } else {
-      const ipfsUri = ipfsUris[Math.floor(Math.random()*ipfsUris.length)];
+      const ipfsUri = ipfsUris[Math.floor(Math.random() * ipfsUris.length)];
       let imgData = fields.imgData;
       let name = fields.name;
       let description = fields.description;
@@ -478,13 +506,68 @@ router.post("/uploadCollectionImage2Server", auth, async (req, res) => {
       // remove file once pinned
       try {
         fs.unlinkSync(uploadPath + imageFileName);
-      } catch (error) {}
+      } catch (error) { }
       return res.json({
         status: "success",
         data: filePinStatus.IpfsHash,
       });
     }
   });
+});
+
+// pin media
+router.post("/uploadMedia2Server", auth, async (req, res) => {
+  let form = new formidable.IncomingForm({
+    maxFileSize: 200 * 1024 * 1024,
+    maxFieldsSize: 300 * 1024 * 1024,
+  });
+  try {
+    form.parse(req, async (err, fields, files) => {
+      if (err) {
+        Logger.error(err);
+        return res.status(400).json({
+          status: "failedParsingForm",
+        });
+      } else {
+        let mediaData = fields.media;
+        let mediaExt = fields.mediaExt;
+        /* change getting address from auth token */
+        let address = extractAddress(req, res);
+        let name = generateRandomName();
+        const ipfsUri = ipfsUris[Math.floor(Math.random() * ipfsUris.length)];
+
+        let imageFileName = address + '_'+ name + "." + mediaExt;
+        mediaData = mediaData.split("base64,")[1];
+        fs.writeFile(uploadPath + imageFileName, mediaData, "base64", (err) => {
+          if (err) {
+            Logger.error(err);
+            return res.status(400).json({
+              status: "failed to save a media file",
+              err,
+            });
+          }
+        });
+
+        let filePinStatus = await pinMediaFileToIPFS(imageFileName, name.replace(" ", ""));
+        // remove file once pinned
+
+        try {
+          fs.unlinkSync(uploadPath + imageFileName);
+        } catch (error) {
+          Logger.error(error);
+        }
+        return res.json({
+          status: "success",
+          data: ipfsUri + filePinStatus.IpfsHash + '/' + imageFileName,
+        });
+      }
+    });
+  } catch (error) {
+    Logger.error(error);
+    return res.json({
+      status: "failed",
+    });
+  }
 });
 
 module.exports = router;
