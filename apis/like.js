@@ -162,16 +162,24 @@ router.post("/getMyLikes", async (req, res) => {
       };
     });
     let myLikedNFTs = await NFTITEM.find({ $or: nftLikes }).select([
-      "contractAddress",
-      "tokenID",
-      "tokenURI",
-      "tokenType",
-      "thumbnailPath",
-      "name",
-      "imageURL",
-      "supply",
-      "price",
-      "liked",
+      'thumbnailPath',
+        'supply',
+        'price',
+        'paymentToken',
+        'priceInUSD',
+        'tokenType',
+        'tokenID',
+        'tokenURI',
+        'name',
+        'imageURL',
+        'liked',
+        'contractAddress',
+        'isAppropriate',
+        'lastSalePrice',
+        'lastSalePricePaymentToken',
+        'lastSalePriceInUSD',
+        'saleEndsAt',
+        'contentType',
     ]);
     // find bundles
     let _bundleLikes = await BundleLike.find({ follower: address });
