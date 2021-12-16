@@ -486,7 +486,8 @@ const selectTokens = async (req, res) => {
               contentType: token_1155.contentType,
               holderSupply: holdingSupplies.get(
                 token_1155.contractAddress + token_1155.tokenID
-              )
+              ),
+              holders: holders.length
             });
         });
        
