@@ -486,7 +486,7 @@ const selectTokens = async (req, res) => {
             });
         });
         
-        let allTokens = [...tokens_721];//, ...tokens_1155];
+        let allTokens = [ ...tokens_1155];
         console.log(allTokens);
         return allTokens
       }
