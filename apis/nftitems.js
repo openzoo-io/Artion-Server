@@ -440,7 +440,7 @@ const selectTokens = async (req, res) => {
           isAppropriate: true
         };
         const tokens_721 = NFTITEM.find(collectionFilters721).select(selectOption).lean();
-        return tokens_721;
+        //return tokens_721;
         // TODO enable erc1155
         let collectionFilters1155 = {
           ...(collections2filter != null
@@ -486,7 +486,7 @@ const selectTokens = async (req, res) => {
             });
         });
         
-        let allTokens = [...tokens_721, ...tokens_1155];
+        let allTokens = [...tokens_721];//, ...tokens_1155];
         console.log(allTokens);
         return allTokens
       }
