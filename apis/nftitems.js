@@ -441,6 +441,7 @@ const selectTokens = async (req, res) => {
         };
         let tokens_721 = [];
         const _tokens_721 = NFTITEM.find(collectionFilters721).select(selectOption).lean();
+        
         _tokens_721.map((token_721) => {
           tokens_721.push({
             supply: token_721.supply,
@@ -467,6 +468,7 @@ const selectTokens = async (req, res) => {
             
           });
         });
+        console.log(tokens_721);
         //return tokens_721;
         // TODO enable erc1155
         let collectionFilters1155 = {
