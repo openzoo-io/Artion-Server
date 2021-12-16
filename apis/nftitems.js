@@ -439,7 +439,34 @@ const selectTokens = async (req, res) => {
           thumbnailPath: { $ne: nonImage },
           isAppropriate: true
         };
-        const tokens_721 = NFTITEM.find(collectionFilters721).select(selectOption).lean();
+        let tokens_721 = [];
+        const _tokens_721 = NFTITEM.find(collectionFilters721).select(selectOption).lean();
+        _tokens_721.map((token_721) => {
+          tokens_721.push({
+            supply: token_721.supply,
+            price: token_721.price,
+            paymentToken: token_721.paymentToken,
+            priceInUSD: token_721.priceInUSD,
+            lastSalePrice: token_721.lastSalePrice,
+            lastSalePricePaymentToken: token_721.lastSalePricePaymentToken,
+            lastSalePriceInUSD: token_721.lastSalePriceInUSD,
+            viewed: token_721.viewed,
+            contractAddress: token_721.contractAddress,
+            tokenID: token_721.tokenID,
+            tokenURI: token_721.tokenURI,
+            thumbnailPath: token_721.thumbnailPath,
+            imageURL: token_721.imageURL,
+            tokenType: token_721.tokenType,
+            name: token_721.name,
+            symbol: token_721.symbol,
+            liked: token_721.liked,
+            createdAt: token_721.createdAt,
+            saleEndsAt: token_721.saleEndsAt,
+            isAppropriate: token_721.isAppropriate,
+            contentType: token_721.contentType,
+            
+          });
+        });
         //return tokens_721;
         // TODO enable erc1155
         let collectionFilters1155 = {
@@ -480,13 +507,14 @@ const selectTokens = async (req, res) => {
               createdAt: token_1155.createdAt,
               saleEndsAt: token_1155.saleEndsAt,
               isAppropriate: token_1155.isAppropriate,
+              contentType: token_1155.contentType,
               holderSupply: holdingSupplies.get(
                 token_1155.contractAddress + token_1155.tokenID
               )
             });
         });
        
-        let allTokens = [tokens_721, ...tokens_1155];
+        let allTokens = [...tokens_721, ...tokens_1155];
        
         return allTokens
       }
