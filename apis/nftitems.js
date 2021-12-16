@@ -487,7 +487,7 @@ const selectTokens = async (req, res) => {
             });
         });
        
-        let allTokens = [...tokens_721, ...tokens_1155];
+        let allTokens = [...tokens_721];
        
         return allTokens
       }
@@ -894,9 +894,6 @@ router.post('/fetchTokens', async (req, res) => {
       ? { isAppropriate: sr.isAppropriate }
       : { isAppropriate: false }),
       ownerAlias: await getAccountInfo(sr.owner),
-      ...(sr.createdAt != null && sr.createdAt != undefined
-        ? { createdAt: sr.createdAt }
-        : { createdAt: 0 }),
   }));
   const results = await Promise.all(searchResults);
   return res.json({
