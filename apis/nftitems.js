@@ -468,7 +468,7 @@ const selectTokens = async (req, res) => {
             
           });
         });
-        console.log(tokens_721);
+        console.log(_tokens_721);
         //return tokens_721;
         // TODO enable erc1155
         let collectionFilters1155 = {
