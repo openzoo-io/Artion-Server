@@ -439,10 +439,10 @@ const selectTokens = async (req, res) => {
           thumbnailPath: { $ne: nonImage },
           isAppropriate: true
         };
- 
+
         const tokens_721 = await NFTITEM.find(collectionFilters721).select(selectOption).lean();
-        
-  
+
+
         //return tokens_721;
         // TODO enable erc1155
         let collectionFilters1155 = {
@@ -487,12 +487,12 @@ const selectTokens = async (req, res) => {
               holderSupply: holdingSupplies.get(
                 token_1155.contractAddress + token_1155.tokenID
               ),
-              holders: 0
+              holders: holders.length
             });
         });
-       
+
         let allTokens = [...tokens_721, ...tokens_1155];
-       
+
         return allTokens
       }
       if (filters) {
@@ -843,9 +843,9 @@ router.post('/fetchTokens', async (req, res) => {
     ...(sr.contractAddress != null && sr.contractAddress != undefined
       ? { contractAddress: sr.contractAddress }
       : {}),
-      ...(sr.contentType != null && sr.contentType != undefined
-        ? { contentType: sr.contentType }
-        : {}),
+    ...(sr.contentType != null && sr.contentType != undefined
+      ? { contentType: sr.contentType }
+      : {}),
     ...(sr.imageURL != null && sr.imageURL != undefined
       ? { imageURL: sr.imageURL }
       : {}),
@@ -878,6 +878,9 @@ router.post('/fetchTokens', async (req, res) => {
     ...(sr.holderSupply != null && sr.holderSupply != undefined
       ? { holderSupply: sr.holderSupply }
       : {}),
+    ...(sr.holders != null && sr.holders != undefined
+      ? { holders: sr.holders }
+      : {}),
     ...(sr.saleEndsAt != null && sr.saleEndsAt != undefined
       ? { saleEndsAt: sr.saleEndsAt }
       : {}),
@@ -891,13 +894,13 @@ router.post('/fetchTokens', async (req, res) => {
     ...(sr.lastSalePriceInUSD != null && sr.lastSalePriceInUSD != undefined
       ? { lastSalePriceInUSD: sr.lastSalePriceInUSD }
       : {}),
-      ...(sr.owner != null && sr.owner != undefined
-        ? { owner: sr.owner }
-        : {}),
+    ...(sr.owner != null && sr.owner != undefined
+      ? { owner: sr.owner }
+      : {}),
     ...(sr.isAppropriate != null && sr.isAppropriate != undefined
       ? { isAppropriate: sr.isAppropriate }
       : { isAppropriate: false }),
-      ownerAlias: await getAccountInfo(sr.owner)
+    ownerAlias: await getAccountInfo(sr.owner)
   }));
   const results = await Promise.all(searchResults);
   return res.json({
@@ -1274,7 +1277,7 @@ const fetchTransferHistory1155 = async (address, id) => {
 
 const getAccountInfo = async (address) => {
   try {
-    
+
     let account = await Account.findOne({ address: address });
     if (account) {
       return [account.alias, account.imageHash];
