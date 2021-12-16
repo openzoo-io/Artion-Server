@@ -413,18 +413,18 @@ const selectTokens = async (req, res) => {
      */
 
       // TODO enable erc1155
-      // const holdingSupplies = new Map();
-      // const holdings = await ERC1155HOLDING.find({
-      //   holderAddress: wallet,
-      //   supplyPerHolder: { $gt: 0 }
-      // });
-      // const holders = holdings.map((holder) => {
-      //   holdingSupplies.set(
-      //     holder.contractAddress + holder.tokenID,
-      //     holder.supplyPerHolder
-      //   );
-      //   return [holder.contractAddress, holder.tokenID];
-      // });
+      const holdingSupplies = new Map();
+      const holdings = await ERC1155HOLDING.find({
+        holderAddress: wallet,
+        supplyPerHolder: { $gt: 0 }
+      });
+      const holders = holdings.map((holder) => {
+        holdingSupplies.set(
+          holder.contractAddress + holder.tokenID,
+          holder.supplyPerHolder
+        );
+        return [holder.contractAddress, holder.tokenID];
+      });
 
       if (!filters) {
         /*
@@ -439,54 +439,54 @@ const selectTokens = async (req, res) => {
           thumbnailPath: { $ne: nonImage },
           isAppropriate: true
         };
-        return NFTITEM.find(collectionFilters721).select(selectOption).lean();
+        //return NFTITEM.find(collectionFilters721).select(selectOption).lean();
 
         // TODO enable erc1155
-        // let collectionFilters1155 = {
-        //   ...(collections2filter != null
-        //     ? { contractAddress: { $in: [...collections2filter] } }
-        //     : {}),
-        //   thumbnailPath: { $ne: nonImage },
-        //   isAppropriate: true
-        // };
-        // let _tokens_1155 = await NFTITEM.find(collectionFilters1155)
-        //   .select(selectOption)
-        //   .lean();
-        // let tokens_1155 = [];
-        // _tokens_1155.map((token_1155) => {
-        //   let isIncluded = isIncludedInArray(holders, [
-        //     token_1155.contractAddress,
-        //     token_1155.tokenID
-        //   ]);
-        //   if (isIncluded)
-        //     tokens_1155.push({
-        //       supply: token_1155.supply,
-        //       price: token_1155.price,
-        //       paymentToken: token_1155.paymentToken,
-        //       priceInUSD: token_1155.priceInUSD,
-        //       lastSalePrice: token_1155.lastSalePrice,
-        //       lastSalePricePaymentToken: token_1155.lastSalePricePaymentToken,
-        //       lastSalePriceInUSD: token_1155.lastSalePriceInUSD,
-        //       viewed: token_1155.viewed,
-        //       contractAddress: token_1155.contractAddress,
-        //       tokenID: token_1155.tokenID,
-        //       tokenURI: token_1155.tokenURI,
-        //       thumbnailPath: token_1155.thumbnailPath,
-        //       imageURL: token_1155.imageURL,
-        //       tokenType: token_1155.tokenType,
-        //       name: token_1155.name,
-        //       symbol: token_1155.symbol,
-        //       liked: token_1155.liked,
-        //       createdAt: token_1155.createdAt,
-        //       saleEndsAt: token_1155.saleEndsAt,
-        //       isAppropriate: token_1155.isAppropriate,
-        //       holderSupply: holdingSupplies.get(
-        //         token_1155.contractAddress + token_1155.tokenID
-        //       )
-        //     });
-        // });
-        // let allTokens = [...tokens_721, ...tokens_1155];
-        // return allTokens
+        let collectionFilters1155 = {
+          ...(collections2filter != null
+            ? { contractAddress: { $in: [...collections2filter] } }
+            : {}),
+          thumbnailPath: { $ne: nonImage },
+          isAppropriate: true
+        };
+        let _tokens_1155 = await NFTITEM.find(collectionFilters1155)
+          .select(selectOption)
+          .lean();
+        let tokens_1155 = [];
+        _tokens_1155.map((token_1155) => {
+          let isIncluded = isIncludedInArray(holders, [
+            token_1155.contractAddress,
+            token_1155.tokenID
+          ]);
+          if (isIncluded)
+            tokens_1155.push({
+              supply: token_1155.supply,
+              price: token_1155.price,
+              paymentToken: token_1155.paymentToken,
+              priceInUSD: token_1155.priceInUSD,
+              lastSalePrice: token_1155.lastSalePrice,
+              lastSalePricePaymentToken: token_1155.lastSalePricePaymentToken,
+              lastSalePriceInUSD: token_1155.lastSalePriceInUSD,
+              viewed: token_1155.viewed,
+              contractAddress: token_1155.contractAddress,
+              tokenID: token_1155.tokenID,
+              tokenURI: token_1155.tokenURI,
+              thumbnailPath: token_1155.thumbnailPath,
+              imageURL: token_1155.imageURL,
+              tokenType: token_1155.tokenType,
+              name: token_1155.name,
+              symbol: token_1155.symbol,
+              liked: token_1155.liked,
+              createdAt: token_1155.createdAt,
+              saleEndsAt: token_1155.saleEndsAt,
+              isAppropriate: token_1155.isAppropriate,
+              holderSupply: holdingSupplies.get(
+                token_1155.contractAddress + token_1155.tokenID
+              )
+            });
+        });
+        let allTokens = [...tokens_721, ...tokens_1155];
+        return allTokens
       }
       if (filters) {
         /*
