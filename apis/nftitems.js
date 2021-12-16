@@ -440,7 +440,7 @@ const selectTokens = async (req, res) => {
           isAppropriate: true
         };
         let tokens_721 = [];
-        const _tokens_721 = NFTITEM.find(collectionFilters721).select(selectOption).lean();
+        const _tokens_721 = await NFTITEM.find(collectionFilters721).select(selectOption).lean();
         
         _tokens_721.map((token_721) => {
           tokens_721.push({
@@ -516,7 +516,7 @@ const selectTokens = async (req, res) => {
             });
         });
        
-        let allTokens = [...tokens_721];
+        let allTokens = [..._tokens_721, ...tokens_1155];
        
         return allTokens
       }
