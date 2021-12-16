@@ -439,7 +439,7 @@ const selectTokens = async (req, res) => {
           thumbnailPath: { $ne: nonImage },
           isAppropriate: true
         };
-        //return NFTITEM.find(collectionFilters721).select(selectOption).lean();
+        const tokens_721 = NFTITEM.find(collectionFilters721).select(selectOption).lean();
 
         // TODO enable erc1155
         let collectionFilters1155 = {
