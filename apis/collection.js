@@ -500,6 +500,13 @@ router.post('/getCollectionStatistic', async (req, res) => {
     countOwner = 0;
   }
 
+  // Count Owner from 1155 //
+  let countOwner1155 = await ERC1155HOLDING.countDocuments({ contractAddress: address });
+  if (countOwner1155 > 0)
+  {
+    countOwner = countOwner1155;
+  }
+
 
   // Floor Price //
   let floorPriceNFT = await NFTITEM.find({contractAddress:address,priceInUSD:{$gt:0}}).sort({priceInUSD:1}).limit(1)
