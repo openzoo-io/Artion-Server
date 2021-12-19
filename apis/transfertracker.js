@@ -241,6 +241,17 @@ const handle1155SingleTransfer = async (
               try {
                 tokenName = metadata.data.name;
                 imageURL = metadata.data.image;
+
+                // Get content Type //
+                if (metadata.data.animation_url) {
+                  let ext = metadata.data.animation_url ? metadata.data.animation_url.split('.').pop() : '';
+                  switch (ext) {
+                    case 'mp4': contentType = "video"; break;
+                    case 'mp3': contentType = "sound"; break;
+                    case 'glb': contentType = "model"; break;
+                  }
+                }
+
               } catch (error) {
                 Logger.error(error);
               }
@@ -248,6 +259,7 @@ const handle1155SingleTransfer = async (
 
 
             let newTk = new NFTITEM();
+            newTk.name = tokenName;
             newTk.contractAddress = contractAddress;
             newTk.tokenID = tokenID;
             newTk.supply = value;
@@ -257,6 +269,7 @@ const handle1155SingleTransfer = async (
             newTk.tokenType = 1155;
             let isBanned = await is1155CollectionBanned(contractAddress);
             newTk.isAppropriate = !isBanned;
+            newTk.contentType = contentType;
             await newTk.save();
           } catch (error) {
             Logger.error(error);
@@ -410,14 +423,12 @@ router.post(
             imageURL = metadata.data.image;
 
             // Get content Type //
-            if (metadata.data.animation_url)
-            {
+            if (metadata.data.animation_url) {
               let ext = metadata.data.animation_url ? metadata.data.animation_url.split('.').pop() : '';
-              switch(ext)
-              {
-                case 'mp4':contentType="video";break;
-                case 'mp3':contentType="sound";break;
-                case 'glb':contentType="model";break;
+              switch (ext) {
+                case 'mp4': contentType = "video"; break;
+                case 'mp3': contentType = "sound"; break;
+                case 'glb': contentType = "model"; break;
               }
             }
 
@@ -426,7 +437,7 @@ router.post(
           }
         }
 
-        
+
 
         if (to == validatorAddress) {
           return res.json();
