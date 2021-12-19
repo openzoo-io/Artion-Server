@@ -1,7 +1,7 @@
 require("dotenv").config();
 const sgMail = require("@sendgrid/mail");
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-const mailingListEmail = "noreply@openzoo.io";
+const mailingListEmail = "notification@openzoo.io";
 const messageUtils = require("./message.utils");
 
 const app_url = process.env.APP_URL;
