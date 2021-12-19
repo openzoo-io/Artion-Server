@@ -1,17 +1,17 @@
 require("dotenv").config();
 const sgMail = require("@sendgrid/mail");
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-const foundationEmail = "support.artion@fantom.foundation";
+const foundationEmail = "contact@openzoo.io";
 
-const adminEmails = ["artion@fantom.foundation"];
+const adminEmails = ["fennec@zookeeper.finance"];
 
 const createDenyMessage = (data) => {
   return {
     to: data.to,
     from: foundationEmail,
     subject: data.subject,
-    text: "artion notification",
-    html: `Your collection has been denied to register on Artion. <br/><br/> reason : ${data.reason} </br></br> Thank You.  <br/><br/>`,
+    text: "OpenZoo notification",
+    html: `Your collection has been denied to register on OpenZoo. <br/><br/> reason : ${data.reason} </br></br> Thank You.  <br/><br/>`,
   };
 };
 
@@ -20,8 +20,8 @@ const createApproveMessage = (data) => {
     to: data.to,
     from: foundationEmail,
     subject: data.subject,
-    text: "artion notification",
-    html: "Dear Artion User! <br/> Your collection has been successfully registered in Artion. ",
+    text: "OpenZoo notification",
+    html: "Dear OpenZoo User! <br/> Your collection has been successfully registered in OpenZoo. ",
   };
 };
 
@@ -52,7 +52,7 @@ const notifyAdminForNewCollectionApplication = () => {
     to: adminEmails,
     from: foundationEmail,
     subject: "New Application",
-    text: "artion notification",
+    text: "OpenZoo notification",
     html: "New collection has been submitted for your review.",
   };
   sgMail.sendMultiple(message).then(
@@ -69,7 +69,7 @@ const notifyInternalCollectionDeployment = (address, email) => {
     to: email,
     from: foundationEmail,
     subject: "Collection Created",
-    text: "artion notification",
+    text: "OpenZoo notification",
     html: `New collection has been deployed with address ${address}`,
   };
   sgMail.send(message).then(
