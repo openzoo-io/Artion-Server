@@ -580,6 +580,7 @@ router.get('/getTrackable1155Contracts', service_auth, async (req, res) => {
     });
   } catch (error) {
     Logger.error(error);
+    console.log(error);
     return res.json({
       status: 'failed',
       data: []
