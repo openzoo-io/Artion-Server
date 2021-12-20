@@ -516,6 +516,11 @@ router.post("/uploadCollectionImage2Server", auth, async (req, res) => {
 });
 
 // pin media
+function getFilesizeInBytes(filename) {
+  var stats = fs.statSync(filename);
+  var fileSizeInBytes = stats.size;
+  return fileSizeInBytes;
+}
 router.post("/uploadMedia2Server", auth, async (req, res) => {
   let form = new formidable.IncomingForm({
     maxFileSize: 200 * 1024 * 1024,
@@ -547,6 +552,7 @@ router.post("/uploadMedia2Server", auth, async (req, res) => {
             });
           }
         });
+        console.log(getFilesizeInBytes(uploadPath + imageFileName));
 
         let filePinStatus = await pinMediaFileToIPFS(imageFileName, name.replace(" ", ""));
         // remove file once pinned
