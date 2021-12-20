@@ -554,7 +554,7 @@ router.post("/uploadMedia2Server", auth, async (req, res) => {
           }
           let filesize = getFilesizeInBytes(uploadPath + imageFileName);
           //console.log(filesize);
-          if (filesize !== mediaSize)
+          if (Number(filesize) !== Number(mediaSize))
           {
             console.log("Size is mismatch desc:"+filesize+'- ori:'+mediaSize);
             try {
