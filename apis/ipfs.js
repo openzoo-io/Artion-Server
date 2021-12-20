@@ -551,8 +551,9 @@ router.post("/uploadMedia2Server", auth, async (req, res) => {
               err,
             });
           }
+          console.log(getFilesizeInBytes(uploadPath + imageFileName));
         });
-        console.log(getFilesizeInBytes(uploadPath + imageFileName));
+        
 
         let filePinStatus = await pinMediaFileToIPFS(imageFileName, name.replace(" ", ""));
         // remove file once pinned
