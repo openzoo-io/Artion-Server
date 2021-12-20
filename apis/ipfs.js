@@ -536,6 +536,7 @@ router.post("/uploadMedia2Server", auth, async (req, res) => {
       } else {
         let mediaData = fields.media;
         let mediaExt = fields.mediaExt;
+        let mediaSize = fields.mediaSize;
         /* change getting address from auth token */
         let address = extractAddress(req, res);
         let name = generateRandomName();
@@ -551,7 +552,13 @@ router.post("/uploadMedia2Server", auth, async (req, res) => {
               err,
             });
           }
-          console.log(getFilesizeInBytes(uploadPath + imageFileName));
+          let filesize = getFilesizeInBytes(uploadPath + imageFileName);
+          if (filesize+1 !== mediaSize)
+          {
+            return res.status(400).json({
+              status: "Size is mismatch"+(filesize+1)+'-'+mediaSize,
+            });
+          }
         });
         
 
