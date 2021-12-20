@@ -553,7 +553,8 @@ router.post("/uploadMedia2Server", auth, async (req, res) => {
             });
           }
           let filesize = getFilesizeInBytes(uploadPath + imageFileName);
-          if (filesize+1 !== mediaSize)
+          console.log(filesize);
+          if ((filesize+1) !== mediaSize)
           {
             return res.status(400).json({
               status: "Size is mismatch"+(filesize+1)+'-'+mediaSize,
