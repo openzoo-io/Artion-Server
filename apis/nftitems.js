@@ -400,7 +400,7 @@ const selectTokens = async (req, res) => {
             collections2filter === null ? undefined : minterFilters,
             ...lookupNFTItemsAndMerge
           ].filter((part) => part !== undefined);
-          pipeline.push({$match: {isAppropriate: true}});
+          //pipeline.push({$match: {isAppropriate: true}});
           return Auction.aggregate(pipeline);
         }
       }
