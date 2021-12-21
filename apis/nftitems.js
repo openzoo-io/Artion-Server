@@ -839,7 +839,7 @@ router.post('/fetchTokens', async (req, res) => {
       ).values()
     ]
   }
-  items = uniqByKeepLast(users, it => it._id);
+  items = uniqByKeepLast(items, it => it._id);
   return res.json({
     status: 'success',
     data: {
