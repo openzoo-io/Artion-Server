@@ -379,6 +379,7 @@ const selectTokens = async (req, res) => {
           const pipeline = [activeBidFilter, ...lookupNFTItemsAndMerge].filter(
             (part) => part !== undefined
           );
+          pipeline.push({$match: {isAppropriate: true}});
           return Bid.aggregate(pipeline);
         }
         if (filters.includes('buyNow')) {
@@ -386,6 +387,7 @@ const selectTokens = async (req, res) => {
             collections2filter === null ? undefined : minterFilters,
             ...lookupNFTItemsAndMerge
           ].filter((part) => part !== undefined);
+          pipeline.push({$match: {isAppropriate: true}});
           return Listing.aggregate(pipeline);
         }
         if (filters.includes('hasOffers')) {
@@ -393,6 +395,7 @@ const selectTokens = async (req, res) => {
             collections2filter === null ? undefined : minterFilters,
             ...lookupNFTItemsAndMerge
           ].filter((part) => part !== undefined);
+          pipeline.push({$match: {isAppropriate: true}});
           return Offer.aggregate(pipeline);
         }
         if (filters.includes('onAuction')) {
@@ -400,7 +403,7 @@ const selectTokens = async (req, res) => {
             collections2filter === null ? undefined : minterFilters,
             ...lookupNFTItemsAndMerge
           ].filter((part) => part !== undefined);
-          //pipeline.push({$match: {isAppropriate: true}});
+          pipeline.push({$match: {isAppropriate: true}});
           return Auction.aggregate(pipeline);
         }
       }
