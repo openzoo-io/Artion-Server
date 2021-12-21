@@ -829,6 +829,14 @@ router.post('/fetchTokens', async (req, res) => {
     items = await selectBundles(req, res);
   }
 
+  return res.json({
+    status: 'success',
+    data: {
+      tokens: items,
+      total: items.length
+    }
+  });
+
   let updatedItems = updatePrices(items);
 
   let data = sortItems(updatedItems, sortby);
