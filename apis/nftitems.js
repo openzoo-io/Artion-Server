@@ -828,7 +828,12 @@ router.post('/fetchTokens', async (req, res) => {
   } else if (type === 'bundle') {
     items = await selectBundles(req, res);
   }
-
+  
+  
+  // Prune dup //
+  items = items.filter(function(elem, pos) {
+      return myArray.indexOf(elem) == pos;
+  })
   return res.json({
     status: 'success',
     data: {
