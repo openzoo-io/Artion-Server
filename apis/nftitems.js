@@ -831,7 +831,15 @@ router.post('/fetchTokens', async (req, res) => {
   
   
   // Prune dup //
-  items = [ ...new Set(items)];
+  function uniqByKeepLast(data, key)
+  {
+    return [
+      ...new Map(
+        data.map(x => [key(x),x])
+      ).values()
+    ]
+  }
+  items = uniqByKeepLast(users, it => it._id);
   return res.json({
     status: 'success',
     data: {
