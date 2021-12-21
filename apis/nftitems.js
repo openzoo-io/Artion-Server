@@ -354,9 +354,9 @@ const selectTokens = async (req, res) => {
       }
 
       if (filters) {
-        const minterFilters = {
+        const minterFilters = [{ $match: { isAppropriate: true } }, {
           $match: { $expr: { $in: ['$minter', collections2filter] } }
-        };
+        }];
         if (filters.includes('hasBids')) {
           const activeBidFilter = {
             $match: {
@@ -379,7 +379,7 @@ const selectTokens = async (req, res) => {
           const pipeline = [activeBidFilter, ...lookupNFTItemsAndMerge].filter(
             (part) => part !== undefined
           );
-          return Bid.aggregate([...pipeline]);
+          return Bid.aggregate(pipeline);
         }
         if (filters.includes('buyNow')) {
           const pipeline = [
