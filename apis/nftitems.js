@@ -292,6 +292,9 @@ const selectTokens = async (req, res) => {
 
     const lookupNFTItemsAndMerge = [
       {
+        $match: { isAppropriate: true }
+      },
+      {
         $lookup: {
           from: 'nftitems',
           let: {
@@ -354,9 +357,9 @@ const selectTokens = async (req, res) => {
       }
 
       if (filters) {
-        const minterFilters = [{ $match: { isAppropriate: true } }, {
+        const minterFilters = {
           $match: { $expr: { $in: ['$minter', collections2filter] } }
-        }];
+        };
         if (filters.includes('hasBids')) {
           const activeBidFilter = {
             $match: {
