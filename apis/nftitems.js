@@ -831,15 +831,15 @@ router.post('/fetchTokens', async (req, res) => {
   
   
   // Prune dup //
-  function uniqByKeepLast(data, key)
-  {
-    return [
-      ...new Map(
-        data.map(x => [key(x),x])
-      ).values()
-    ]
-  }
-  items = uniqByKeepLast(items, it => it._id);
+  items = items.filter(
+    (tk, idx) =>
+    items.findIndex(_tk =>
+        tk.items
+          ? tk._id === _tk._id
+          : tk.contractAddress === _tk.contractAddress &&
+            tk.tokenID === _tk.tokenID
+      ) === idx
+  );
   return res.json({
     status: 'success',
     data: {
