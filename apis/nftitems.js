@@ -840,13 +840,7 @@ router.post('/fetchTokens', async (req, res) => {
             tk.tokenID === _tk.tokenID
       ) === idx
   );
-  return res.json({
-    status: 'success',
-    data: {
-      tokens: items,
-      total: items.length
-    }
-  });
+ 
 
   let updatedItems = updatePrices(items);
 
