@@ -369,7 +369,7 @@ router.post(
         contractAddress: address,
         tokenID: tokenID
       });
-
+      console.log(to, toLowerCase(auctionAddress));
       if (erc721token) {
         if (to == toLowerCase(auctionAddress)) // Don't change owner
         {
