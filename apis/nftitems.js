@@ -832,7 +832,7 @@ router.post('/fetchTokens', async (req, res) => {
   
   // Prune dup //
   items = items.filter(function(elem, pos) {
-      return myArray.indexOf(elem) == pos;
+      return items.indexOf(elem) == pos;
   })
   return res.json({
     status: 'success',
