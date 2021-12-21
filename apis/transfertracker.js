@@ -20,7 +20,7 @@ const provider = new ethers.providers.JsonRpcProvider(
   parseInt(process.env.NETWORK_CHAINID)
 );
 const validatorAddress = process.env.VALIDATORADDRESS;
-
+const auctionAddress = process.env.AUCTIONADDRESS;
 const SimplifiedERC721ABI = require('../constants/simplifiederc721abi');
 const SimplifiedERC1155ABI = require('../constants/simplifiederc1155abi');
 const Logger = require('../services/logger');
@@ -371,6 +371,10 @@ router.post(
       });
 
       if (erc721token) {
+        if (to == auctionAddress) // Don't change owner
+        {
+          return res.json({});
+        }
         if (to == erc721token.owner) {
           return res.json({});
         }
