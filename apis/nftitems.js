@@ -209,8 +209,8 @@ const isIncludedInArray = (array, target) => {
 
 const selectTokens = async (req, res) => {
   // all smart contract categories - 721/1155
-  let tokenTypes = await Category.find();
-  tokenTypes = tokenTypes.map((tt) => [tt.minterAddress, tt.type]);
+  //let tokenTypes = await Category.find({isAppropriate:true});
+  //tokenTypes = tokenTypes.map((tt) => [tt.minterAddress, tt.type]);
   try {
     // get options from request & process
     const category = req.body?.category;
@@ -249,7 +249,8 @@ const selectTokens = async (req, res) => {
 
     const getCategoryCollectionAddresses = async (category) => {
       const categoryCollectionRows = await Collection.find({
-        categories: category
+        categories: category,
+        isAppropriate: true
       }).select('erc721Address');
       const categoryCollectionAddresses = categoryCollectionRows.map((row) =>
         row.erc721Address.toLowerCase()
@@ -354,6 +355,7 @@ const selectTokens = async (req, res) => {
 
       if (filters) {
         const minterFilters = {
+          isAppropriate: true,
           $match: { $expr: { $in: ['$minter', collections2filter] } }
         };
         if (filters.includes('hasBids')) {
