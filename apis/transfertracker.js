@@ -371,7 +371,7 @@ router.post(
       });
 
       if (erc721token) {
-        if (to == auctionAddress) // Don't change owner
+        if (to == toLowerCase(auctionAddress)) // Don't change owner
         {
           return res.json({});
         }
