@@ -292,9 +292,6 @@ const selectTokens = async (req, res) => {
 
     const lookupNFTItemsAndMerge = [
       {
-        $match: { isAppropriate: true }
-      },
-      {
         $lookup: {
           from: 'nftitems',
           let: {
@@ -403,6 +400,7 @@ const selectTokens = async (req, res) => {
             collections2filter === null ? undefined : minterFilters,
             ...lookupNFTItemsAndMerge
           ].filter((part) => part !== undefined);
+          pipeline.push({$match: {isAppropriate: true}});
           return Auction.aggregate(pipeline);
         }
       }
