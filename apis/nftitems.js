@@ -834,6 +834,9 @@ router.post('/fetchTokens', async (req, res) => {
   items = items.filter(function(elem, pos) {
       return items.indexOf(elem) == pos;
   })
+  var uSet = new Set(items);
+  console.log([...uSet]);
+  
   return res.json({
     status: 'success',
     data: {
