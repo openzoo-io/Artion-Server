@@ -379,7 +379,7 @@ const selectTokens = async (req, res) => {
           const pipeline = [activeBidFilter, ...lookupNFTItemsAndMerge].filter(
             (part) => part !== undefined
           );
-          return Bid.aggregate([{ $match: { isAppropriate: true } }, ...pipeline]);
+          return Bid.aggregate([{ $match: { '$isAppropriate': true } }, ...pipeline]);
         }
         if (filters.includes('buyNow')) {
           const pipeline = [
