@@ -831,7 +831,8 @@ router.post('/fetchTokens', async (req, res) => {
   
   
   // Prune dup //
-  /*
+  const filters = req.body.filterby;
+  if (filters)
   items = items.filter(
     (tk, idx) =>
     items.findIndex(_tk =>
@@ -841,7 +842,7 @@ router.post('/fetchTokens', async (req, res) => {
             tk.tokenID === _tk.tokenID
       ) === idx
   );
- */
+ 
 
   let updatedItems = updatePrices(items);
 
