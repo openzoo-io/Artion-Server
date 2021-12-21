@@ -836,7 +836,7 @@ router.post('/fetchTokens', async (req, res) => {
   })
   var uSet = new Set(items);
   console.log([...uSet]);
-  
+  items = [...uSet];
   return res.json({
     status: 'success',
     data: {
