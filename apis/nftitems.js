@@ -831,12 +831,7 @@ router.post('/fetchTokens', async (req, res) => {
   
   
   // Prune dup //
-  items = items.filter(function(elem, pos) {
-      return items.indexOf(elem) == pos;
-  })
-  var uSet = new Set(items);
-  console.log([...uSet]);
-  items = [...uSet];
+  items = [ ...new Set(items)];
   return res.json({
     status: 'success',
     data: {
