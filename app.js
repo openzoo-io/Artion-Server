@@ -10,8 +10,6 @@ const Logger = require('./services/logger');
 const morganMiddleware = require('./apis/middleware/morgan');
 
 
-const {Helmet} = require('react-helmet');
-
 require("./models/abi");
 require("./models/account");
 require("./models/bid");
@@ -84,24 +82,3 @@ const connect = () => {
 };
 
 connect();
-
-
-app.get('/hi', (req, res) => {
-  const helmet = Helmet.renderStatic();
-  const html = `
-  <!DOCTYPE html>
-  <html ${helmet.htmlAttributes.toString()}>
-    <head>
-      ${helmet.title.toString()}
-      ${helmet.meta.toString()}
-      ${helmet.link.toString()}
-    </head>
-    <body ${helmet.bodyAttributes.toString()}>
-      <div id="root">
-        ${app}
-      </div>
-      </body>
-  </html>
-`;
-res.send(html);
-})
