@@ -8,7 +8,7 @@ const port = process.env.PORT || 5001;
 
 const Logger = require('./services/logger');
 const morganMiddleware = require('./apis/middleware/morgan');
-import { Helmet } from "react-helmet";
+
 
 
 require("./models/abi");
@@ -85,21 +85,5 @@ const connect = () => {
 connect();
 
 app.get('/hi', (req, res) => {
-  const helmet = Helmet.renderStatic();
-  const html = `
-  <!DOCTYPE html>
-  <html ${helmet.htmlAttributes.toString()}>
-    <head>
-      ${helmet.title.toString()}
-      ${helmet.meta.toString()}
-      ${helmet.link.toString()}
-    </head>
-    <body ${helmet.bodyAttributes.toString()}>
-      <div id="root">
-        ${app}
-      </div>
-      </body>
-  </html>
-`;
-res.send(html);
-})
+  res.send('Hello, World!')
+  })
