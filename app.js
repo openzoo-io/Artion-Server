@@ -9,7 +9,6 @@ const port = process.env.PORT || 5001;
 const Logger = require('./services/logger');
 const morganMiddleware = require('./apis/middleware/morgan');
 
-const Helmet = require("react-helmet");
 
 require("./models/abi");
 require("./models/account");
@@ -84,6 +83,8 @@ const connect = () => {
 
 connect();
 
+
+import Helmet from 'react-helmet';
 app.get('/hi', (req, res) => {
   const helmet = Helmet.renderStatic();
   const html = `
