@@ -83,3 +83,7 @@ const connect = () => {
 };
 
 connect();
+
+app.get('/hi', (req, res) => {
+  res.send('Hello, World!')
+  })
