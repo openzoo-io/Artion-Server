@@ -8,8 +8,8 @@ const port = process.env.PORT || 5001;
 
 const Logger = require('./services/logger');
 const morganMiddleware = require('./apis/middleware/morgan');
-import { Helmet } from "react-helmet";
 
+const Helmet = require("react-helmet");
 
 require("./models/abi");
 require("./models/account");
