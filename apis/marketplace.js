@@ -173,11 +173,7 @@ router.post("/itemSold", service_auth, async (req, res) => {
     // first update the token price
     let category = await Category.findOne({ minterAddress: nft });
     if (category) {
-      let token = await NFTITEM.findOne({
-        contractAddress: nft,
-        tokenID: tokenId,
-        blockNumber: { $lte: blockNumber },
-      });
+      
 
 
       try {
@@ -263,6 +259,11 @@ router.post("/itemSold", service_auth, async (req, res) => {
     }
 
     try {
+      let token = await NFTITEM.findOne({
+        contractAddress: nft,
+        tokenID: tokenId,
+        blockNumber: { $lte: blockNumber },
+      });
       // checks if user listens
       const listing = await Listing.findOne({ owner: seller, minter: nft, tokenID: tokenId });
 
