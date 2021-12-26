@@ -274,17 +274,36 @@ router.post("/itemSold", service_auth, async (req, res) => {
           tokenID: tokenId,
           blockNumber: { $lte: blockNumber }
         });
-        if (token) {
-          token.price = 0;
-          token.paymentToken = "wan";
-          token.priceInUSD = 0;
-          token.lastSalePrice = pricePerItem;
-          token.lastSalePricePaymentToken = itemPayToken.address;
-          token.lastSalePriceInUSD = priceInUSD;
-          token.listedAt = new Date(0);
-          token.soldAt = new Date(); //set recently sold date
-          await token.save();
+        // Still has listing //
+        const listing = await Listing.findOne({ minter: nft, tokenID: tokenId });
+        if (listing) {
+
+          if (token) {
+            token.price = listing.price;
+            token.paymentToken = listing.paymentToken;
+            token.priceInUSD = listing.priceInUSD;
+            token.lastSalePrice = pricePerItem;
+            token.lastSalePricePaymentToken = itemPayToken.address;
+            token.lastSalePriceInUSD = priceInUSD;
+            token.listedAt = listing.startTime;
+            token.soldAt = new Date(); //set recently sold date
+            await token.save();
+          }
         }
+        else {
+          if (token) {
+            token.price = 0;
+            token.paymentToken = "wan";
+            token.priceInUSD = 0;
+            token.lastSalePrice = pricePerItem;
+            token.lastSalePricePaymentToken = itemPayToken.address;
+            token.lastSalePriceInUSD = priceInUSD;
+            token.listedAt = new Date(0);
+            token.soldAt = new Date(); //set recently sold date
+            await token.save();
+          }
+        }
+
       }
       else {
         // reduce listing
@@ -404,7 +423,7 @@ router.post("/itemCanceled", service_auth, async (req, res) => {
       tokenID: tokenId,
       blockNumber: { $lt: blockNumber }
     });
-    
+
     let category = await Category.findOne({ minterAddress: nft });
     if (category) {
       let token = await NFTITEM.findOne({
@@ -436,7 +455,7 @@ router.post("/itemCanceled", service_auth, async (req, res) => {
         }
       }
     }
-    
+
 
     Logger.info("[ItemCanceled] Success: ", { transactionHash, blockNumber });
     return res.json({ status: "success" });
