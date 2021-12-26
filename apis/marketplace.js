@@ -275,7 +275,7 @@ router.post("/itemSold", service_auth, async (req, res) => {
           tokenID: tokenId,
           blockNumber: { $lte: blockNumber }
         });
-        // Still has listing //
+        // Still has listing for 1155 //
         const listing = await Listing.findOne({ minter: nft, tokenID: tokenId });
         if (listing) {
 
