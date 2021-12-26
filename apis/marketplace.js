@@ -330,6 +330,7 @@ router.post("/itemSold", service_auth, async (req, res) => {
 
     } catch (err) {
       Logger.error("[ItemSold] Failed to udpate date listing: ", err.message);
+      console.log(err.message);
     }
 
 
