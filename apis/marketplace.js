@@ -178,17 +178,7 @@ router.post("/itemSold", service_auth, async (req, res) => {
         tokenID: tokenId,
         blockNumber: { $lte: blockNumber },
       });
-      if (token) {
-        token.price = 0;
-        token.paymentToken = "wan";
-        token.priceInUSD = 0;
-        token.lastSalePrice = pricePerItem;
-        token.lastSalePricePaymentToken = itemPayToken.address;
-        token.lastSalePriceInUSD = priceInUSD;
-        token.listedAt = new Date(0);
-        token.soldAt = new Date(); //set recently sold date
-        await token.save();
-      }
+
 
       try {
         // send mail here to buyer first
@@ -275,7 +265,7 @@ router.post("/itemSold", service_auth, async (req, res) => {
     try {
       // checks if user listens
       const listing = await Listing.findOne({ owner: seller, minter: nft, tokenID: tokenId });
-      
+
       if (quantity >= listing.quantity) {
         // remove from listing
         await Listing.deleteMany({
@@ -284,18 +274,39 @@ router.post("/itemSold", service_auth, async (req, res) => {
           tokenID: tokenId,
           blockNumber: { $lte: blockNumber }
         });
+        if (token) {
+          token.price = 0;
+          token.paymentToken = "wan";
+          token.priceInUSD = 0;
+          token.lastSalePrice = pricePerItem;
+          token.lastSalePricePaymentToken = itemPayToken.address;
+          token.lastSalePriceInUSD = priceInUSD;
+          token.listedAt = new Date(0);
+          token.soldAt = new Date(); //set recently sold date
+          await token.save();
+        }
       }
-      else
-      {
+      else {
         // reduce listing
         await Listing.updateOne({
           owner: seller,
           minter: nft,
           tokenID: tokenId,
           blockNumber: { $lte: blockNumber }
-        },{
-          $inc : {"quantity": (quantity*-1)}
+        }, {
+          $inc: { "quantity": (quantity * -1) }
         });
+        if (token) {
+          token.price = pricePerItem;
+          token.paymentToken = itemPayToken.address;
+          token.priceInUSD = priceInUSD;
+          token.lastSalePrice = pricePerItem;
+          token.lastSalePricePaymentToken = itemPayToken.address;
+          token.lastSalePriceInUSD = priceInUSD;
+          token.listedAt = new Date(0);
+          token.soldAt = new Date(); //set recently sold date
+          await token.save();
+        }
       }
 
     } catch (err) {
@@ -386,21 +397,6 @@ router.post("/itemCanceled", service_auth, async (req, res) => {
     const nft = nftC.toLowerCase();
     const tokenId = parseInt(tokenIdBN.hex);
 
-    let category = await Category.findOne({ minterAddress: nft });
-    if (category) {
-      let token = await NFTITEM.findOne({
-        contractAddress: nft,
-        tokenID: tokenId,
-        blockNumber: { $lt: blockNumber },
-      });
-      if (token) {
-        token.price = 0;
-        token.paymentToken = "wan";
-        token.priceInUSD = 0;
-        token.listedAt = new Date(0);
-        await token.save();
-      }
-    }
     // remove from listing
     await Listing.deleteMany({
       owner: owner,
@@ -408,6 +404,39 @@ router.post("/itemCanceled", service_auth, async (req, res) => {
       tokenID: tokenId,
       blockNumber: { $lt: blockNumber }
     });
+    
+    let category = await Category.findOne({ minterAddress: nft });
+    if (category) {
+      let token = await NFTITEM.findOne({
+        contractAddress: nft,
+        tokenID: tokenId,
+        blockNumber: { $lt: blockNumber },
+      });
+
+
+
+      // Still has listing //
+      const listing = await Listing.findOne({ minter: nft, tokenID: tokenId });
+      if (listing) {
+        if (token) {
+          token.price = listing.price;
+          token.paymentToken = listing.paymentToken;
+          token.priceInUSD = listing.priceInUSD;
+          token.listedAt = listing.startTime;
+          await token.save();
+        }
+      }
+      else {
+        if (token) {
+          token.price = 0;
+          token.paymentToken = "wan";
+          token.priceInUSD = 0;
+          token.listedAt = new Date(0);
+          await token.save();
+        }
+      }
+    }
+    
 
     Logger.info("[ItemCanceled] Success: ", { transactionHash, blockNumber });
     return res.json({ status: "success" });
