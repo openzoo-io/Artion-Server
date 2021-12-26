@@ -301,6 +301,7 @@ router.post("/itemSold", service_auth, async (req, res) => {
             token.lastSalePriceInUSD = priceInUSD;
             token.listedAt = new Date(0);
             token.soldAt = new Date(); //set recently sold date
+            token.owner = buyer;
             await token.save();
           }
         }
