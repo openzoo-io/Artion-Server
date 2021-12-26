@@ -251,6 +251,10 @@ const handle1155SingleTransfer = async (
                     case 'glb': contentType = "model"; break;
                   }
                 }
+                else
+                {
+                  contentType = "image";
+                }
 
               } catch (error) {
                 Logger.error(error);
