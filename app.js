@@ -64,6 +64,7 @@ app.use(morganMiddleware);
 app.use(require("./apis"));
 
 app.get('/image/:id', function(req, res){
+  console.log(`${__dirname}/../Artion-Thumbnail-Indexer/thumb-image/${req.params.id}`);
   res.sendFile(`${__dirname}/../Artion-Thumbnail-Indexer/thumb-image/${req.params.id}`);
 });
 
