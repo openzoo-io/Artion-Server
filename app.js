@@ -63,9 +63,7 @@ app.use(morganMiddleware);
 
 app.use(require("./apis"));
 
-app.get('/image/:id', function(req, res){
-  res.send('Hello World');
-});
+
 
 const priceFeed = require("./services/price.feed");
 
