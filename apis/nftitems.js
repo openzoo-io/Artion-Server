@@ -222,7 +222,7 @@ const selectTokens = async (req, res) => {
 
     let onlyVerified = filters.includes('onlyVerified') ? true : false;
     // Remove verified from filter //
-    var index = array.indexOf('onlyVerified');
+    var index = filters.indexOf('onlyVerified');
     if (index !== -1) {
       filters.splice(index, 1);
     }
