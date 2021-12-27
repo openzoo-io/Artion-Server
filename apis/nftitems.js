@@ -355,18 +355,16 @@ const selectTokens = async (req, res) => {
         when no status option
          */
         /* contract address filter */
-        if (!onlyVerified) {
-          let collectionFilters = {
-            ...(collections2filter === null
-              ? {}
-              : { contractAddress: { $in: [...collections2filter] } }),
-            thumbnailPath: { $ne: nonImage },
-            isAppropriate: true,
+        let collectionFilters = {
+          ...(collections2filter === null
+            ? {}
+            : { contractAddress: { $in: [...collections2filter] } }),
+          thumbnailPath: { $ne: nonImage },
+          isAppropriate: true,
 
-          };
-        }
-        else {
-          let collectionFilters = {
+        };
+        if (onlyVerified) {
+          collectionFilters = {
             ...(collections2filter === null
               ? {}
               : { contractAddress: { $in: [...collections2filter] } }),
@@ -375,6 +373,7 @@ const selectTokens = async (req, res) => {
             isVerified: true
           };
         }
+       
 
         return NFTITEM.find(collectionFilters).select(selectOption).lean();
       }
