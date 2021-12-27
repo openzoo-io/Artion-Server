@@ -17,7 +17,7 @@ const storage_url = process.env.RUNTIME
         tokenID: tokenID,
       });
     console.log(nft,tokenID,token);
-      if (token) return token.imageURL;
+      if (token) return token.thumbnailPath;
       else return null;
     } catch (error) {
       console.log(error);
@@ -36,7 +36,7 @@ const createMessage = async (data) => {
           let title = "Auction Price Update!";
           let content = `${name}'s auction price has been updated.`;
           let image = await getNFTThumbnailPath(data.nftAddress, data.tokenID);
-          image = `${image}`;
+          image = `${storage_url}${image}`;
           let link = `${app_url}explore/${data.nftAddress}/${data.tokenID}`;
           message = messageUtils.createNFTItemMessage({
             to,
@@ -55,7 +55,7 @@ const createMessage = async (data) => {
           let title = "Bid Placed to your NFT!";
           let content = `Your NFT Item, ${name} has got a new bid from ${data.bidderAlias}.`;
           let image = await getNFTThumbnailPath(data.nftAddress, data.tokenID);
-          image = `${image}`;
+          image = `${storage_url}${image}`;
           let link = `${app_url}explore/${data.nftAddress}/${data.tokenID}`;
           message = messageUtils.createNFTItemMessage({
             to,
@@ -74,7 +74,7 @@ const createMessage = async (data) => {
           let title = "Bid canceled!";
           let content = `Bid to your NFT Item, ${name} from ${data.bidderAlias} canceled.`;
           let image = await getNFTThumbnailPath(data.nftAddress, data.tokenID);
-          image = `${image}`;
+          image = `${storage_url}${image}`;
           let link = `${app_url}explore/${data.nftAddress}/${data.tokenID}`;
           message = messageUtils.createNFTItemMessage({
             to,
@@ -93,7 +93,7 @@ const createMessage = async (data) => {
           let title = "Auction Resulted!";
           let content = `You purchased an item, ${data.collectionName}'s ${data.tokenName} as it's auction has been resulted.`;
           let image = await getNFTThumbnailPath(data.nftAddress, data.tokenID);
-          image = `${image}`;
+          image = `${storage_url}${image}`;
           let link = `${app_url}explore/${data.nftAddress}/${data.tokenID}`;
           message = messageUtils.createNFTItemMessage({
             to,
@@ -112,7 +112,7 @@ const createMessage = async (data) => {
           let title = "Auction Canceled!";
           let content = `Auction for ${data.collectionName}'s ${data.tokenName} canceled.`;
           let image = await getNFTThumbnailPath(data.nftAddress, data.tokenID);
-          image = `${image}`;
+          image = `${storage_url}${image}`;
           let link = `${app_url}explore/${data.nftAddress}/${data.tokenID}`;
           message = messageUtils.createNFTItemMessage({
             to,

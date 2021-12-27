@@ -5,10 +5,10 @@ const mailingListEmail = "notification@openzoo.io";
 const messageUtils = require("./message.utils");
 
 const app_url = process.env.APP_URL;
-// const storage_url = process.env.RUNTIME
-//   ? "https://storage.testnet.artion.io/image/"
-//   : "https://storage.artion.io/image/";
-  const storage_url = '';
+const storage_url = process.env.RUNTIME
+  ? "https://api.openzoo.io/image/"
+  : "https://api.openzoo.io/image/";
+//  const storage_url = '';
 const mongoose = require("mongoose");
 const toLowerCase = require("../utils/utils");
 const Account = mongoose.model("Account");
@@ -46,7 +46,7 @@ const getNFTThumbnailPath = async (nft, tokenID) => {
       tokenID: tokenID,
     });
 	console.log(nft,tokenID,token);
-    if (token) return token.imageURL;
+    if (token) return token.thumbnailPath;
     else return null;
   } catch (error) {
     console.log(error);

@@ -8,8 +8,8 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const app_url = process.env.APP_URL;
 const storage_url = process.env.RUNTIME
-  ? "https://storage.testnet.artion.io/image/"
-  : "https://storage.artion.io/image/";
+  ? "https://api.openzoo.io/image/"
+  : "https://api.openzoo.io/image/";
 
 const getNFTThumbnailPath = async (nft, tokenID) => {
   try {
@@ -37,7 +37,7 @@ const createMessage = async (data) => {
           let title = "NFT Item Purchased!";
           let content = `Congratulations! You have purchased ${name}.`;
           let image = await getNFTThumbnailPath(data.nftAddress, data.tokenID);
-          image = `${image}`;
+          image = `${storage_url}${image}`;
           let link = `${app_url}explore/${data.nftAddress}/${data.tokenID}`;
           message = messageUtils.createNFTItemMessage({
             to,
@@ -53,7 +53,7 @@ const createMessage = async (data) => {
           let title = "NFT Item Sold!";
           let content = `Congratulations! You have sold ${name}.`;
           let image = await getNFTThumbnailPath(data.nftAddress, data.tokenID);
-          image = `${image}`;
+          image = `${storage_url}${image}`;
           let link = `${app_url}explore/${data.nftAddress}/${data.tokenID}`;
           message = messageUtils.createNFTItemMessage({
             to,
@@ -75,7 +75,7 @@ const createMessage = async (data) => {
           let content = `Congratulations! Someone sent you an offer for ${name}.`;
           let image = await getNFTThumbnailPath(data.nftAddress, data.tokenID);
 
-          image = `${image}`;
+          image = `${storage_url}${image}`;
           let link = `${app_url}explore/${data.nftAddress}/${data.tokenID}`;
           message = messageUtils.createNFTItemMessage({
             to,
@@ -97,7 +97,7 @@ const createMessage = async (data) => {
           let title = "Offer Canceled!";
           let content = `Offer to your nft item, ${name} is now canceled.`;
           let image = await getNFTThumbnailPath(data.nftAddress, data.tokenID);
-          image = `${image}`;
+          image = `${storage_url}${image}`;
           let link = `${app_url}explore/${data.nftAddress}/${data.tokenID}`;
           message = messageUtils.createNFTItemMessage({
             to,
