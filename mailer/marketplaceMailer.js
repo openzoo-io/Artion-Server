@@ -18,7 +18,7 @@ const getNFTThumbnailPath = async (nft, tokenID) => {
       tokenID: tokenID,
     });
 	console.log(nft,tokenID,token);
-    if (token) return token.imageURL;
+    if (token) return token.thumbnailPath;
     else return null;
   } catch (error) {
     console.log(error);
