@@ -231,6 +231,7 @@ const selectTokens = async (req, res) => {
       }
       
     }
+    console.log(onlyVerified);
 
     // create a sort by option
     const selectOption = [
