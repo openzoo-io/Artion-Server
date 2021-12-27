@@ -851,8 +851,9 @@ router.post('/fetchTokens', async (req, res) => {
   let items = [];
   if (type === 'all') {
     let nfts = await selectTokens(req, res);
-    let bundles = await selectBundles(req, res);
-    items = [...nfts, ...bundles];
+    //let bundles = await selectBundles(req, res);
+    //items = [...nfts, ...bundles]; // Todo for Bundle pack
+    items = [...nfts];
   } else if (type === 'single') {
     items = await selectTokens(req, res);
   } else if (type === 'bundle') {
