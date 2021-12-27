@@ -224,12 +224,12 @@ const selectTokens = async (req, res) => {
     {
       onlyVerified = filters.includes('onlyVerified') ? true : false;
       // Remove verified from filter //
-      /*
+      
       var index = filters.indexOf('onlyVerified');
       if (index !== -1) {
         filters.splice(index, 1);
       }
-      */
+      
     }
 
     // create a sort by option
