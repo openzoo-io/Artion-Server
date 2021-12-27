@@ -498,7 +498,7 @@ router.post('/getBidParticipants', async (req, res) => {
   return res.json({
     status: 'success',
     data: {
-      bidParticipants:countBIDS
+      bidParticipants: countBIDS
     }
   });
 })
