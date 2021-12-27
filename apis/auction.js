@@ -11,7 +11,7 @@ const Bid = mongoose.model('Bid');
 const NFTITEM = mongoose.model('NFTITEM');
 const TradeHistory = mongoose.model('TradeHistory');
 // const NotificationSetting = mongoose.model("NotificationSetting");
-
+const toLowerCase = require('../utils/utils');
 // const sendEmail = require("../mailer/auctionMailer");
 // const getCollectionName = require("../mailer/utils");
 // const notifications = require("../mailer/followMailer");
