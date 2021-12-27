@@ -494,11 +494,11 @@ router.post('/getBidParticipants', async (req, res) => {
   let tokenID = req.body.tokenID;
   //const BIDS = mongoose.model('BID');
   // Count NFT //
-  let countBIDS = await Bid.countDocuments({ minter: address, tokenID: Number(tokenID) });
+  let countBIDS = await Bid.countDocuments({ minter: address, tokenID: tokenID });
   return res.json({
     status: 'success',
-    data: {bidParticipants:countBIDS, 
-      
+    data: {
+      bidParticipants:countBIDS
     }
   });
 })
