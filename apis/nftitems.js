@@ -224,10 +224,13 @@ const selectTokens = async (req, res) => {
     {
       onlyVerified = filters.includes('onlyVerified') ? true : false;
       // Remove verified from filter //
-      
       var index = filters.indexOf('onlyVerified');
       if (index !== -1) {
         filters.splice(index, 1);
+      }
+      if (filters.length === 0)
+      {
+        filters = null;
       }
       
     }
@@ -364,7 +367,16 @@ const selectTokens = async (req, res) => {
           isAppropriate: true,
 
         };
-        
+        if (onlyVerified) {
+          collectionFilters = {
+            ...(collections2filter === null
+              ? {}
+              : { contractAddress: { $in: [...collections2filter] } }),
+            thumbnailPath: { $ne: nonImage },
+            isAppropriate: true,
+            isVerified: true
+          };
+        }
        
         console.log('hereee');
 
