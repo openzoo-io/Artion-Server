@@ -231,7 +231,7 @@ const selectTokens = async (req, res) => {
       }
       
     }
-    console.log(filters);
+    //console.log(filters);
 
     // create a sort by option
     const selectOption = [
@@ -375,6 +375,7 @@ const selectTokens = async (req, res) => {
           };
         }
        
+        console.log('hereee');
 
         return NFTITEM.find(collectionFilters).select(selectOption).lean();
       }
