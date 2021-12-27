@@ -484,6 +484,25 @@ router.post('/auctionResulted', service_auth, async (req, res) => {
   }
 });
 
+router.post('/getBidParticipants', async (req, res) => {
+  let address = toLowerCase(req.body.contractAddress);
+  if (!ethers.utils.isAddress(address))
+    return res.json({
+      status: 'failed',
+      data: 'NFT Contract Address Invalid'
+    });
+  let tokenID = req.body.tokenID;
+  const BIDS = mongoose.model('BID');
+  // Count NFT //
+  let countBIDS = await NFTITEM.countDocuments({ minter: address, tokenID: Number(tokenID) });
+  return res.json({
+    status: 'success',
+    data: {bidParticipants:countBIDS, 
+      
+    }
+  });
+})
+
 router.post('/bidPlaced', service_auth, async (req, res) => {
   try {
     const { blockNumber, transactionHash, args } = req.body;
