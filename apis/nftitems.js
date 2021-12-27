@@ -220,19 +220,17 @@ const selectTokens = async (req, res) => {
       : null;
     let filters = req.body.filterby; //status -> array or null
     let onlyVerified = false;
-    if (filters)
-    {
+    if (filters) {
       onlyVerified = filters.includes('onlyVerified') ? true : false;
       // Remove verified from filter //
       var index = filters.indexOf('onlyVerified');
       if (index !== -1) {
         filters.splice(index, 1);
       }
-      if (filters.length === 0)
-      {
+      if (filters.length === 0) {
         filters = null;
       }
-      
+
     }
     //console.log(filters);
 
@@ -296,9 +294,19 @@ const selectTokens = async (req, res) => {
         disabledExplorerCollectionRows.map((row) =>
           row.minterAddress.toLowerCase()
         );
-      const allExploreCollectionRows = await Collection.find({
-        erc721Address: { $nin: disabledExploreCollectionAddresses }
-      });
+
+      let allExploreCollectionRows = null
+      if (!onlyVerified) {
+        allExploreCollectionRows = await Collection.find({
+          erc721Address: { $nin: disabledExploreCollectionAddresses },
+        });
+      }
+      else {
+        allExploreCollectionRows = await Collection.find({
+          erc721Address: { $nin: disabledExploreCollectionAddresses },
+          isVerified: true,
+        });
+      }
 
       allExceptDisabledCollections = allExploreCollectionRows.map((row) =>
         row.erc721Address.toLowerCase()
@@ -359,7 +367,7 @@ const selectTokens = async (req, res) => {
         when no status option
          */
         /* contract address filter */
-        let collectionFilters = {
+        const collectionFilters = {
           ...(collections2filter === null
             ? {}
             : { contractAddress: { $in: [...collections2filter] } }),
@@ -367,18 +375,6 @@ const selectTokens = async (req, res) => {
           isAppropriate: true,
 
         };
-        if (onlyVerified) {
-          collectionFilters = {
-            ...(collections2filter === null
-              ? {}
-              : { contractAddress: { $in: [...collections2filter] } }),
-            thumbnailPath: { $ne: nonImage },
-            isAppropriate: true,
-            isVerified: true
-          };
-        }
-       
-        console.log('hereee');
 
         return NFTITEM.find(collectionFilters).select(selectOption).lean();
       }
