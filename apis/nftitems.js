@@ -231,7 +231,7 @@ const selectTokens = async (req, res) => {
       }
       
     }
-    console.log(onlyVerified);
+    //console.log(onlyVerified);
 
     // create a sort by option
     const selectOption = [
@@ -371,7 +371,7 @@ const selectTokens = async (req, res) => {
               : { contractAddress: { $in: [...collections2filter] } }),
             thumbnailPath: { $ne: nonImage },
             isAppropriate: true,
-            isVerified: true
+            //isVerified: true
           };
         }
        
