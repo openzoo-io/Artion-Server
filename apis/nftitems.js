@@ -364,16 +364,7 @@ const selectTokens = async (req, res) => {
           isAppropriate: true,
 
         };
-        if (onlyVerified) {
-          collectionFilters = {
-            ...(collections2filter === null
-              ? {}
-              : { contractAddress: { $in: [...collections2filter] } }),
-            thumbnailPath: { $ne: nonImage },
-            isAppropriate: true,
-            //isVerified: true
-          };
-        }
+        
        
 
         return NFTITEM.find(collectionFilters).select(selectOption).lean();
