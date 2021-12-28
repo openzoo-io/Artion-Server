@@ -359,7 +359,7 @@ const handle1155SingleTransfer = async (
 router.post(
   '/handle721Transfer',
   /*service_auth,*/ async (req, res) => {
-    
+    await lock.acquire();
     try {
       let address = toLowerCase(req.body.address); //contract address
       let to = toLowerCase(req.body.to); // transferred to
@@ -470,6 +470,9 @@ router.post(
     } catch (error) {
       Logger.error(error);
       return res.json({});
+    } finally {
+      lock.release();
+      console.log('Released Lock');
     }
   }
 );
