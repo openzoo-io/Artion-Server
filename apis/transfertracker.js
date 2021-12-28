@@ -27,7 +27,7 @@ const Logger = require('../services/logger');
 import { Lock } from "async-await-mutex-lock";
 const bannedCollections = new Map();
 const loadedContracts = new Map();
-
+let lock = new Lock();
 const loadContract = (contractAddress, tokenType) => {
   let sc = loadedContracts.get(contractAddress);
   if (sc) return sc;
