@@ -364,7 +364,7 @@ router.post(
       let address = toLowerCase(req.body.address); //contract address
       let to = toLowerCase(req.body.to); // transferred to
       let tokenID = parseInt(req.body.tokenID); //tokenID
-
+      console.log('Transffered to: '+to);
       // remove existing listing(s)
       await Listing.deleteMany({
         minter: address,
@@ -391,7 +391,7 @@ router.post(
           console.log('[Burned!] '+address+'|'+tokenID);
           await erc721token.remove();
           await removeLike(address, tokenID);
-          return res.json();
+          return res.json(); 
         }
         if (to == validatorAddress) {
           await erc721token.remove();
