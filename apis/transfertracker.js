@@ -375,8 +375,9 @@ router.post(
         contractAddress: address,
         tokenID: tokenID
       });
-      //console.log(to, toLowerCase(auctionAddress));
+      
       if (erc721token) {
+        console.log('[Existed] Transferred to ',to);
         if (to == toLowerCase(auctionAddress)) // Don't change owner
         {
           return res.json({});
@@ -400,6 +401,7 @@ router.post(
           return res.json({});
         }
       } else {
+        console.log('[NewNFT] Transferred to ',to);
         let sc = loadContract(address, 721);
         let tokenURI = await sc.tokenURI(tokenID);
         let metadata;
