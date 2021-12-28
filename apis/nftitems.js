@@ -404,7 +404,7 @@ const selectTokens = async (req, res) => {
             : { contractAddress: { $in: [...collections2filter] } }),
           thumbnailPath: { $ne: nonImage },
           isAppropriate: true,
-
+          owner: { $ne: "0x000000000000000000000000000000000000000f" },
         };
 
         return NFTITEM.find(collectionFilters).select(selectOption).lean();
@@ -436,7 +436,7 @@ const selectTokens = async (req, res) => {
           const pipeline = [activeBidFilter, ...lookupNFTItemsAndMerge].filter(
             (part) => part !== undefined
           );
-          pipeline.push({ $match: { isAppropriate: true } });
+          pipeline.push({ $match: { isAppropriate: true , owner: { $ne: "0x000000000000000000000000000000000000000f" } } });
           return Bid.aggregate(pipeline);
         }
         if (filters.includes('buyNow')) {
@@ -444,7 +444,7 @@ const selectTokens = async (req, res) => {
             collections2filter === null ? undefined : minterFilters,
             ...lookupNFTItemsAndMerge
           ].filter((part) => part !== undefined);
-          pipeline.push({ $match: { isAppropriate: true } });
+          pipeline.push({ $match: { isAppropriate: true , owner: { $ne: "0x000000000000000000000000000000000000000f" } } });
           return Listing.aggregate(pipeline);
         }
         if (filters.includes('hasOffers')) {
@@ -452,7 +452,7 @@ const selectTokens = async (req, res) => {
             collections2filter === null ? undefined : minterFilters,
             ...lookupNFTItemsAndMerge
           ].filter((part) => part !== undefined);
-          pipeline.push({ $match: { isAppropriate: true } });
+          pipeline.push({ $match: { isAppropriate: true, owner: { $ne: "0x000000000000000000000000000000000000000f" } } });
           return Offer.aggregate(pipeline);
         }
         if (filters.includes('onAuction')) {
@@ -460,7 +460,7 @@ const selectTokens = async (req, res) => {
             collections2filter === null ? undefined : minterFilters,
             ...lookupNFTItemsAndMerge
           ].filter((part) => part !== undefined);
-          pipeline.push({ $match: { isAppropriate: true } });
+          pipeline.push({ $match: { isAppropriate: true, owner: { $ne: "0x000000000000000000000000000000000000000f" } } });
           return Auction.aggregate(pipeline);
         }
       }
@@ -497,6 +497,7 @@ const selectTokens = async (req, res) => {
           ...(wallet ? { owner: wallet } : {}),
           thumbnailPath: { $ne: nonImage },
           isAppropriate: true
+          , owner: { $ne: "0x000000000000000000000000000000000000000f" }
         };
 
         const tokens_721 = await NFTITEM.find(collectionFilters721).select(selectOption).lean();
