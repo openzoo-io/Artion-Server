@@ -86,6 +86,37 @@ router.post('/increaseViews', async (req, res) => {
   }
 });
 
+router.post('/resyncThumbnailPath', async (req, res) => {
+  try {
+    let contractAddress = req.body.contractAddress;
+    contractAddress = toLowerCase(contractAddress);
+    let tokenID = parseInt(req.body.tokenID);
+    
+    let token = await NFTITEM.findOne({
+      contractAddress: contractAddress,
+      tokenID: tokenID
+    });
+    if (token) {
+      token.thumbnailPath = '-';
+      let _token = await token.save();
+      return res.json({
+        status: 'success',
+        data: _token.thumbnailPath
+      });
+    } else {
+      return res.json({
+        status: 'success',
+        data: 0
+      });
+    }
+  } catch (error) {
+    Logger.error(error);
+    return res.status(400).json({
+      status: 'failed'
+    });
+  }
+});
+
 router.post('/setContentType', async (req, res) => {
   try {
     let contractAddress = req.body.contractAddress;
