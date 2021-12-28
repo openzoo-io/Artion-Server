@@ -385,6 +385,13 @@ router.post(
         if (to == erc721token.owner) {
           return res.json({});
         }
+        // Burn Item //
+        if (to == '0x000000000000000000000000000000000000dead')
+        {
+          await erc721token.remove();
+          await removeLike(address, tokenID);
+          return res.json();
+        }
         if (to == validatorAddress) {
           await erc721token.remove();
           await removeLike(address, tokenID);
