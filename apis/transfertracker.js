@@ -27,7 +27,7 @@ const Logger = require('../services/logger');
 import { Lock } from "async-await-mutex-lock";
 const bannedCollections = new Map();
 const loadedContracts = new Map();
-let lock = new Lock();
+
 const loadContract = (contractAddress, tokenType) => {
   let sc = loadedContracts.get(contractAddress);
   if (sc) return sc;
@@ -358,6 +358,7 @@ const handle1155SingleTransfer = async (
 router.post(
   '/handle721Transfer',
   /*service_auth,*/ async (req, res) => {
+    let lock = new Lock();
     await lock.acquire();
     try {
       let address = toLowerCase(req.body.address); //contract address
