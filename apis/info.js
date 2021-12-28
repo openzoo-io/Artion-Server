@@ -263,7 +263,8 @@ router.get('/getAccountActivity/:address', async (req, res) => {
           quantity: bfa.quantity,
           createdAt: bfa._id.getTimestamp(),
           alias: account ? account[0] : null,
-          image: account ? account[1] : null
+          image: account ? account[1] : null,
+          txHash: bfa.txHash
         });
       }
     });
@@ -292,7 +293,8 @@ router.get('/getAccountActivity/:address', async (req, res) => {
           paymentToken: ofa.paymentToken,
           createdAt: ofa._id.getTimestamp(),
           alias: account ? account[0] : null,
-          image: account ? account[1] : null
+          image: account ? account[1] : null,
+          
         });
       }
     });
@@ -350,7 +352,8 @@ router.get('/getAccountActivity/:address', async (req, res) => {
           paymentToken: sfa.paymentToken,
           createdAt: sfa._id.getTimestamp(),
           alias: account ? account[0] : null,
-          image: account ? account[1] : null
+          image: account ? account[1] : null,
+          txHash: sfa.txHash
         });
       }
     });
