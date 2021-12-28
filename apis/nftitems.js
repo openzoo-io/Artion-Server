@@ -879,6 +879,7 @@ router.post('/fetchTokens', async (req, res) => {
   let sortby = req.body.sortby; //sort -> string param
   let from = parseInt(req.body.from);
   let count = parseInt(req.body.count);
+  let isProfile = req.body.isProfile;
 
   let items = [];
   if (type === 'all') {
@@ -895,7 +896,7 @@ router.post('/fetchTokens', async (req, res) => {
 
   // Prune dup //
   const filters = req.body.filterby;
-  if (filters)
+  if (filters || isProfile)
     items = items.filter(
       (tk, idx) =>
         items.findIndex(_tk =>
