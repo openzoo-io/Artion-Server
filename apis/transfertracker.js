@@ -3,7 +3,7 @@ const axios = require('axios');
 const ethers = require('ethers');
 const router = require('express').Router();
 const isBase64 = require('is-base64');
-
+const { Lock } = require("async-await-mutex-lock");
 const mongoose = require('mongoose');
 const ERC721CONTRACT = mongoose.model('ERC721CONTRACT');
 const ERC1155CONTRACT = mongoose.model('ERC1155CONTRACT');
