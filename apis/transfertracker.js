@@ -364,7 +364,7 @@ router.post(
       let address = toLowerCase(req.body.address); //contract address
       let to = toLowerCase(req.body.to); // transferred to
       let tokenID = parseInt(req.body.tokenID); //tokenID
-      console.log('Transffered to: '+to);
+      console.log('Transffered to: ', to);
       // remove existing listing(s)
       await Listing.deleteMany({
         minter: address,
