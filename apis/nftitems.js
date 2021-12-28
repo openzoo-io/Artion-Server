@@ -1010,6 +1010,8 @@ router.post('/getSingleItemDetails', async (req, res) => {
     }
     // content type
     let contentType = nft.contentType;
+    // Thumbnail
+    let thumbnailPath = nft.thumbnailPath;
     // likes count
     let likes = nft ? nft.liked : 0;
     // token uri
@@ -1140,6 +1142,7 @@ router.post('/getSingleItemDetails', async (req, res) => {
       status: 'success',
       data: {
         tokenType,
+        thumbnailPath,
         likes,
         uri,
         listings,
