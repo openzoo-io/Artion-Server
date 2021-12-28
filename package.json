@@ -15,6 +15,7 @@
     "@pinata/sdk": "^1.1.13",
     "@sendgrid/mail": "^7.4.5",
     "@sideway/address": "^4.1.1",
+    "async-await-mutex-lock": "^1.0.7",
     "axios": "^0.21.1",
     "body-parser": "^1.19.0",
     "coinbase": "^2.0.8",

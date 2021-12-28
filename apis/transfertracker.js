@@ -24,7 +24,7 @@ const auctionAddress = process.env.AUCTION_ADDRESS;
 const SimplifiedERC721ABI = require('../constants/simplifiederc721abi');
 const SimplifiedERC1155ABI = require('../constants/simplifiederc1155abi');
 const Logger = require('../services/logger');
-
+import { Lock } from "async-await-mutex-lock";
 const bannedCollections = new Map();
 const loadedContracts = new Map();
 
@@ -358,6 +358,7 @@ const handle1155SingleTransfer = async (
 router.post(
   '/handle721Transfer',
   /*service_auth,*/ async (req, res) => {
+    await lock.acquire();
     try {
       let address = toLowerCase(req.body.address); //contract address
       let to = toLowerCase(req.body.to); // transferred to
@@ -373,7 +374,7 @@ router.post(
         contractAddress: address,
         tokenID: tokenID
       });
-      console.log(to, toLowerCase(auctionAddress));
+      //console.log(to, toLowerCase(auctionAddress));
       if (erc721token) {
         if (to == toLowerCase(auctionAddress)) // Don't change owner
         {
@@ -449,7 +450,7 @@ router.post(
 
         if (to == validatorAddress) {
           return res.json();
-        } else {
+        } else { // Save a new NFT //
           let newTk = new NFTITEM();
           newTk.contractAddress = address;
           newTk.tokenID = tokenID;
@@ -468,6 +469,8 @@ router.post(
     } catch (error) {
       Logger.error(error);
       return res.json({});
+    } finally {
+      lock.release();
     }
   }
 );
