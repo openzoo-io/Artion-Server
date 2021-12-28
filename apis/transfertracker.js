@@ -388,6 +388,7 @@ router.post(
         // Burn Item //
         if (to == '0x000000000000000000000000000000000000dead')
         {
+          console.log('[Burned!] '+address+'|'+tokenID);
           await erc721token.remove();
           await removeLike(address, tokenID);
           return res.json();
