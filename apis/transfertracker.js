@@ -24,7 +24,7 @@ const auctionAddress = process.env.AUCTION_ADDRESS;
 const SimplifiedERC721ABI = require('../constants/simplifiederc721abi');
 const SimplifiedERC1155ABI = require('../constants/simplifiederc1155abi');
 const Logger = require('../services/logger');
-import { Lock } from "async-await-mutex-lock";
+
 const bannedCollections = new Map();
 const loadedContracts = new Map();
 
@@ -358,8 +358,7 @@ const handle1155SingleTransfer = async (
 router.post(
   '/handle721Transfer',
   /*service_auth,*/ async (req, res) => {
-    let lock = new Lock();
-    await lock.acquire();
+    
     try {
       let address = toLowerCase(req.body.address); //contract address
       let to = toLowerCase(req.body.to); // transferred to
@@ -470,8 +469,6 @@ router.post(
     } catch (error) {
       Logger.error(error);
       return res.json({});
-    } finally {
-      lock.release();
     }
   }
 );
