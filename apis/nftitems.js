@@ -453,7 +453,14 @@ const selectTokens = async (req, res) => {
             collections2filter === null ? undefined : minterFilters,
             ...lookupNFTItemsAndMerge
           ].filter((part) => part !== undefined);
+          if (!mediaType)
+          {
           pipeline.push({ $match: { isAppropriate: true } });
+          }
+          else
+          {
+            pipeline.push({ $match: { isAppropriate: true, contentType: mediaType } });
+          }
           return Listing.aggregate(pipeline);
         }
         if (filters.includes('hasOffers')) {
@@ -461,7 +468,14 @@ const selectTokens = async (req, res) => {
             collections2filter === null ? undefined : minterFilters,
             ...lookupNFTItemsAndMerge
           ].filter((part) => part !== undefined);
+          if (!mediaType)
+          {
           pipeline.push({ $match: { isAppropriate: true } });
+          }
+          else
+          {
+            pipeline.push({ $match: { isAppropriate: true, contentType: mediaType } });
+          }
           return Offer.aggregate(pipeline);
         }
         if (filters.includes('onAuction')) {
@@ -469,7 +483,14 @@ const selectTokens = async (req, res) => {
             collections2filter === null ? undefined : minterFilters,
             ...lookupNFTItemsAndMerge
           ].filter((part) => part !== undefined);
+          if (!mediaType)
+          {
           pipeline.push({ $match: { isAppropriate: true } });
+          }
+          else
+          {
+            pipeline.push({ $match: { isAppropriate: true, contentType: mediaType } });
+          }
           return Auction.aggregate(pipeline);
         }
       }
