@@ -246,7 +246,7 @@ const selectTokens = async (req, res) => {
     // get options from request & process
     const category = req.body?.category;
     const mediaType = req.body?.mediaType;
-    console.log(mediaType);
+
     const wallet = req.body?.address && req.body.address.toLowerCase(); // account address from meta mask
     const filterCollections = req.body.collectionAddresses?.length
       ? req.body.collectionAddresses.map((coll) => coll.toLowerCase())
@@ -406,7 +406,7 @@ const selectTokens = async (req, res) => {
             : { contractAddress: { $in: [...collections2filter] } }),
           thumbnailPath: { $ne: nonImage },
           isAppropriate: true,
-
+          ...(mediaType ?  {contentType: mediaType}: {})
         };
 
         return NFTITEM.find(collectionFilters).select(selectOption).lean();
