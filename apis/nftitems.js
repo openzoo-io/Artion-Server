@@ -245,7 +245,8 @@ const selectTokens = async (req, res) => {
   try {
     // get options from request & process
     const category = req.body?.category;
-    let mediaType = req.body?.mediaType;
+    const mediaType = req.body?.mediaType;
+    console.log(mediaType);
     const wallet = req.body?.address && req.body.address.toLowerCase(); // account address from meta mask
     const filterCollections = req.body.collectionAddresses?.length
       ? req.body.collectionAddresses.map((coll) => coll.toLowerCase())
