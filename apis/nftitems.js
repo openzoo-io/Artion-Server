@@ -245,6 +245,7 @@ const selectTokens = async (req, res) => {
   try {
     // get options from request & process
     const category = req.body?.category;
+    let mediaType = req.body?.mediaType;
     const wallet = req.body?.address && req.body.address.toLowerCase(); // account address from meta mask
     const filterCollections = req.body.collectionAddresses?.length
       ? req.body.collectionAddresses.map((coll) => coll.toLowerCase())
@@ -436,7 +437,14 @@ const selectTokens = async (req, res) => {
           const pipeline = [activeBidFilter, ...lookupNFTItemsAndMerge].filter(
             (part) => part !== undefined
           );
+          if (!mediaType)
+          {
           pipeline.push({ $match: { isAppropriate: true } });
+          }
+          else
+          {
+            pipeline.push({ $match: { isAppropriate: true, contentType: mediaType } });
+          }
           return Bid.aggregate(pipeline);
         }
         if (filters.includes('buyNow')) {
@@ -880,7 +888,7 @@ router.post('/fetchTokens', async (req, res) => {
   let from = parseInt(req.body.from);
   let count = parseInt(req.body.count);
   let isProfile = req.body.isProfile;
-
+  
   let items = [];
   if (type === 'all') {
     let nfts = await selectTokens(req, res);
