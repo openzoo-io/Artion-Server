@@ -268,6 +268,7 @@ router.post("/itemSold", service_auth, async (req, res) => {
       const listing = await Listing.findOne({ owner: seller, minter: nft, tokenID: tokenId });
       //console.log('quantity', listing.quantity);
       if (listing.quantity && quantity >= listing.quantity) {
+        console.log('1155 Sold exactly amount case');
         // remove from listing
         await Listing.deleteMany({
           owner: seller,
@@ -309,6 +310,7 @@ router.post("/itemSold", service_auth, async (req, res) => {
       }
       else {
         if (listing.quantity) { // 1155
+          console.log('1155 Sold reduce case');
           // reduce listing
           await Listing.updateOne({
             owner: seller,
@@ -332,6 +334,7 @@ router.post("/itemSold", service_auth, async (req, res) => {
         }
         else // 721
         {
+          console.log('721 Sold case');
           if (token) {
             token.price = 0;
             token.paymentToken = "wan";
