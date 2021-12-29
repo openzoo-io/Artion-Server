@@ -168,7 +168,7 @@ router.post("/itemSold", service_auth, async (req, res) => {
     const quantity = parseInt(quantityBN.hex);
 
     const priceInUSD = pricePerItem * getPrice(itemPayToken.address);
-    console.log('quantity', quantity);
+    
     // update last sale price
     // first update the token price
     let category = await Category.findOne({ minterAddress: nft });
@@ -266,7 +266,7 @@ router.post("/itemSold", service_auth, async (req, res) => {
       });
       // checks if user listens
       const listing = await Listing.findOne({ owner: seller, minter: nft, tokenID: tokenId });
-
+      console.log('quantity', listing.quantity);
       if (quantity >= listing.quantity) {
         // remove from listing
         await Listing.deleteMany({
