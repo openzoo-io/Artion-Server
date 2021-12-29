@@ -168,7 +168,7 @@ router.post("/itemSold", service_auth, async (req, res) => {
     const quantity = parseInt(quantityBN.hex);
 
     const priceInUSD = pricePerItem * getPrice(itemPayToken.address);
-
+    console.log('quantity',quantity);
     // update last sale price
     // first update the token price
     let category = await Category.findOne({ minterAddress: nft });
