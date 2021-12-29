@@ -267,7 +267,7 @@ router.post("/itemSold", service_auth, async (req, res) => {
       // checks if user listens
       const listing = await Listing.findOne({ owner: seller, minter: nft, tokenID: tokenId });
       //console.log('quantity', listing.quantity);
-      if (listing.quantity && quantity >= listing.quantity) {
+      if (listing && quantity >= listing.quantity) {
         console.log('1155 Sold exactly amount case');
         // remove from listing
         await Listing.deleteMany({
