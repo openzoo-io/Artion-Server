@@ -132,6 +132,14 @@ router.post("/accountdetails", auth, async (req, res) => {
           address,
           res
         );
+
+        if (!ipfsHash) {
+          return res.json({
+            status: "failed to save image file",
+          });
+        }
+
+
         if (account) {
           account.alias = alias;
           account.email = email;
