@@ -18,9 +18,9 @@ const DISABLED_PAYTOKENS = process.env.NETWORK_CHAINID === "250" ? [
 
 const PAYTOKENS = process.env.NETWORK_CHAINID === "888" ? [
     {
-      address: '0xdabd997ae5e4799be47d6e69d9431615cba28f48',
-      name: 'Wrapped Wanchain',
-      symbol: 'WWAN',
+      address: '0x6e11655d6aB3781C6613db8CB1Bc3deE9a7e111F',
+      name: 'ZOO',
+      symbol: 'ZOO',
       decimals: 18,
     }
   ] :
