@@ -64,8 +64,14 @@ app.use(morganMiddleware);
 app.use(require("./apis"));
 
 app.get('/image/:id', function(req, res){
- 
-  res.sendFile(`/root/Artion-Thumbnail-Indexer/thumb-image/${req.params.id}`);
+  if (!process.env.RUNTIME)
+  {
+    res.sendFile(`/root/open-zoo-thumbnail-Indexer/thumb-image/${req.params.id}`);
+  }
+  else
+  {
+    res.sendFile(`/root/Artion-Thumbnail-Indexer/thumb-image/${req.params.id}`);
+  }
 });
 
 const priceFeed = require("./services/price.feed");
