@@ -38,7 +38,7 @@ const createMessage = async (data) => {
           let content = `Congratulations! You have purchased ${name}.`;
           let image = await getNFTThumbnailPath(data.nftAddress, data.tokenID);
           image = `${storage_url}${image}`;
-          let link = `${app_url}explore/${data.nftAddress}/${data.tokenID}`;
+          let link = `${app_url}collection/${data.nftAddress}/${data.tokenID}`;
           message = messageUtils.createNFTItemMessage({
             to,
             title,
@@ -54,7 +54,7 @@ const createMessage = async (data) => {
           let content = `Congratulations! You have sold ${name}.`;
           let image = await getNFTThumbnailPath(data.nftAddress, data.tokenID);
           image = `${storage_url}${image}`;
-          let link = `${app_url}explore/${data.nftAddress}/${data.tokenID}`;
+          let link = `${app_url}collection/${data.nftAddress}/${data.tokenID}`;
           message = messageUtils.createNFTItemMessage({
             to,
             title,
@@ -76,7 +76,7 @@ const createMessage = async (data) => {
           let image = await getNFTThumbnailPath(data.nftAddress, data.tokenID);
 
           image = `${storage_url}${image}`;
-          let link = `${app_url}explore/${data.nftAddress}/${data.tokenID}`;
+          let link = `${app_url}collection/${data.nftAddress}/${data.tokenID}`;
           message = messageUtils.createNFTItemMessage({
             to,
             title,
@@ -98,7 +98,7 @@ const createMessage = async (data) => {
           let content = `Offer to your nft item, ${name} is now canceled.`;
           let image = await getNFTThumbnailPath(data.nftAddress, data.tokenID);
           image = `${storage_url}${image}`;
-          let link = `${app_url}explore/${data.nftAddress}/${data.tokenID}`;
+          let link = `${app_url}collection/${data.nftAddress}/${data.tokenID}`;
           message = messageUtils.createNFTItemMessage({
             to,
             title,

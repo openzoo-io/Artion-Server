@@ -112,7 +112,7 @@ const nofifyNFTShowUp = async (address, contractAddress, tokenID) => {
     let image = await getNFTThumbnailPath(contractAddress, tokenID);
     image = `${storage_url}${image}`;
     let name = nftName;
-    let link = `${app_url}explore/${contractAddress}/${tokenID}`;
+    let link = `${app_url}collection/${contractAddress}/${tokenID}`;
     let message = messageUtils.createNFTItemMessageList({
       to,
       bcc,
@@ -153,7 +153,7 @@ const notifyAuctionPriceUpdate = async (contractAddress, tokenID, price) => {
     let image = await getNFTThumbnailPath(contractAddress, tokenID);
     image = `${storage_url}${image}`;
     let name = nftName;
-    let link = `${app_url}explore/${contractAddress}/${tokenID}`;
+    let link = `${app_url}collection/${contractAddress}/${tokenID}`;
     let message = messageUtils.createNFTItemMessageList({
       to,
       bcc,
@@ -194,7 +194,7 @@ const notifySingleItemListed = async (
     let image = await getNFTThumbnailPath(contractAddress, tokenID);
     image = `${storage_url}${image}`;
     let name = nftName;
-    let link = `${app_url}explore/${contractAddress}/${tokenID}`;
+    let link = `${app_url}collection/${contractAddress}/${tokenID}`;
     let message = messageUtils.createNFTItemMessageList({
       to,
       bcc,
@@ -234,7 +234,7 @@ const notifyNewAuction = async (contractAddress, tokenID) => {
     let image = await getNFTThumbnailPath(contractAddress, tokenID);
     image = `${storage_url}${image}`;
     let name = nftName;
-    let link = `${app_url}explore/${contractAddress}/${tokenID}`;
+    let link = `${app_url}collection/${contractAddress}/${tokenID}`;
     let message = messageUtils.createNFTItemMessageList({
       to,
       bcc,
@@ -329,7 +329,7 @@ const nofityNFTUpdated = async (address, contractAddress, tokenID, price) => {
     let image = await getNFTThumbnailPath(contractAddress, tokenID);
     image = `${storage_url}${image}`;
     let name = nftName;
-    let link = `${app_url}explore/${contractAddress}/${tokenID}`;
+    let link = `${app_url}collection/${contractAddress}/${tokenID}`;
     let message = messageUtils.createNFTItemMessageList({
       to,
       bcc,
