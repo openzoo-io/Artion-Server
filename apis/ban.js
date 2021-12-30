@@ -360,6 +360,10 @@ router.post('/banItems', auth, async (req, res) => {
       contractAddress: contractAddress,
       tokenID: { $in: tokenIDs }
     });
+    Logger.info('[Remove item succesfully]');
+    return res.json({
+      status: 'Remove an item succesfully!'
+    });
   } catch (error) {
     Logger.error(error);
     return res.json({
