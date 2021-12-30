@@ -86,6 +86,37 @@ router.post('/increaseViews', async (req, res) => {
   }
 });
 
+router.post('/resyncThumbnailPath', async (req, res) => {
+  try {
+    let contractAddress = req.body.contractAddress;
+    contractAddress = toLowerCase(contractAddress);
+    let tokenID = parseInt(req.body.tokenID);
+    
+    let token = await NFTITEM.findOne({
+      contractAddress: contractAddress,
+      tokenID: tokenID
+    });
+    if (token) {
+      token.thumbnailPath = '-';
+      let _token = await token.save();
+      return res.json({
+        status: 'success',
+        data: _token.thumbnailPath
+      });
+    } else {
+      return res.json({
+        status: 'success',
+        data: 0
+      });
+    }
+  } catch (error) {
+    Logger.error(error);
+    return res.status(400).json({
+      status: 'failed'
+    });
+  }
+});
+
 router.post('/setContentType', async (req, res) => {
   try {
     let contractAddress = req.body.contractAddress;
@@ -209,16 +240,33 @@ const isIncludedInArray = (array, target) => {
 
 const selectTokens = async (req, res) => {
   // all smart contract categories - 721/1155
-  let tokenTypes = await Category.find();
-  tokenTypes = tokenTypes.map((tt) => [tt.minterAddress, tt.type]);
+  //let tokenTypes = await Category.find({isAppropriate:true});
+  //tokenTypes = tokenTypes.map((tt) => [tt.minterAddress, tt.type]);
   try {
     // get options from request & process
     const category = req.body?.category;
+    const mediaType = req.body?.mediaType;
+
     const wallet = req.body?.address && req.body.address.toLowerCase(); // account address from meta mask
     const filterCollections = req.body.collectionAddresses?.length
       ? req.body.collectionAddresses.map((coll) => coll.toLowerCase())
       : null;
-    const filters = req.body.filterby; //status -> array or null
+    let filters = req.body.filterby; //status -> array or null
+    let onlyVerified = false;
+    if (filters) {
+      onlyVerified = filters.includes('onlyVerified') ? true : false;
+      // Remove verified from filter //
+      var index = filters.indexOf('onlyVerified');
+      if (index !== -1) {
+        filters.splice(index, 1);
+      }
+      if (filters.length === 0) {
+        filters = null;
+      }
+
+    }
+    //console.log(filters);
+
     // create a sort by option
     const selectOption = [
       'contractAddress',
@@ -240,10 +288,7 @@ const selectTokens = async (req, res) => {
       'lastSalePricePaymentToken',
       'lastSalePriceInUSD',
       'lastSalePrice',
-      'lastSalePricePaymentToken',
-      'lastSalePriceInUSD',
       'saleEndsAt',
-      'createdAt',
       'listedAt',
       'soldAt',
       'owner',
@@ -252,7 +297,8 @@ const selectTokens = async (req, res) => {
 
     const getCategoryCollectionAddresses = async (category) => {
       const categoryCollectionRows = await Collection.find({
-        categories: category
+        categories: category,
+        isAppropriate: true
       }).select('erc721Address');
       const categoryCollectionAddresses = categoryCollectionRows.map((row) =>
         row.erc721Address.toLowerCase()
@@ -281,9 +327,19 @@ const selectTokens = async (req, res) => {
         disabledExplorerCollectionRows.map((row) =>
           row.minterAddress.toLowerCase()
         );
-      const allExploreCollectionRows = await Collection.find({
-        erc721Address: { $nin: disabledExploreCollectionAddresses }
-      });
+
+      let allExploreCollectionRows = null
+      if (!onlyVerified) {
+        allExploreCollectionRows = await Collection.find({
+          erc721Address: { $nin: disabledExploreCollectionAddresses },
+        });
+      }
+      else {
+        allExploreCollectionRows = await Collection.find({
+          erc721Address: { $nin: disabledExploreCollectionAddresses },
+          isVerified: true,
+        });
+      }
 
       allExceptDisabledCollections = allExploreCollectionRows.map((row) =>
         row.erc721Address.toLowerCase()
@@ -349,7 +405,8 @@ const selectTokens = async (req, res) => {
             ? {}
             : { contractAddress: { $in: [...collections2filter] } }),
           thumbnailPath: { $ne: nonImage },
-          isAppropriate: true
+          isAppropriate: true,
+          ...(mediaType ?  {contentType: mediaType}: {})
         };
 
         return NFTITEM.find(collectionFilters).select(selectOption).lean();
@@ -381,6 +438,14 @@ const selectTokens = async (req, res) => {
           const pipeline = [activeBidFilter, ...lookupNFTItemsAndMerge].filter(
             (part) => part !== undefined
           );
+          if (!mediaType)
+          {
+          pipeline.push({ $match: { isAppropriate: true } });
+          }
+          else
+          {
+            pipeline.push({ $match: { isAppropriate: true, contentType: mediaType } });
+          }
           return Bid.aggregate(pipeline);
         }
         if (filters.includes('buyNow')) {
@@ -388,6 +453,14 @@ const selectTokens = async (req, res) => {
             collections2filter === null ? undefined : minterFilters,
             ...lookupNFTItemsAndMerge
           ].filter((part) => part !== undefined);
+          if (!mediaType)
+          {
+          pipeline.push({ $match: { isAppropriate: true } });
+          }
+          else
+          {
+            pipeline.push({ $match: { isAppropriate: true, contentType: mediaType } });
+          }
           return Listing.aggregate(pipeline);
         }
         if (filters.includes('hasOffers')) {
@@ -395,6 +468,14 @@ const selectTokens = async (req, res) => {
             collections2filter === null ? undefined : minterFilters,
             ...lookupNFTItemsAndMerge
           ].filter((part) => part !== undefined);
+          if (!mediaType)
+          {
+          pipeline.push({ $match: { isAppropriate: true } });
+          }
+          else
+          {
+            pipeline.push({ $match: { isAppropriate: true, contentType: mediaType } });
+          }
           return Offer.aggregate(pipeline);
         }
         if (filters.includes('onAuction')) {
@@ -402,6 +483,14 @@ const selectTokens = async (req, res) => {
             collections2filter === null ? undefined : minterFilters,
             ...lookupNFTItemsAndMerge
           ].filter((part) => part !== undefined);
+          if (!mediaType)
+          {
+          pipeline.push({ $match: { isAppropriate: true } });
+          }
+          else
+          {
+            pipeline.push({ $match: { isAppropriate: true, contentType: mediaType } });
+          }
           return Auction.aggregate(pipeline);
         }
       }
@@ -413,18 +502,18 @@ const selectTokens = async (req, res) => {
      */
 
       // TODO enable erc1155
-      // const holdingSupplies = new Map();
-      // const holdings = await ERC1155HOLDING.find({
-      //   holderAddress: wallet,
-      //   supplyPerHolder: { $gt: 0 }
-      // });
-      // const holders = holdings.map((holder) => {
-      //   holdingSupplies.set(
-      //     holder.contractAddress + holder.tokenID,
-      //     holder.supplyPerHolder
-      //   );
-      //   return [holder.contractAddress, holder.tokenID];
-      // });
+      const holdingSupplies = new Map();
+      const holdings = await ERC1155HOLDING.find({
+        holderAddress: wallet,
+        supplyPerHolder: { $gt: 0 }
+      });
+      const holders = holdings.map((holder) => {
+        holdingSupplies.set(
+          holder.contractAddress + holder.tokenID,
+          holder.supplyPerHolder
+        );
+        return [holder.contractAddress, holder.tokenID];
+      });
 
       if (!filters) {
         /*
@@ -439,54 +528,60 @@ const selectTokens = async (req, res) => {
           thumbnailPath: { $ne: nonImage },
           isAppropriate: true
         };
-        return NFTITEM.find(collectionFilters721).select(selectOption).lean();
 
+        const tokens_721 = await NFTITEM.find(collectionFilters721).select(selectOption).lean();
+
+
+        //return tokens_721;
         // TODO enable erc1155
-        // let collectionFilters1155 = {
-        //   ...(collections2filter != null
-        //     ? { contractAddress: { $in: [...collections2filter] } }
-        //     : {}),
-        //   thumbnailPath: { $ne: nonImage },
-        //   isAppropriate: true
-        // };
-        // let _tokens_1155 = await NFTITEM.find(collectionFilters1155)
-        //   .select(selectOption)
-        //   .lean();
-        // let tokens_1155 = [];
-        // _tokens_1155.map((token_1155) => {
-        //   let isIncluded = isIncludedInArray(holders, [
-        //     token_1155.contractAddress,
-        //     token_1155.tokenID
-        //   ]);
-        //   if (isIncluded)
-        //     tokens_1155.push({
-        //       supply: token_1155.supply,
-        //       price: token_1155.price,
-        //       paymentToken: token_1155.paymentToken,
-        //       priceInUSD: token_1155.priceInUSD,
-        //       lastSalePrice: token_1155.lastSalePrice,
-        //       lastSalePricePaymentToken: token_1155.lastSalePricePaymentToken,
-        //       lastSalePriceInUSD: token_1155.lastSalePriceInUSD,
-        //       viewed: token_1155.viewed,
-        //       contractAddress: token_1155.contractAddress,
-        //       tokenID: token_1155.tokenID,
-        //       tokenURI: token_1155.tokenURI,
-        //       thumbnailPath: token_1155.thumbnailPath,
-        //       imageURL: token_1155.imageURL,
-        //       tokenType: token_1155.tokenType,
-        //       name: token_1155.name,
-        //       symbol: token_1155.symbol,
-        //       liked: token_1155.liked,
-        //       createdAt: token_1155.createdAt,
-        //       saleEndsAt: token_1155.saleEndsAt,
-        //       isAppropriate: token_1155.isAppropriate,
-        //       holderSupply: holdingSupplies.get(
-        //         token_1155.contractAddress + token_1155.tokenID
-        //       )
-        //     });
-        // });
-        // let allTokens = [...tokens_721, ...tokens_1155];
-        // return allTokens
+        let collectionFilters1155 = {
+          ...(collections2filter != null
+            ? { contractAddress: { $in: [...collections2filter] } }
+            : {}),
+          thumbnailPath: { $ne: nonImage },
+          isAppropriate: true
+        };
+        let _tokens_1155 = await NFTITEM.find(collectionFilters1155)
+          .select(selectOption)
+          .lean();
+        let tokens_1155 = [];
+        _tokens_1155.map((token_1155) => {
+          let isIncluded = isIncludedInArray(holders, [
+            token_1155.contractAddress,
+            token_1155.tokenID
+          ]);
+          if (isIncluded)
+            tokens_1155.push({
+              supply: token_1155.supply,
+              price: token_1155.price,
+              paymentToken: token_1155.paymentToken,
+              priceInUSD: token_1155.priceInUSD,
+              lastSalePrice: token_1155.lastSalePrice,
+              lastSalePricePaymentToken: token_1155.lastSalePricePaymentToken,
+              lastSalePriceInUSD: token_1155.lastSalePriceInUSD,
+              viewed: token_1155.viewed,
+              contractAddress: token_1155.contractAddress,
+              tokenID: token_1155.tokenID,
+              tokenURI: token_1155.tokenURI,
+              thumbnailPath: token_1155.thumbnailPath,
+              imageURL: token_1155.imageURL,
+              tokenType: token_1155.tokenType,
+              name: token_1155.name,
+              symbol: token_1155.symbol,
+              liked: token_1155.liked,
+              createdAt: token_1155.createdAt,
+              saleEndsAt: token_1155.saleEndsAt,
+              isAppropriate: token_1155.isAppropriate,
+              contentType: token_1155.contentType,
+              holderSupply: holdingSupplies.get(
+                token_1155.contractAddress + token_1155.tokenID
+              )
+            });
+        });
+
+        let allTokens = [...tokens_721, ...tokens_1155];
+
+        return allTokens
       }
       if (filters) {
         /*
@@ -814,17 +909,34 @@ router.post('/fetchTokens', async (req, res) => {
   let sortby = req.body.sortby; //sort -> string param
   let from = parseInt(req.body.from);
   let count = parseInt(req.body.count);
-
+  let isProfile = req.body.isProfile;
+  
   let items = [];
   if (type === 'all') {
     let nfts = await selectTokens(req, res);
-    let bundles = await selectBundles(req, res);
-    items = [...nfts, ...bundles];
+    //let bundles = await selectBundles(req, res);
+    //items = [...nfts, ...bundles]; // Todo for Bundle pack
+    items = [...nfts];
   } else if (type === 'single') {
     items = await selectTokens(req, res);
   } else if (type === 'bundle') {
     items = await selectBundles(req, res);
   }
+
+
+  // Prune dup //
+  const filters = req.body.filterby;
+  if (filters || isProfile)
+    items = items.filter(
+      (tk, idx) =>
+        items.findIndex(_tk =>
+          tk.items
+            ? tk._id === _tk._id
+            : tk.contractAddress === _tk.contractAddress &&
+            tk.tokenID === _tk.tokenID
+        ) === idx
+    );
+
 
   let updatedItems = updatePrices(items);
 
@@ -836,9 +948,9 @@ router.post('/fetchTokens', async (req, res) => {
     ...(sr.contractAddress != null && sr.contractAddress != undefined
       ? { contractAddress: sr.contractAddress }
       : {}),
-      ...(sr.contentType != null && sr.contentType != undefined
-        ? { contentType: sr.contentType }
-        : {}),
+    ...(sr.contentType != null && sr.contentType != undefined
+      ? { contentType: sr.contentType }
+      : {}),
     ...(sr.imageURL != null && sr.imageURL != undefined
       ? { imageURL: sr.imageURL }
       : {}),
@@ -884,13 +996,13 @@ router.post('/fetchTokens', async (req, res) => {
     ...(sr.lastSalePriceInUSD != null && sr.lastSalePriceInUSD != undefined
       ? { lastSalePriceInUSD: sr.lastSalePriceInUSD }
       : {}),
-      ...(sr.owner != null && sr.owner != undefined
-        ? { owner: sr.owner }
-        : {}),
+    ...(sr.owner != null && sr.owner != undefined
+      ? { owner: sr.owner }
+      : {}),
     ...(sr.isAppropriate != null && sr.isAppropriate != undefined
       ? { isAppropriate: sr.isAppropriate }
       : { isAppropriate: false }),
-      ownerAlias: await getAccountInfo(sr.owner)
+    ownerAlias: await getAccountInfo(sr.owner),
   }));
   const results = await Promise.all(searchResults);
   return res.json({
@@ -960,6 +1072,8 @@ router.post('/getSingleItemDetails', async (req, res) => {
     }
     // content type
     let contentType = nft.contentType;
+    // Thumbnail
+    let thumbnailPath = nft.thumbnailPath;
     // likes count
     let likes = nft ? nft.liked : 0;
     // token uri
@@ -1078,7 +1192,8 @@ router.post('/getSingleItemDetails', async (req, res) => {
         'lastSalePrice',
         'lastSalePricePaymentToken',
         'lastSalePriceInUSD',
-        'saleEndsAt'
+        'saleEndsAt',
+        'contentType',
       ]);
     let hasUnlockable = await UnlockableContents.findOne({
       contractAddress: contractAddress,
@@ -1089,6 +1204,7 @@ router.post('/getSingleItemDetails', async (req, res) => {
       status: 'success',
       data: {
         tokenType,
+        thumbnailPath,
         likes,
         uri,
         listings,
@@ -1266,7 +1382,7 @@ const fetchTransferHistory1155 = async (address, id) => {
 
 const getAccountInfo = async (address) => {
   try {
-    
+
     let account = await Account.findOne({ address: address });
     if (account) {
       return [account.alias, account.imageHash];

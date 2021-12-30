@@ -9,7 +9,7 @@ const Collection = mongoose.model('Collection');
 const Category = mongoose.model('Category');
 const ERC1155CONTRACT = mongoose.model('ERC1155CONTRACT');
 const ERC721CONTRACT = mongoose.model('ERC721CONTRACT');
-
+const ERC1155HOLDING = mongoose.model('ERC1155HOLDING');
 const auth = require('./middleware/auth');
 const admin_auth = require('./middleware/auth.admin');
 const toLowerCase = require('../utils/utils');
@@ -498,6 +498,13 @@ router.post('/getCollectionStatistic', async (req, res) => {
   else
   {
     countOwner = 0;
+  }
+
+  // Count Owner from 1155 //
+  let countOwner1155 = await ERC1155HOLDING.countDocuments({ contractAddress: address });
+  if (countOwner1155 > 0)
+  {
+    countOwner = countOwner1155;
   }
 
 

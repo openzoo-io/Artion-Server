@@ -3,7 +3,8 @@ const axios = require('axios');
 const ethers = require('ethers');
 const router = require('express').Router();
 const isBase64 = require('is-base64');
-
+const { Lock } = require("async-await-mutex-lock");
+let lock = new Lock();
 const mongoose = require('mongoose');
 const ERC721CONTRACT = mongoose.model('ERC721CONTRACT');
 const ERC1155CONTRACT = mongoose.model('ERC1155CONTRACT');
@@ -20,7 +21,7 @@ const provider = new ethers.providers.JsonRpcProvider(
   parseInt(process.env.NETWORK_CHAINID)
 );
 const validatorAddress = process.env.VALIDATORADDRESS;
-
+const auctionAddress = process.env.AUCTION_ADDRESS;
 const SimplifiedERC721ABI = require('../constants/simplifiederc721abi');
 const SimplifiedERC1155ABI = require('../constants/simplifiederc1155abi');
 const Logger = require('../services/logger');
@@ -241,6 +242,21 @@ const handle1155SingleTransfer = async (
               try {
                 tokenName = metadata.data.name;
                 imageURL = metadata.data.image;
+
+                // Get content Type //
+                if (metadata.data.animation_url) {
+                  let ext = metadata.data.animation_url ? metadata.data.animation_url.split('.').pop() : '';
+                  switch (ext) {
+                    case 'mp4': contentType = "video"; break;
+                    case 'mp3': contentType = "sound"; break;
+                    case 'glb': contentType = "model"; break;
+                  }
+                }
+                else
+                {
+                  contentType = "image";
+                }
+
               } catch (error) {
                 Logger.error(error);
               }
@@ -248,6 +264,7 @@ const handle1155SingleTransfer = async (
 
 
             let newTk = new NFTITEM();
+            newTk.name = tokenName;
             newTk.contractAddress = contractAddress;
             newTk.tokenID = tokenID;
             newTk.supply = value;
@@ -257,6 +274,7 @@ const handle1155SingleTransfer = async (
             newTk.tokenType = 1155;
             let isBanned = await is1155CollectionBanned(contractAddress);
             newTk.isAppropriate = !isBanned;
+            newTk.contentType = contentType;
             await newTk.save();
           } catch (error) {
             Logger.error(error);
@@ -341,11 +359,12 @@ const handle1155SingleTransfer = async (
 router.post(
   '/handle721Transfer',
   /*service_auth,*/ async (req, res) => {
+    await lock.acquire();
     try {
       let address = toLowerCase(req.body.address); //contract address
       let to = toLowerCase(req.body.to); // transferred to
       let tokenID = parseInt(req.body.tokenID); //tokenID
-
+      console.log('Transffered to: ', to);
       // remove existing listing(s)
       await Listing.deleteMany({
         minter: address,
@@ -356,10 +375,23 @@ router.post(
         contractAddress: address,
         tokenID: tokenID
       });
-
+      
       if (erc721token) {
+        console.log('[Existed] Transferred to ',to);
+        if (to == toLowerCase(auctionAddress)) // Don't change owner
+        {
+          return res.json({});
+        }
         if (to == erc721token.owner) {
           return res.json({});
+        }
+        // Burn Item //
+        if (to == '0x000000000000000000000000000000000000000f')
+        {
+          console.log('[Burned!] '+address+'|'+tokenID);
+          await erc721token.remove();
+          await removeLike(address, tokenID);
+          return res.json(); 
         }
         if (to == validatorAddress) {
           await erc721token.remove();
@@ -377,6 +409,7 @@ router.post(
           return res.json({});
         }
       } else {
+        console.log('[NewNFT] Transferred to ',to);
         let sc = loadContract(address, 721);
         let tokenURI = await sc.tokenURI(tokenID);
         let metadata;
@@ -410,14 +443,12 @@ router.post(
             imageURL = metadata.data.image;
 
             // Get content Type //
-            if (metadata.data.animation_url)
-            {
+            if (metadata.data.animation_url) {
               let ext = metadata.data.animation_url ? metadata.data.animation_url.split('.').pop() : '';
-              switch(ext)
-              {
-                case 'mp4':contentType="video";break;
-                case 'mp3':contentType="sound";break;
-                case 'glb':contentType="model";break;
+              switch (ext) {
+                case 'mp4': contentType = "video"; break;
+                case 'mp3': contentType = "sound"; break;
+                case 'glb': contentType = "model"; break;
               }
             }
 
@@ -426,11 +457,11 @@ router.post(
           }
         }
 
-        
+
 
         if (to == validatorAddress) {
           return res.json();
-        } else {
+        } else { // Save a new NFT //
           let newTk = new NFTITEM();
           newTk.contractAddress = address;
           newTk.tokenID = tokenID;
@@ -449,6 +480,9 @@ router.post(
     } catch (error) {
       Logger.error(error);
       return res.json({});
+    } finally {
+      lock.release();
+      console.log('Released Lock');
     }
   }
 );
@@ -569,6 +603,7 @@ router.get('/getTrackable1155Contracts', service_auth, async (req, res) => {
     });
   } catch (error) {
     Logger.error(error);
+    console.log(error);
     return res.json({
       status: 'failed',
       data: []

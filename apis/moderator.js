@@ -19,6 +19,7 @@ const isAdmin = (msgSender) => {
 router.post("/add", auth, async (req, res) => {
   try {
     let adminAddress = extractAddress(req, res);
+    console.log(adminAddress);
     if (!isAdmin(adminAddress))
       return res.json({
         status: "failed",

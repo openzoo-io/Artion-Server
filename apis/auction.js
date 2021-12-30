@@ -11,7 +11,7 @@ const Bid = mongoose.model('Bid');
 const NFTITEM = mongoose.model('NFTITEM');
 const TradeHistory = mongoose.model('TradeHistory');
 // const NotificationSetting = mongoose.model("NotificationSetting");
-
+const toLowerCase = require('../utils/utils');
 // const sendEmail = require("../mailer/auctionMailer");
 // const getCollectionName = require("../mailer/utils");
 // const notifications = require("../mailer/followMailer");
@@ -483,6 +483,25 @@ router.post('/auctionResulted', service_auth, async (req, res) => {
     return res.status(400).json({ status: 'failed', error });
   }
 });
+
+router.post('/getBidParticipants', async (req, res) => {
+  let address = toLowerCase(req.body.contractAddress);
+  if (!ethers.utils.isAddress(address))
+    return res.json({
+      status: 'failed',
+      data: 'NFT Contract Address Invalid'
+    });
+  let tokenID = req.body.tokenID;
+  //const BIDS = mongoose.model('BID');
+  // Count NFT //
+  let countBIDS = await Bid.countDocuments({ minter: address, tokenID: tokenID });
+  return res.json({
+    status: 'success',
+    data: {
+      bidParticipants: countBIDS
+    }
+  });
+})
 
 router.post('/bidPlaced', service_auth, async (req, res) => {
   try {

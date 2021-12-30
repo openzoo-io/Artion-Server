@@ -8,8 +8,7 @@ const port = process.env.PORT || 5001;
 
 const Logger = require('./services/logger');
 const morganMiddleware = require('./apis/middleware/morgan');
-
-
+//const {Helmet} = require('react-helmet');
 
 require("./models/abi");
 require("./models/account");
@@ -63,6 +62,11 @@ app.use(morganMiddleware);
 
 
 app.use(require("./apis"));
+
+app.get('/image/:id', function(req, res){
+ 
+  res.sendFile(`/root/Artion-Thumbnail-Indexer/thumb-image/${req.params.id}`);
+});
 
 const priceFeed = require("./services/price.feed");
 

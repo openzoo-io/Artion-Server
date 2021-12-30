@@ -280,10 +280,18 @@ router.post("/uploadImage2Server", auth, async (req, res) => {
               xtraUrl
             );
 
+
+
             // remove file once pinned
             try {
               fs.unlinkSync(uploadPath + imageFileName);
             } catch (error) {
+            }
+
+            if (!filePinStatus.IpfsHash) {
+              return res.json({
+                status: "failed",
+              });
             }
 
             let now = new Date();
@@ -306,6 +314,11 @@ router.post("/uploadImage2Server", auth, async (req, res) => {
             };
 
             let jsonPinStatus = await pinJsonToIPFS(metaData);
+            if (!jsonPinStatus.IpfsHash) {
+              return res.json({
+                status: "failed",
+              });
+            }
             return res.send({
               status: "success",
               uploadedCounts: 2,
@@ -364,6 +377,12 @@ router.post("/uploadBundleImage2Server", auth, async (req, res) => {
         fs.unlinkSync(uploadPath + imageFileName);
       } catch (error) {
         Logger.error(error);
+      }
+
+      if (!filePinStatus.IpfsHash) {
+        return res.json({
+          status: "failed",
+        });
       }
 
       let bundle = new Bundle();
@@ -434,7 +453,16 @@ router.post("/uploadBannerImage2Server", auth, async (req, res) => {
 
       let filePinStatus = await pinBannerFileToIPFS(imageFileName, address);
       // remove file once pinned
-
+      if (!filePinStatus.IpfsHash) {
+        try {
+          fs.unlinkSync(uploadPath + imageFileName);
+        } catch (error) {
+          Logger.error(error);
+        }
+        return res.json({
+          status: "failed",
+        });
+      }
       try {
         let account = await Account.findOne({
           address: address,
@@ -507,6 +535,14 @@ router.post("/uploadCollectionImage2Server", auth, async (req, res) => {
       try {
         fs.unlinkSync(uploadPath + imageFileName);
       } catch (error) { }
+
+      if (!filePinStatus.IpfsHash) {
+        
+        return res.json({
+          status: "failed",
+        });
+      }
+
       return res.json({
         status: "success",
         data: filePinStatus.IpfsHash,
@@ -516,6 +552,11 @@ router.post("/uploadCollectionImage2Server", auth, async (req, res) => {
 });
 
 // pin media
+function getFilesizeInBytes(filename) {
+  var stats = fs.statSync(filename);
+  var fileSizeInBytes = stats.size;
+  return fileSizeInBytes;
+}
 router.post("/uploadMedia2Server", auth, async (req, res) => {
   let form = new formidable.IncomingForm({
     maxFileSize: 200 * 1024 * 1024,
@@ -531,12 +572,13 @@ router.post("/uploadMedia2Server", auth, async (req, res) => {
       } else {
         let mediaData = fields.media;
         let mediaExt = fields.mediaExt;
+        let mediaSize = fields.mediaSize;
         /* change getting address from auth token */
         let address = extractAddress(req, res);
         let name = generateRandomName();
         const ipfsUri = ipfsUris[Math.floor(Math.random() * ipfsUris.length)];
 
-        let imageFileName = address + '_'+ name + "." + mediaExt;
+        let imageFileName = address + '_' + name + "." + mediaExt;
         mediaData = mediaData.split("base64,")[1];
         fs.writeFile(uploadPath + imageFileName, mediaData, "base64", (err) => {
           if (err) {
@@ -546,7 +588,21 @@ router.post("/uploadMedia2Server", auth, async (req, res) => {
               err,
             });
           }
+          let filesize = getFilesizeInBytes(uploadPath + imageFileName);
+          //console.log(filesize);
+          if (Number(filesize) !== Number(mediaSize)) {
+            console.log("Size is mismatch desc:" + filesize + '- ori:' + mediaSize);
+            try {
+              fs.unlinkSync(uploadPath + imageFileName);
+            } catch (error) {
+              Logger.error(error);
+            }
+            return res.status(400).json({
+              status: "Size is mismatch" + (filesize + 1) + '-' + mediaSize,
+            });
+          }
         });
+
 
         let filePinStatus = await pinMediaFileToIPFS(imageFileName, name.replace(" ", ""));
         // remove file once pinned
@@ -556,6 +612,14 @@ router.post("/uploadMedia2Server", auth, async (req, res) => {
         } catch (error) {
           Logger.error(error);
         }
+
+        if (!filePinStatus.IpfsHash) {
+        
+          return res.json({
+            status: "failed",
+          });
+        }
+
         return res.json({
           status: "success",
           data: ipfsUri + filePinStatus.IpfsHash + '/' + imageFileName,

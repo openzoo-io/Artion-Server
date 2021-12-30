@@ -65,7 +65,7 @@ const isOfferCancelNotifiable = async (receiver, nft, tokenID) => {
 router.post("/itemListed", service_auth, async (req, res) => {
   try {
     const { args, blockNumber, transactionHash } = req.body;
-    const [ ownerC, nftC, tokenIdBN, quantityBN, paytokenC, pricePerItemBN, startingTimeBN ] = args;
+    const [ownerC, nftC, tokenIdBN, quantityBN, paytokenC, pricePerItemBN, startingTimeBN] = args;
 
     console.log('args', args);
 
@@ -139,12 +139,12 @@ router.post("/itemListed", service_auth, async (req, res) => {
         pricePerItem,
         itemPayToken.address
       );
-    } catch(err) {
+    } catch (err) {
       Logger.error("[ItemListed] Failed to notify followers: ", err.message);
     }
 
     Logger.info("[ItemListed] Success: ", { transactionHash, blockNumber });
-    return res.json({status: "success"});
+    return res.json({ status: "success" });
   } catch (error) {
     Logger.info("[ItemListed] Failed: ", { transactionHash: req.body.transactionHash, blockNumber: req.body.blockNumber });
     Logger.error(error);
@@ -156,7 +156,7 @@ router.post("/itemListed", service_auth, async (req, res) => {
 router.post("/itemSold", service_auth, async (req, res) => {
   try {
     const { args, blockNumber, transactionHash } = req.body;
-    const [ sellerC, buyerC, nftC, tokenIdBN, quantityBN, paytokenC, unitPriceBN, pricePerItemBN ] = args;
+    const [sellerC, buyerC, nftC, tokenIdBN, quantityBN, paytokenC, unitPriceBN, pricePerItemBN] = args;
 
     const seller = sellerC.toLowerCase();
     const buyer = buyerC.toLowerCase();
@@ -168,33 +168,19 @@ router.post("/itemSold", service_auth, async (req, res) => {
     const quantity = parseInt(quantityBN.hex);
 
     const priceInUSD = pricePerItem * getPrice(itemPayToken.address);
-
+    
     // update last sale price
     // first update the token price
     let category = await Category.findOne({ minterAddress: nft });
     if (category) {
-      let token = await NFTITEM.findOne({
-        contractAddress: nft,
-        tokenID: tokenId,
-        blockNumber: { $lte: blockNumber },
-      });
-      if (token) {
-        token.price = 0;
-        token.paymentToken = "wan";
-        token.priceInUSD = 0;
-        token.lastSalePrice = pricePerItem;
-        token.lastSalePricePaymentToken = itemPayToken.address;
-        token.lastSalePriceInUSD = priceInUSD;
-        token.listedAt = new Date(0);
-        token.soldAt = new Date(); //set recently sold date
-        await token.save();
-      }
+
+
 
       try {
         // send mail here to buyer first
-        let account = await Account.findOne({address: buyer});
+        let account = await Account.findOne({ address: buyer });
         // checks if user listens
-        let ns = await NotificationSetting.findOne({address: buyer});
+        let ns = await NotificationSetting.findOne({ address: buyer });
         if (account && ns.sNftBuy) {
           let to = account.email;
           let alias = account.alias;
@@ -223,8 +209,8 @@ router.post("/itemSold", service_auth, async (req, res) => {
 
       try {
         // checks if user listens
-        const account = await Account.findOne({address: seller});
-        const ns = await NotificationSetting.findOne({address: seller});
+        const account = await Account.findOne({ address: seller });
+        const ns = await NotificationSetting.findOne({ address: seller });
         if (account && ns.sNftSell) {
           let to = account.email;
           let alias = account.alias;
@@ -252,7 +238,7 @@ router.post("/itemSold", service_auth, async (req, res) => {
       }
     }
 
-      // add new trade history
+    // add new trade history
     try {
       const existingHistory = await TradeHistory.find({ txHash: transactionHash });
       if (!existingHistory.length) {
@@ -272,16 +258,109 @@ router.post("/itemSold", service_auth, async (req, res) => {
       Logger.error("[ItemSold] Failed to save new TradeHistory: ", err.message)
     }
 
-    // remove from listing
-    await Listing.deleteMany({
-      owner: seller,
-      minter: nft,
-      tokenID: tokenId,
-      blockNumber: { $lte: blockNumber}
-    });
+    try {
+      let token = await NFTITEM.findOne({
+        contractAddress: nft,
+        tokenID: tokenId,
+        blockNumber: { $lte: blockNumber },
+      });
+      // checks if user listens
+      const listing = await Listing.findOne({ owner: seller, minter: nft, tokenID: tokenId });
+      //console.log('quantity', listing.quantity);
+      if (listing && quantity >= listing.quantity) {
+        console.log('1155 Sold exactly amount case');
+        // remove from listing
+        await Listing.deleteMany({
+          owner: seller,
+          minter: nft,
+          tokenID: tokenId,
+          blockNumber: { $lte: blockNumber }
+        });
+        // Still has listing for 1155 //
+        const listing = await Listing.findOne({ minter: nft, tokenID: tokenId });
+        if (listing) {
+
+          if (token) {
+            token.price = listing.price;
+            token.paymentToken = listing.paymentToken;
+            token.priceInUSD = listing.priceInUSD;
+            token.lastSalePrice = pricePerItem;
+            token.lastSalePricePaymentToken = itemPayToken.address;
+            token.lastSalePriceInUSD = priceInUSD;
+            token.listedAt = listing.startTime;
+            token.soldAt = new Date(); //set recently sold date
+            await token.save();
+          }
+        }
+        else {
+          if (token) {
+            token.price = 0;
+            token.paymentToken = "wan";
+            token.priceInUSD = 0;
+            token.lastSalePrice = pricePerItem;
+            token.lastSalePricePaymentToken = itemPayToken.address;
+            token.lastSalePriceInUSD = priceInUSD;
+            token.listedAt = new Date(0);
+            token.soldAt = new Date(); //set recently sold date
+            token.owner = buyer;
+            await token.save();
+          }
+        }
+
+      }
+      else {
+        if (listing) { // 1155
+          console.log('1155 Sold reduce case');
+          // reduce listing
+          await Listing.updateOne({
+            owner: seller,
+            minter: nft,
+            tokenID: tokenId,
+            blockNumber: { $lte: blockNumber }
+          }, {
+            $inc: { "quantity": (quantity * -1) }
+          });
+          if (token) {
+            token.price = pricePerItem;
+            token.paymentToken = itemPayToken.address;
+            token.priceInUSD = priceInUSD;
+            token.lastSalePrice = pricePerItem;
+            token.lastSalePricePaymentToken = itemPayToken.address;
+            token.lastSalePriceInUSD = priceInUSD;
+            token.listedAt = new Date(0);
+            token.soldAt = new Date(); //set recently sold date
+            await token.save();
+          }
+        }
+        else // 721
+        {
+          console.log('721 Sold case');
+          if (token) {
+            token.price = 0;
+            token.paymentToken = "wan";
+            token.priceInUSD = 0;
+            token.lastSalePrice = pricePerItem;
+            token.lastSalePricePaymentToken = itemPayToken.address;
+            token.lastSalePriceInUSD = priceInUSD;
+            token.listedAt = new Date(0);
+            token.soldAt = new Date(); //set recently sold date
+            token.owner = buyer;
+            await token.save();
+          }
+        }
+      }
+
+    } catch (err) {
+      Logger.error("[ItemSold] Failed to udpate date listing: ", err.message);
+      console.log(err.message);
+    }
+
+
+
+
 
     Logger.info("[ItemSold] Success: ", { transactionHash, blockNumber });
-    return res.json({status: "success"});
+    return res.json({ status: "success" });
   } catch (error) {
     Logger.info("[ItemSold] Failed: ", { transactionHash: req.body.transactionHash, blockNumber: req.body.blockNumber });
     Logger.error(error);
@@ -293,7 +372,7 @@ router.post("/itemSold", service_auth, async (req, res) => {
 
 router.post("/itemUpdated", service_auth, async (req, res) => {
   try {
-    const {args, blockNumber, transactionHash } = req.body;
+    const { args, blockNumber, transactionHash } = req.body;
     const [ownerC, nftC, tokenIdBN, paytokenC, newPricePerItemBN] = args;
 
     const owner = ownerC.toLowerCase();
@@ -305,12 +384,12 @@ router.post("/itemUpdated", service_auth, async (req, res) => {
 
     // update the price of the nft here
     // first update the token price
-    let category = await Category.findOne({minterAddress: nft});
+    let category = await Category.findOne({ minterAddress: nft });
     if (category) {
       let token = await NFTITEM.findOne({
         contractAddress: nft,
         tokenID: tokenId,
-        blockNumber: {$lt: blockNumber}
+        blockNumber: { $lt: blockNumber }
       });
       if (token) {
         token.price = newPricePerItem;
@@ -324,7 +403,7 @@ router.post("/itemUpdated", service_auth, async (req, res) => {
       owner: owner,
       minter: nft,
       tokenID: tokenId,
-      blockNumber: {$lt: blockNumber},
+      blockNumber: { $lt: blockNumber },
     });
     if (list) {
       list.price = newPricePerItem;
@@ -342,7 +421,7 @@ router.post("/itemUpdated", service_auth, async (req, res) => {
     }
 
     Logger.info("[ItemUpdated] Success: ", { transactionHash, blockNumber });
-    return res.json({status: "success"});
+    return res.json({ status: "success" });
   } catch (error) {
     Logger.info("[ItemUpdated] Failed: ", { transactionHash: req.body.transactionHash, blockNumber: req.body.blockNumber });
     Logger.error(error);
@@ -353,38 +432,56 @@ router.post("/itemUpdated", service_auth, async (req, res) => {
 
 router.post("/itemCanceled", service_auth, async (req, res) => {
   try {
-    const {args, blockNumber, transactionHash} = req.body;
+    const { args, blockNumber, transactionHash } = req.body;
     const [ownerC, nftC, tokenIdBN] = args;
 
     const owner = ownerC.toLowerCase();
     const nft = nftC.toLowerCase();
     const tokenId = parseInt(tokenIdBN.hex);
 
-    let category = await Category.findOne({ minterAddress: nft });
-    if (category) {
-      let token = await NFTITEM.findOne({
-        contractAddress: nft,
-        tokenID: tokenId,
-        blockNumber: {$lt: blockNumber},
-      });
-      if (token) {
-        token.price = 0;
-        token.paymentToken = "wan";
-        token.priceInUSD = 0;
-        token.listedAt = new Date(0);
-        await token.save();
-      }
-    }
     // remove from listing
     await Listing.deleteMany({
       owner: owner,
       minter: nft,
       tokenID: tokenId,
-      blockNumber: {$lt: blockNumber}
+      blockNumber: { $lt: blockNumber }
     });
 
+    let category = await Category.findOne({ minterAddress: nft });
+    if (category) {
+      let token = await NFTITEM.findOne({
+        contractAddress: nft,
+        tokenID: tokenId,
+        blockNumber: { $lt: blockNumber },
+      });
+
+
+
+      // Still has listing //
+      const listing = await Listing.findOne({ minter: nft, tokenID: tokenId });
+      if (listing) {
+        if (token) {
+          token.price = listing.price;
+          token.paymentToken = listing.paymentToken;
+          token.priceInUSD = listing.priceInUSD;
+          token.listedAt = listing.startTime;
+          await token.save();
+        }
+      }
+      else {
+        if (token) {
+          token.price = 0;
+          token.paymentToken = "wan";
+          token.priceInUSD = 0;
+          token.listedAt = new Date(0);
+          await token.save();
+        }
+      }
+    }
+
+
     Logger.info("[ItemCanceled] Success: ", { transactionHash, blockNumber });
-    return res.json({status: "success"});
+    return res.json({ status: "success" });
   } catch (error) {
     Logger.info("[ItemCanceled] Failed!: ", { transactionHash: req.body.transactionHash, blockNumber: req.body.blockNumber });
     Logger.error(error);
@@ -395,7 +492,7 @@ router.post("/itemCanceled", service_auth, async (req, res) => {
 
 router.post("/offerCreated", service_auth, async (req, res) => {
   try {
-    const {args, blockNumber, transactionHash} = req.body;
+    const { args, blockNumber, transactionHash } = req.body;
     const [creatorC, nftC, tokenIdBN, quantityBN, paytokenC, pricePerItemBN, deadlineBN] = args;
 
     const creator = creatorC.toLowerCase();
@@ -412,7 +509,7 @@ router.post("/offerCreated", service_auth, async (req, res) => {
         creator: creator,
         minter: nft,
         tokenID: tokenId,
-        blockNumber: {$lt: blockNumber},
+        blockNumber: { $lt: blockNumber },
       });
 
       const existingOffer = await Offer.find({
@@ -486,7 +583,7 @@ router.post("/offerCreated", service_auth, async (req, res) => {
     }
 
     Logger.info("[OfferCreated] Success: ", { transactionHash, blockNumber });
-    return res.json({status: "success"});
+    return res.json({ status: "success" });
   } catch (error) {
     Logger.info("[OfferCreated] Failed!: ", { transactionHash: req.body.transactionHash, blockNumber: req.body.blockNumber });
     Logger.error(error);
@@ -497,7 +594,7 @@ router.post("/offerCreated", service_auth, async (req, res) => {
 
 router.post("/offerCanceled", service_auth, async (req, res) => {
   try {
-    const {args, blockNumber, transactionHash} = req.body;
+    const { args, blockNumber, transactionHash } = req.body;
     const [creatorC, nftC, tokenIdBN] = args;
 
     const creator = creatorC.toLowerCase();
@@ -508,7 +605,7 @@ router.post("/offerCanceled", service_auth, async (req, res) => {
       creator: creator,
       minter: nft,
       tokenID: tokenId,
-      blockNumber: {$lt: blockNumber},
+      blockNumber: { $lt: blockNumber },
     });
 
     // now send email
@@ -555,7 +652,7 @@ router.post("/offerCanceled", service_auth, async (req, res) => {
               nftAddress: nft,
             };
             if (creatorAlias != alias) await sendEmail(data);
-          } 
+          }
         } else if (category == 1155) {
         }
       }
@@ -565,7 +662,7 @@ router.post("/offerCanceled", service_auth, async (req, res) => {
     }
 
     Logger.info("[OfferCanceled] Success: ", { transactionHash, blockNumber });
-    return res.json({status: "success"});
+    return res.json({ status: "success" });
   } catch (error) {
     Logger.info("[OfferCanceled] Failed!: ", { transactionHash: req.body.transactionHash, blockNumber: req.body.blockNumber });
     Logger.error(error);
