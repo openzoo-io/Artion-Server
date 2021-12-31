@@ -296,7 +296,7 @@ router.post("/uploadImage2Server", auth, async (req, res) => {
             }
 
             let now = new Date();
-            let currentTime = now.toTimeString();
+            let currentTime = now.toUTCString();
 
             let metaData = {
               name: name,
@@ -309,8 +309,7 @@ router.post("/uploadImage2Server", auth, async (req, res) => {
                 royalty: royalty,
                 recipient: address,
                 IP_Rights: xtraUrl,
-                createdAt: currentTime,
-                collection: "OpenZoo.io NFT Collection",
+                createdAt: currentTime
               },
             };
 
