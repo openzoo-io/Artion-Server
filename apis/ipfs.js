@@ -582,7 +582,7 @@ router.post("/uploadMedia2Server", auth, async (req, res) => {
         let imageFileName = address + '_' + name + "." + mediaExt;
         mediaData = mediaData.split("base64,")[1];
         let filesize = 0;
-        fs.writeFile(uploadPath + imageFileName, mediaData, "base64", (err) => {
+        fs.writeFile(uploadPath + imageFileName, mediaData, "base64", async (err) => {
           if (err) {
             Logger.error(err);
             return res.status(400).json({
