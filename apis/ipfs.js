@@ -581,6 +581,7 @@ router.post("/uploadMedia2Server", auth, async (req, res) => {
 
         let imageFileName = address + '_' + name + "." + mediaExt;
         mediaData = mediaData.split("base64,")[1];
+        let filesize = 0;
         fs.writeFile(uploadPath + imageFileName, mediaData, "base64", (err) => {
           if (err) {
             Logger.error(err);
@@ -589,7 +590,7 @@ router.post("/uploadMedia2Server", auth, async (req, res) => {
               err,
             });
           }
-          let filesize = getFilesizeInBytes(uploadPath + imageFileName);
+          filesize = getFilesizeInBytes(uploadPath + imageFileName);
           //console.log(filesize);
           if (Number(filesize) !== Number(mediaSize)) {
             console.log("Size is mismatch desc:" + filesize + '- ori:' + mediaSize);
