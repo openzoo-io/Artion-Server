@@ -613,7 +613,8 @@ router.post("/uploadMedia2Server", auth, async (req, res) => {
         } catch (error) {
           Logger.error(error);
         }
-        console.log(filePinStatus.PinSize);
+        console.log('original filesize',filesize);
+        console.log('after pinnned',filePinStatus.PinSize);
         if (!filePinStatus.IpfsHash) {
         
           return res.json({
