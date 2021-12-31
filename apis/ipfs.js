@@ -538,7 +538,7 @@ router.post("/uploadCollectionImage2Server", auth, async (req, res) => {
       } catch (error) { }
 
       if (!filePinStatus.IpfsHash) {
-        
+
         return res.json({
           status: "failed",
         });
@@ -603,30 +603,30 @@ router.post("/uploadMedia2Server", auth, async (req, res) => {
               status: "Size is mismatch" + (filesize + 1) + '-' + mediaSize,
             });
           }
-        });
 
+          let filePinStatus = await pinMediaFileToIPFS(imageFileName, name.replace(" ", ""));
+          // remove file once pinned
 
-        let filePinStatus = await pinMediaFileToIPFS(imageFileName, name.replace(" ", ""));
-        // remove file once pinned
+          try {
+            fs.unlinkSync(uploadPath + imageFileName);
+          } catch (error) {
+            Logger.error(error);
+          }
+          console.log('original filesize', filesize);
+          console.log('after pinnned', filePinStatus.PinSize);
+          if (filePinStatus.PinSize < filesize) {
+            return res.json({
+              status: "failed",
+            });
+          }
 
-        try {
-          fs.unlinkSync(uploadPath + imageFileName);
-        } catch (error) {
-          Logger.error(error);
-        }
-        console.log('original filesize',filesize);
-        console.log('after pinnned',filePinStatus.PinSize);
-        if (!filePinStatus.IpfsHash) {
-        
           return res.json({
-            status: "failed",
+            status: "success",
+            data: ipfsUri + filePinStatus.IpfsHash + '/' + imageFileName,
           });
-        }
 
-        return res.json({
-          status: "success",
-          data: ipfsUri + filePinStatus.IpfsHash + '/' + imageFileName,
         });
+
       }
     });
   } catch (error) {
