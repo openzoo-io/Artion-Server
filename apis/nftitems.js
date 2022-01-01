@@ -1003,7 +1003,7 @@ router.post('/fetchTokens', async (req, res) => {
       ? { isAppropriate: sr.isAppropriate }
       : { isAppropriate: false }),
     ownerAlias: await getAccountInfo(sr.owner),
-    items: await NFTITEM.countDocuments({ contractAddress: address }),
+    
   }));
   const results = await Promise.all(searchResults);
   return res.json({
