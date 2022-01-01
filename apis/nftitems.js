@@ -1078,6 +1078,8 @@ router.post('/getSingleItemDetails', async (req, res) => {
     let likes = nft ? nft.liked : 0;
     // token uri
     let uri = nft ? nft.tokenURI : '';
+
+    let owner = nft ? nft.owner : '';
     // get listings
     let listings = [];
     let _listings = await Listing.find({
@@ -1212,7 +1214,8 @@ router.post('/getSingleItemDetails', async (req, res) => {
         history,
         nfts,
         contentType,
-        hasUnlockable
+        hasUnlockable,
+        owner
       }
     });
   } catch (error) {
