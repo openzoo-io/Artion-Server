@@ -55,8 +55,6 @@ router.get('/getCollectionList', async (_, res) => {
     isVerified: true,
   });
 
-  let allContracts = new Array();
-
   let searchResults = allCollections.map(async (collection) => ({
 
       address: collection.erc721Address,
@@ -75,7 +73,7 @@ router.get('/getCollectionList', async (_, res) => {
       isOwnerble: collection.isOwnerble,
       owner:collection.owner,
       ownerAlias: await getAccountInfo(collection.owner),
-  
+      items: await NFTITEM.countDocuments({ contractAddress: address }),
   }));
 
   const results = await Promise.all(searchResults);
