@@ -13,18 +13,45 @@ const auth = require("./middleware/auth");
 
 const pinataSDK = require("@pinata/sdk");
 
+const axios = require('axios');
+const sleep = require('ko-sleep');
+
 const toLowerCase = require("../utils/utils");
 
 const extractAddress = require("../services/address.utils");
 const service_auth = require("./middleware/auth.tracker");
 
 // const ipfsUris = ["https://artion.mypinata.cloud/ipfs/", "https://artion1.mypinata.cloud/ipfs/", "https://artion2.mypinata.cloud/ipfs/", "https://artion3.mypinata.cloud/ipfs/", "https://artion4.mypinata.cloud/ipfs/", "https://artion5.mypinata.cloud/ipfs/", "https://artion6.mypinata.cloud/ipfs/", "https://artion7.mypinata.cloud/ipfs/", "https://artion8.mypinata.cloud/ipfs/", "https://artion9.mypinata.cloud/ipfs/", "https://artion10.mypinata.cloud/ipfs/", "https://artion11.mypinata.cloud/ipfs/", "https://artion12.mypinata.cloud/ipfs/", "https://artion13.mypinata.cloud/ipfs/"];
-const ipfsUris = ["https://openzoo.mypinata.cloud/ipfs/"];
+const ipfsUris = ["https://openzoo.mypinata.cloud/ipfs/", "https://openzoo2.mypinata.cloud/ipfs/"];
 const uploadPath = process.env.UPLOAD_PATH;
 const pinata = pinataSDK(
   process.env.PINATA_API_KEY,
   process.env.PINATA_SECRET_API_KEY
 );
+
+const checkResult = async (func) => {
+  let times = 0; 
+  while(times < 100) {
+    const ipfsUri = ipfsUris[Math.floor(Math.random() * ipfsUris.length)];
+    try {
+      console.log('upload to ipfs...');
+      let ret = await func();
+      let ipfsData = ipfsUri + ret.IpfsHash;
+      console.log('verify ipfs', ipfsData);
+      let test = await axios.get(ipfsData);
+      if (test.data === '') {
+        console.log('verify ipfs failed', ipfsData);
+        throw new Error("verify ipfs failed, retry after 5s");
+      } else {
+        return ret;
+      }
+    } catch (error) {
+      console.log(error);
+      times++;
+      await sleep(5000);
+    }
+  }
+}
 
 // pin image file for NFT creation
 const pinFileToIPFS = async (
@@ -53,8 +80,10 @@ const pinFileToIPFS = async (
   const readableStreamForFile = fs.createReadStream(uploadPath + fileName);
 
   try {
-    let result = await pinata.pinFileToIPFS(readableStreamForFile, options);
-    return result;
+    return await checkResult(() => {
+      let result = await pinata.pinFileToIPFS(readableStreamForFile, options);
+      return result;
+    })
   } catch (error) {
     Logger.error(error);
     return "failed to pin file to ipfs";
@@ -78,8 +107,10 @@ const pinBundleFileToIPFS = async (fileName, name, address) => {
   const readableStreamForFile = fs.createReadStream(uploadPath + fileName);
 
   try {
-    let result = await pinata.pinFileToIPFS(readableStreamForFile, options);
-    return result;
+    return await checkResult(() => {
+      let result = await pinata.pinFileToIPFS(readableStreamForFile, options);
+      return result;
+    });
   } catch (error) {
     return "failed to pin file to ipfs";
   }
@@ -99,8 +130,10 @@ const pinBannerFileToIPFS = async (fileName, address) => {
   const readableStreamForFile = fs.createReadStream(uploadPath + fileName);
 
   try {
-    let result = await pinata.pinFileToIPFS(readableStreamForFile, options);
-    return result;
+    return await checkResult(() => {
+      let result = await pinata.pinFileToIPFS(readableStreamForFile, options);
+      return result;
+    });
   } catch (error) {
     Logger.error(error);
     return "failed to pin file to ipfs";
@@ -122,8 +155,10 @@ const pinMediaFileToIPFS = async (fileName, address) => {
   const readableStreamForFile = fs.createReadStream(uploadPath + fileName);
 
   try {
-    let result = await pinata.pinFileToIPFS(readableStreamForFile, options);
-    return result;
+    return await checkResult(() => {
+      let result = await pinata.pinFileToIPFS(readableStreamForFile, options);
+      return result;
+    });
   } catch (error) {
     Logger.error(error);
     return "failed to pin file to ipfs";
@@ -147,8 +182,10 @@ const pinCollectionFileToIPFS = async (fileName, name, address) => {
   const readableStreamForFile = fs.createReadStream(uploadPath + fileName);
 
   try {
-    let result = await pinata.pinFileToIPFS(readableStreamForFile, options);
-    return result;
+    return await checkResult(() => {
+      let result = await pinata.pinFileToIPFS(readableStreamForFile, options);
+      return result;
+    });
   } catch (error) {
     Logger.error(error);
     return "failed to pin file to ipfs";
@@ -169,8 +206,10 @@ const pinJsonToIPFS = async (jsonMetadata) => {
   };
 
   try {
-    let result = await pinata.pinJSONToIPFS(jsonMetadata, options);
-    return result;
+    return await checkResult(() => {
+      let result = await pinata.pinJSONToIPFS(jsonMetadata, options);
+      return result;
+    });
   } catch (error) {
     Logger.error(error);
     return "failed to pin json to ipfs";
@@ -191,8 +230,10 @@ const pinBundleJsonToIPFS = async (jsonMetadata) => {
   };
 
   try {
-    let result = await pinata.pinJSONToIPFS(jsonMetadata, options);
-    return result;
+    return await checkResult(() => {
+      let result = await pinata.pinJSONToIPFS(jsonMetadata, options);
+      return result;
+    });
   } catch (error) {
     Logger.error(error);
     return "failed to pin json to ipfs";

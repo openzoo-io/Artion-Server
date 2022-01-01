@@ -32,6 +32,7 @@
     "formidable": "^1.2.2",
     "is-base64": "^1.1.0",
     "jsonwebtoken": "^8.5.1",
+    "ko-sleep": "^1.1.4",
     "legit": "^1.0.9",
     "lodash.orderby": "^4.6.0",
     "lodash.sortby": "^4.7.0",
