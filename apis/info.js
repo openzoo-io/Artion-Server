@@ -75,6 +75,7 @@ router.get('/getCollectionList', async (_, res) => {
       isInternal: collection.isInternal,
       isOwnerble: collection.isOwnerble,
       owner:collection.owner,
+      ownerAlias: await getAccountInfo(collection.owner),
     });
   });
 
