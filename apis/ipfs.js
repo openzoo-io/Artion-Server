@@ -80,7 +80,7 @@ const pinFileToIPFS = async (
   const readableStreamForFile = fs.createReadStream(uploadPath + fileName);
 
   try {
-    return await checkResult(() => {
+    return await checkResult(async () => {
       let result = await pinata.pinFileToIPFS(readableStreamForFile, options);
       return result;
     })
@@ -107,7 +107,7 @@ const pinBundleFileToIPFS = async (fileName, name, address) => {
   const readableStreamForFile = fs.createReadStream(uploadPath + fileName);
 
   try {
-    return await checkResult(() => {
+    return await checkResult(async () => {
       let result = await pinata.pinFileToIPFS(readableStreamForFile, options);
       return result;
     });
@@ -130,7 +130,7 @@ const pinBannerFileToIPFS = async (fileName, address) => {
   const readableStreamForFile = fs.createReadStream(uploadPath + fileName);
 
   try {
-    return await checkResult(() => {
+    return await checkResult(async () => {
       let result = await pinata.pinFileToIPFS(readableStreamForFile, options);
       return result;
     });
@@ -155,7 +155,7 @@ const pinMediaFileToIPFS = async (fileName, address) => {
   const readableStreamForFile = fs.createReadStream(uploadPath + fileName);
 
   try {
-    return await checkResult(() => {
+    return await checkResult(async () => {
       let result = await pinata.pinFileToIPFS(readableStreamForFile, options);
       return result;
     });
@@ -182,7 +182,7 @@ const pinCollectionFileToIPFS = async (fileName, name, address) => {
   const readableStreamForFile = fs.createReadStream(uploadPath + fileName);
 
   try {
-    return await checkResult(() => {
+    return await checkResult(async () => {
       let result = await pinata.pinFileToIPFS(readableStreamForFile, options);
       return result;
     });
@@ -206,7 +206,7 @@ const pinJsonToIPFS = async (jsonMetadata) => {
   };
 
   try {
-    return await checkResult(() => {
+    return await checkResult(async () => {
       let result = await pinata.pinJSONToIPFS(jsonMetadata, options);
       return result;
     });
@@ -230,7 +230,7 @@ const pinBundleJsonToIPFS = async (jsonMetadata) => {
   };
 
   try {
-    return await checkResult(() => {
+    return await checkResult(async () => {
       let result = await pinata.pinJSONToIPFS(jsonMetadata, options);
       return result;
     });
