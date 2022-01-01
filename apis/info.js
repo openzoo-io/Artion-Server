@@ -57,9 +57,8 @@ router.get('/getCollectionList', async (_, res) => {
 
   let allContracts = new Array();
 
-  allCollections.map(async (collection) => {
-    
-    allContracts.push({
+  let searchResults = allCollections.map(async (collection) => ({
+
       address: collection.erc721Address,
       collectionName: collection.collectionName,
       description: collection.description,
@@ -76,13 +75,13 @@ router.get('/getCollectionList', async (_, res) => {
       isOwnerble: collection.isOwnerble,
       owner:collection.owner,
       ownerAlias: await getAccountInfo(collection.owner),
-    });
-  });
+  
+  }));
 
-
+  const results = await Promise.all(searchResults);
   return res.json({
     status: 'success',
-    data: allContracts
+    data: results
   });
 });
 
