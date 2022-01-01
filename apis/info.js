@@ -57,23 +57,24 @@ router.get('/getCollectionList', async (_, res) => {
 
   let searchResults = allCollections.map(async (collection) => ({
 
-      address: collection.erc721Address,
-      collectionName: collection.collectionName,
-      description: collection.description,
-      categories: collection.categories,
-      logoImageHash: collection.logoImageHash,
-      siteUrl: collection.siteUrl,
-      discord: collection.discord,
-      twitterHandle: collection.twitterHandle,
-      mediumHandle: collection.mediumHandle,
-      telegram: collection.telegram,
-      isVerified: collection.isVerified,
-      isVisible: true,
-      isInternal: collection.isInternal,
-      isOwnerble: collection.isOwnerble,
-      owner:collection.owner,
-      ownerAlias: await getAccountInfo(collection.owner),
-      item_count: await NFTITEM.countDocuments({ contractAddress: collection.erc721Address }),
+    address: collection.erc721Address,
+    collectionName: collection.collectionName,
+    description: collection.description,
+    categories: collection.categories,
+    logoImageHash: collection.logoImageHash,
+    siteUrl: collection.siteUrl,
+    discord: collection.discord,
+    twitterHandle: collection.twitterHandle,
+    mediumHandle: collection.mediumHandle,
+    telegram: collection.telegram,
+    isVerified: collection.isVerified,
+    isVisible: true,
+    isInternal: collection.isInternal,
+    isOwnerble: collection.isOwnerble,
+    owner: collection.owner,
+    ownerAlias: await getAccountInfo(collection.owner),
+    item_count: await NFTITEM.countDocuments({ contractAddress: collection.erc721Address }),
+    owner_count: await getCollectionOwnerCount(collection.erc721Address)
   }));
 
   const results = await Promise.all(searchResults);
@@ -329,7 +330,7 @@ router.get('/getAccountActivity/:address', async (req, res) => {
           createdAt: ofa._id.getTimestamp(),
           alias: account ? account[0] : null,
           image: account ? account[1] : null,
-          
+
         });
       }
     });
@@ -615,6 +616,41 @@ const getAccountInfo = async (address) => {
   } catch (error) {
     Logger.error(error);
     return null;
+  }
+};
+
+const getCollectionOwnerCount = async (address) => {
+  try {
+    // Count Owner //
+    let countOwner = await NFTITEM.aggregate([
+      {
+        $match: { contractAddress: address }
+      },
+      {
+        $group: {
+          _id: "$owner", count: { $sum: 1 }
+        },
+      },
+      {
+        $facet: { totalCount: [{ $count: 'ownerCount' }] }
+      }
+    ]);
+    if (countOwner.length > 0) {
+      countOwner = countOwner[0].totalCount[0].ownerCount;
+    }
+    else {
+      countOwner = 0;
+    }
+
+    // Count Owner from 1155 //
+    let countOwner1155 = await ERC1155HOLDING.countDocuments({ contractAddress: address });
+    if (countOwner1155 > 0) {
+      countOwner = countOwner1155;
+    }
+    return countOwner;
+  } catch (error) {
+    Logger.error(error);
+    return 0;
   }
 };
 module.exports = router;
