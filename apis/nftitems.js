@@ -525,7 +525,7 @@ const selectTokens = async (req, res) => {
             ? {}
             : { contractAddress: { $in: [...collections2filter] } }),
           ...(wallet ? { owner: wallet } : {}),
-          thumbnailPath: { $ne: nonImage },
+          //thumbnailPath: { $ne: nonImage },
           isAppropriate: true
         };
 
@@ -538,7 +538,7 @@ const selectTokens = async (req, res) => {
           ...(collections2filter != null
             ? { contractAddress: { $in: [...collections2filter] } }
             : {}),
-          thumbnailPath: { $ne: nonImage },
+          //thumbnailPath: { $ne: nonImage },
           isAppropriate: true
         };
         let _tokens_1155 = await NFTITEM.find(collectionFilters1155)
