@@ -48,6 +48,43 @@ router.get('/getNewestAuctions', async (_, res) => {
     });
 });
 
+router.get('/getCollectionList', async (_, res) => {
+
+  let allCollections = await Collection.find({
+    status: true,
+    isAppropriate: true,
+    isVerified: true,
+  });
+
+  let allContracts = new Array();
+
+  allCollections.map((collection) => {
+    
+    allContracts.push({
+      address: collection.erc721Address,
+      collectionName: collection.collectionName,
+      description: collection.description,
+      categories: collection.categories,
+      logoImageHash: collection.logoImageHash,
+      siteUrl: collection.siteUrl,
+      discord: collection.discord,
+      twitterHandle: collection.twitterHandle,
+      mediumHandle: collection.mediumHandle,
+      telegram: collection.telegram,
+      isVerified: collection.isVerified,
+      isVisible: true,
+      isInternal: collection.isInternal,
+      isOwnerble: collection.isOwnerble
+    });
+  });
+
+
+  return res.json({
+    status: 'success',
+    data: allContracts
+  });
+});
+
 router.get('/getCollections', async (_, res) => {
   let collections_721 = await ERC721CONTRACT.find({ isAppropriate: true });
   let collections_1155 = await ERC1155CONTRACT.find({ isAppropriate: true });
