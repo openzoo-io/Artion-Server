@@ -378,21 +378,17 @@ router.post(
       let to = toLowerCase(req.body.to); // transferred to
       let tokenID = parseInt(req.body.tokenID); //tokenID
       console.log('Transffered to: ', to);
-      
+      // remove existing listing(s)
+      await Listing.deleteMany({
+        minter: address,
+        tokenID: tokenID
+      });
 
       let erc721token = await NFTITEM.findOne({
         contractAddress: address,
         tokenID: tokenID
       });
 
-      if (erc721token)
-      {
-        // remove existing listing(s)
-        await Listing.deleteMany({
-          minter: address,
-          tokenID: tokenID
-        });
-      }
       
       if (erc721token) {
         console.log('[Existed] Transferred to ',to);
