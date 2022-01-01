@@ -73,7 +73,7 @@ router.get('/getCollectionList', async (_, res) => {
       isOwnerble: collection.isOwnerble,
       owner:collection.owner,
       ownerAlias: await getAccountInfo(collection.owner),
-      items: await NFTITEM.countDocuments({ contractAddress: collection.erc721Address }),
+      item_count: await NFTITEM.countDocuments({ contractAddress: collection.erc721Address }),
   }));
 
   const results = await Promise.all(searchResults);
