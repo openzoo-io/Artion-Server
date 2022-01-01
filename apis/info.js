@@ -51,7 +51,6 @@ router.get('/getNewestAuctions', async (_, res) => {
 router.get('/getCollectionList', async (_, res) => {
 
   let allCollections = await Collection.find({
-    status: true,
     isAppropriate: true,
     isVerified: true,
   });
