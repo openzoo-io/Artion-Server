@@ -73,7 +73,8 @@ router.get('/getCollectionList', async (_, res) => {
       isVerified: collection.isVerified,
       isVisible: true,
       isInternal: collection.isInternal,
-      isOwnerble: collection.isOwnerble
+      isOwnerble: collection.isOwnerble,
+      owner:collection.owner,
     });
   });
 
