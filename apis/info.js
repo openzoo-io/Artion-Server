@@ -57,7 +57,7 @@ router.get('/getCollectionList', async (_, res) => {
 
   let allContracts = new Array();
 
-  allCollections.map((collection) => {
+  allCollections.map(async (collection) => {
     
     allContracts.push({
       address: collection.erc721Address,
