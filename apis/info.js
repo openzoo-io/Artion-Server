@@ -74,7 +74,8 @@ router.get('/getCollectionList', async (_, res) => {
     owner: collection.owner,
     ownerAlias: await getAccountInfo(collection.owner),
     item_count: await NFTITEM.countDocuments({ contractAddress: collection.erc721Address }),
-    owner_count: await getCollectionOwnerCount(collection.erc721Address)
+    owner_count: await getCollectionOwnerCount(collection.erc721Address),
+    collectionType: await NFTITEM.find({ contractAddress: collection.erc721Address }).select('tokenType').limit(1)
   }));
 
   const results = await Promise.all(searchResults);
