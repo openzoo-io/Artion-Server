@@ -197,14 +197,11 @@ const sortItems = (_allTokens, sortby) => {
       tmp = orderBy(_allTokens, ({ viewed }) => viewed || 0, ['desc']);
       break;
     }
+   
     case 'listedAt': {
-      tmp = orderBy(
-        _allTokens,
-        ({ listedAt }) => listedAt || new Date(1970, 1, 1),
-        ['desc']
-      );
+      tmp = _allTokens.sort((a,b) => b.listedAt - a.listedAt);
       break;
-    }
+    } 
     case 'soldAt': {
       tmp = orderBy(
         _allTokens,
