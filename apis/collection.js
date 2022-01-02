@@ -7,6 +7,7 @@ const ethers = require('ethers');
 const mongoose = require('mongoose');
 const Collection = mongoose.model('Collection');
 const Category = mongoose.model('Category');
+const Account = mongoose.model('Account');
 const ERC1155CONTRACT = mongoose.model('ERC1155CONTRACT');
 const ERC721CONTRACT = mongoose.model('ERC721CONTRACT');
 const ERC1155HOLDING = mongoose.model('ERC1155HOLDING');
@@ -650,8 +651,24 @@ const minifyCollection = (collection) => {
       : {}),
     isInternal: collection.isInternal,
     isOwnerble: collection.isOwnerble,
-    isAppropriate: collection.isAppropriate
+    isAppropriate: collection.isAppropriate,
+    ownerAlias: await getAccountInfo(collection.owner),
   };
+};
+
+
+const getAccountInfo = async (address) => {
+  try {
+    let account = await Account.findOne({ address: address });
+    if (account) {
+      return [account.alias, account.imageHash];
+    } else {
+      return null;
+    }
+  } catch (error) {
+    Logger.error(error);
+    return null;
+  }
 };
 
 const updateMarketplaceRoyalty = async (collection, receipient, fee) => {
