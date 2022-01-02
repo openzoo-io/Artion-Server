@@ -938,11 +938,23 @@ router.post('/fetchTokens', async (req, res) => {
     );
 
 
-  let updatedItems = updatePrices(items);
+  let updatedItems = [];
+  let data = [];
+  let _searchResults = [];
+  if (sortby === 'price' || sortby==='cheapest')
+  {
+    updatedItems = updatePrices(items);
+    data = sortItems(updatedItems, sortby);
+    _searchResults = data.slice(from, from + count);
+  }
+  else{
+    data = sortItems(items, sortby);
+    _searchResults = data.slice(from, from + count);
+    _searchResults = updatePrices(_searchResults);
 
-  let data = sortItems(updatedItems, sortby);
+  }
 
-  let _searchResults = data.slice(from, from + count);
+  
 
   let searchResults = _searchResults.map(async (sr) => ({
     ...(sr.contractAddress != null && sr.contractAddress != undefined
