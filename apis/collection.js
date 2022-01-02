@@ -612,7 +612,7 @@ router.post('/isValidated', auth, async (req, res) => {
   }
 });
 
-const minifyCollection = (collection) => {
+const minifyCollection = async (collection) => {
   return {
     ...(collection.address ? { address: collection.address } : {}),
     ...(collection.isVerified
