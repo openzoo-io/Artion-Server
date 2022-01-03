@@ -491,7 +491,7 @@ router.post('/getCollectionStatistic', async (req, res) => {
       $facet: { totalCount: [{ $count: 'ownerCount' }] }
     }
   ]);
-  if (countOwner.length > 0)
+  if (countOwner.length > 0 && countOwner[0].totalCount[0]?.ownerCount)
   {
     countOwner = countOwner[0].totalCount[0].ownerCount;
   }
@@ -501,10 +501,11 @@ router.post('/getCollectionStatistic', async (req, res) => {
   }
 
   // Count Owner from 1155 //
-  let countOwner1155 = await ERC1155HOLDING.countDocuments({ contractAddress: address });
-  if (countOwner1155 > 0)
+  //let countOwner1155 = await ERC1155HOLDING.countDocuments({ contractAddress: address });
+  let countOwner1155 = await ERC1155HOLDING.aggregate([{$match: {contractAddress:address}},{"$group":{_id:"$holderAddress"}}])
+  if (countOwner1155.length > 0)
   {
-    countOwner = countOwner1155;
+    countOwner = countOwner1155.length;
   }
 
 
