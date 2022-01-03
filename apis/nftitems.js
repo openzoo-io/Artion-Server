@@ -910,11 +910,15 @@ const selectBundles = async (req, res) => {
 };
 
 router.post('/fetchTokens', async (req, res) => {
+  let timestart = Date.now();
+
   let type = req.body.type; // type - item type
   let sortby = req.body.sortby; //sort -> string param
   let from = parseInt(req.body.from);
   let count = parseInt(req.body.count);
   let isProfile = req.body.isProfile;
+
+  console.log('cost 1', Date.now() - timestart);
   
   let items = [];
   if (type === 'all') {
@@ -928,10 +932,11 @@ router.post('/fetchTokens', async (req, res) => {
     items = await selectBundles(req, res);
   }
 
+  console.log('cost 2 selectTokens', Date.now() - timestart);
 
   // Prune dup //
   const filters = req.body.filterby;
-  if (filters || isProfile)
+  if (isProfile || (filters && filters.length > 0))
     items = items.filter(
       (tk, idx) =>
         items.findIndex(_tk =>
@@ -942,6 +947,7 @@ router.post('/fetchTokens', async (req, res) => {
         ) === idx
     );
 
+  console.log('cost 3 prune', Date.now() - timestart);
 
   let updatedItems = [];
   let data = [];
@@ -959,6 +965,7 @@ router.post('/fetchTokens', async (req, res) => {
 
   }
 
+  console.log('cost 4 sort', Date.now() - timestart);
   
 
   let searchResults = _searchResults.map(async (sr) => ({
@@ -1023,6 +1030,9 @@ router.post('/fetchTokens', async (req, res) => {
     
   }));
   const results = await Promise.all(searchResults);
+
+  console.log('cost 5 search', Date.now() - timestart);
+
   return res.json({
     status: 'success',
     data: {
