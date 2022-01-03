@@ -151,7 +151,8 @@ router.post('/searchNames', async (req, res) => {
       .select(['address', 'imageHash', 'alias'])
       .limit(3);
     let collections = await Collection.find({
-      collectionName: { $regex: name, $options: 'i' }
+      collectionName: { $regex: name, $options: 'i' },
+      isAppropriate: true
     })
       .select(['erc721Address', 'collectionName', 'logoImageHash', 'isVerified'])
       .limit(3);
