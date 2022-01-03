@@ -5,7 +5,7 @@ const messageUtils = require("./message.utils");
 const sgMail = require("@sendgrid/mail");
 const toLowerCase = require("../utils/utils");
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-console.log('API KEY',process.env.SENDGRID_API_KEY);
+
 const app_url = process.env.APP_URL;
 const storage_url = process.env.RUNTIME
   ? "https://api.openzoo.io/image/"
@@ -118,6 +118,7 @@ const createMessage = async (data) => {
 
 const sendEmailMarketplace = async (data) => {
   let message = await createMessage(data);
+  console.log('API KEY',process.env.SENDGRID_API_KEY);
   sgMail.sendMultiple(message, (error, result) => {
     if (error) {
       console.log(error);
