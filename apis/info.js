@@ -29,7 +29,7 @@ const { getPrice, getDecimals } = require('../services/price.feed');
 // Show total volume traded //
 
 router.get('/totalVolumeTraded', async (_, res) => {
-  let volumeTraded = await TradeHistory.aggregate({$group:{ _id:null, sum: {$sum:"$price"}}})
+  let volumeTraded = await TradeHistory.aggregate([{$group:{ _id: null, sum: {$sum:"$price"}}}])
   return res.json({
     status: 'success',
     data: volumeTraded
