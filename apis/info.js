@@ -25,6 +25,17 @@ const service_auth = require('./middleware/auth.tracker');
 
 const { getPrice, getDecimals } = require('../services/price.feed');
 
+
+// Show total volume traded //
+
+router.get('/totalVolumeTraded', async (_, res) => {
+  let volumeTraded = await TradeHistory.tradehistories.aggregate({$group:{ _id:null, sum: {$sum:"$price"}}})
+  return res.json({
+    status: 'success',
+    data: volumeTraded
+  });
+});
+
 // list the newly minted 10 tokens
 router.get('/getNewestTokens', async (_, res) => {
   let tokens = await NFTITEM.find().sort({ createdAt: 1 }).limit(20);
