@@ -303,7 +303,8 @@ const selectTokens = async (req, res) => {
     const getCategoryCollectionAddresses = async (category) => {
       const categoryCollectionRows = await Collection.find({
         categories: category,
-        isAppropriate: true
+        isAppropriate: true,
+        ...{isVerified: onlyVerified}
       }).select('erc721Address');
       const categoryCollectionAddresses = categoryCollectionRows.map((row) =>
         row.erc721Address.toLowerCase()

@@ -118,7 +118,6 @@ const createMessage = async (data) => {
 
 const sendEmailMarketplace = async (data) => {
   let message = await createMessage(data);
-  console.log('API KEY',process.env.SENDGRID_API_KEY);
   sgMail.sendMultiple(message, (error, result) => {
     if (error) {
       console.log(error);
