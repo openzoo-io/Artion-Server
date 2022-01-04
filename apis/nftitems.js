@@ -301,11 +301,24 @@ const selectTokens = async (req, res) => {
     ];
 
     const getCategoryCollectionAddresses = async (category) => {
-      const categoryCollectionRows = await Collection.find({
-        categories: category,
-        isAppropriate: true,
-        ...{isVerified: onlyVerified}
-      }).select('erc721Address');
+
+      let filterTmp = {}
+      if (onlyVerified)
+      {
+        filterTmp = {
+          categories: category,
+          isAppropriate: true,
+          isVerified: true
+        }
+      }
+      else{
+        filterTmp = {
+          categories: category,
+          isAppropriate: true,
+        }
+      }
+
+      const categoryCollectionRows = await Collection.find(filterTmp).select('erc721Address');
       const categoryCollectionAddresses = categoryCollectionRows.map((row) =>
         row.erc721Address.toLowerCase()
       );
