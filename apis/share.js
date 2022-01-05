@@ -40,6 +40,9 @@ router.get('/collection/:address/:tokenid', async (req, res) => {
     contractAddress: address,
     tokenID: tokenid
   });
+  let collection = await Collection.findOne({
+    erc721Address: address,
+  });
   if (!token)
   {
     return res.redirect('https://openzoo.io/404');
@@ -50,6 +53,7 @@ console.log('do return');
   <html lang="en">
   <head>
   <title>${token.name} - OpenZoo</title>
+  <meta property="description" content="${collection.description}" />
   <meta property="twitter:card" content="summary_large_image" />
   <meta property="og:image" content="${token.imageURL}" />
   <meta property="twitter:image" content="${token.imageURL}" />
