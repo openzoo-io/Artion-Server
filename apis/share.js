@@ -31,6 +31,7 @@ const { getPrice, getDecimals } = require('../services/price.feed');
 router.get('/collection/:address/:tokenid', async (req, res) => {
   let address = toLowerCase(req.params.address);
   let tokenid = Math.floor(req.params.tokenid);
+  console.log(address, tokenid);
   if (!tokenid)
   {
     return res.redirect('https://openzoo.io/404');
@@ -43,7 +44,7 @@ router.get('/collection/:address/:tokenid', async (req, res) => {
   {
     return res.redirect('https://openzoo.io/404');
   }
-
+console.log('do return');
   res.setHeader('Content-type','text/html');
   return res.write(`<!doctype html>
   <html lang="en">
