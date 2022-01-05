@@ -53,6 +53,9 @@ console.log('do return');
   <meta property="twitter:card" content="summary_large_image" />
   <meta property="twitter:image" content="${token.imageURL}" />
   </head>
+  <body>
+  <meta http-equiv="refresh" content="0; url=https://openzoo.io/collection/${address}/${tokenid}" />
+  </body>
   </html>`);
 });
 
