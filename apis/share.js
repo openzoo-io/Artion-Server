@@ -33,7 +33,7 @@ router.get('/collection/:address/:tokenid', async (req, res) => {
   let tokenid = Math.floor(req.params.tokenid);
   if (!tokenid)
   {
-    res.redirect('https://openzoo.io/404');
+    return res.redirect('https://openzoo.io/404');
   }
   let token = await NFTITEM.findOne({
     contractAddress: address,
@@ -41,11 +41,11 @@ router.get('/collection/:address/:tokenid', async (req, res) => {
   });
   if (!token)
   {
-    res.redirect('https://openzoo.io/404');
+    return res.redirect('https://openzoo.io/404');
   }
 
   res.setHeader('Content-type','text/html');
-  res.write(`<!doctype html>
+  return res.write(`<!doctype html>
   <html lang="en">
   <head>
   <title>Test</title>
