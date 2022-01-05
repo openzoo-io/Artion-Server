@@ -58,7 +58,6 @@ console.log('do return');
   <meta property="twitter:card" content="summary_large_image" />
   <meta property="og:image" content="${token.imageURL}" />
   <meta property="og:url" content="https://openzoo.io/collection/${address}/${tokenid}" />
-  <link rel="canonical" href="https://openzoo.io/collection/${address}/${tokenid}" />
   <meta property="twitter:image" content="${token.imageURL}" />
   </head>
   <body>
