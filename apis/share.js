@@ -51,6 +51,7 @@ console.log('do return');
   <head>
   <title>${token.name} - OpenZoo</title>
   <meta property="twitter:card" content="summary_large_image" />
+  <meta property="og:image" content="${token.imageURL}" />
   <meta property="twitter:image" content="${token.imageURL}" />
   </head>
   <body>
