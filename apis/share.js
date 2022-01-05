@@ -28,7 +28,7 @@ const { getPrice, getDecimals } = require('../services/price.feed');
 
 // Show total volume traded //
 
-router.get('/collection/:address/:tokenid', async (_, res) => {
+router.get('/collection/:address/:tokenid', async (req, res) => {
   let address = toLowerCase(req.params.address);
   let tokenid = Math.floor(req.params.tokenid);
   if (!tokenid)
