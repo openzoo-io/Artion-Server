@@ -49,8 +49,9 @@ console.log('do return');
   return res.send(`<!doctype html>
   <html lang="en">
   <head>
-  <title>Test</title>
-  <meta name="description" content="Test Description"/>
+  <title>${token.name} - OpenZoo</title>
+  <meta property="twitter:card" content="summary_large_image" />
+  <meta property="twitter:image" content="${token.imageURL}" />
   </head>
   </html>`);
 });
