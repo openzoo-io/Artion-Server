@@ -46,7 +46,7 @@ router.get('/collection/:address/:tokenid', async (req, res) => {
   }
 console.log('do return');
   res.setHeader('Content-type','text/html');
-  return res.write(`<!doctype html>
+  return res.send(`<!doctype html>
   <html lang="en">
   <head>
   <title>Test</title>
