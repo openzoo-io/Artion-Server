@@ -270,7 +270,7 @@ router.post('/banCollection', auth, async (req, res) => {
 router.post('/unbanCollection', auth, async (req, res) => {
   try {
     let adminAddress = extractAddress(req, res);
-    if (!isAdmin(adminAddress))
+    if (!isAllowedToBan(adminAddress))
       return res.json({
         status: 'failed',
         data: 'Only Admin can unban collection!'
