@@ -270,7 +270,7 @@ const selectTokens = async (req, res) => {
       }
 
     }
-    //console.log(filters);
+    console.log(filters);
 
     // create a sort by option
     const selectOption = [
@@ -336,7 +336,6 @@ const selectTokens = async (req, res) => {
       category === undefined
         ? null
         : await getCategoryCollectionAddresses(category);
-
     // Filter out disabled explorer collections. Disabled collections are only returned when in filterCollections
     let allExceptDisabledCollections = null;
     if (!categoryCollections && !filterCollections) {
@@ -367,6 +366,8 @@ const selectTokens = async (req, res) => {
     const collections2filter =
       categoryCollections || filterCollections || allExceptDisabledCollections;
 
+    console.log('debug category', wallet, filters, collections2filter, category, categoryCollections, filterCollections, onlyVerified);
+    
     const lookupNFTItemsAndMerge = [
       {
         $lookup: {
