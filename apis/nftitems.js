@@ -428,7 +428,7 @@ const selectTokens = async (req, res) => {
           isAppropriate: true,
           ...(mediaType ?  {contentType: mediaType}: {})
         };
-
+        console.log('debug collectionFilters', collectionFilters);
         return NFTITEM.find(collectionFilters).select(selectOption).lean();
       }
 
