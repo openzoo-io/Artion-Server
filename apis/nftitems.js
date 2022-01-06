@@ -1056,6 +1056,142 @@ router.post('/fetchTokens', async (req, res) => {
   });
 });
 
+router.post('/fetchTokensDebug', async (req, res) => {
+  let timestart = Date.now();
+
+  let type = req.body.type; // type - item type
+  let sortby = req.body.sortby; //sort -> string param
+  let from = parseInt(req.body.from);
+  let count = parseInt(req.body.count);
+  let isProfile = req.body.isProfile;
+
+  console.log('cost 1', Date.now() - timestart);
+  
+  let items = [];
+  if (type === 'all') {
+    let nfts = await selectTokens(req, res);
+    //let bundles = await selectBundles(req, res);
+    //items = [...nfts, ...bundles]; // Todo for Bundle pack
+    items = [...nfts];
+  } else if (type === 'single') {
+    items = await selectTokens(req, res);
+  } else if (type === 'bundle') {
+    items = await selectBundles(req, res);
+  }
+
+  console.log('cost 2 selectTokens', Date.now() - timestart);
+  console.log('items', items);
+
+  // Prune dup //
+  const filters = req.body.filterby;
+  if (isProfile || (filters && filters.length > 0))
+    items = items.filter(
+      (tk, idx) =>
+        items.findIndex(_tk =>
+          tk.items
+            ? tk._id === _tk._id
+            : tk.contractAddress === _tk.contractAddress &&
+            tk.tokenID === _tk.tokenID
+        ) === idx
+    );
+
+  console.log('cost 3 prune', Date.now() - timestart);
+  console.log('filters', filters, items);
+
+  let updatedItems = [];
+  let data = [];
+  let _searchResults = [];
+  if (sortby === 'price' || sortby==='cheapest')
+  {
+    updatedItems = updatePrices(items);
+    data = sortItems(updatedItems, sortby);
+    _searchResults = data.slice(from, from + count);
+  }
+  else{
+    data = sortItems(items, sortby);
+    _searchResults = data.slice(from, from + count);
+    _searchResults = updatePrices(_searchResults);
+
+  }
+
+  console.log('cost 4 sort', Date.now() - timestart);
+  console.log('data', data, _searchResults);
+
+  let searchResults = _searchResults.map(async (sr) => ({
+    ...(sr.contractAddress != null && sr.contractAddress != undefined
+      ? { contractAddress: sr.contractAddress }
+      : {}),
+    ...(sr.contentType != null && sr.contentType != undefined
+      ? { contentType: sr.contentType }
+      : {}),
+    ...(sr.imageURL != null && sr.imageURL != undefined
+      ? { imageURL: sr.imageURL }
+      : {}),
+    ...(sr.name != null && sr.name != undefined ? { name: sr.name } : {}),
+    ...(sr.price != null && sr.price != undefined ? { price: sr.price } : {}),
+    ...(sr.paymentToken != null && sr.paymentToken != undefined
+      ? { paymentToken: sr.paymentToken }
+      : {}),
+    ...(sr.priceInUSD != null && sr.priceInUSD != undefined
+      ? { priceInUSD: sr.priceInUSD }
+      : {}),
+    ...(sr.supply != null && sr.supply != undefined
+      ? { supply: sr.supply }
+      : {}),
+    ...(sr.thumbnailPath != null && sr.thumbnailPath != undefined
+      ? { thumbnailPath: sr.thumbnailPath }
+      : {}),
+    ...(sr.tokenID != null && sr.tokenID != undefined
+      ? { tokenID: sr.tokenID }
+      : {}),
+    ...(sr.tokenType != null && sr.tokenType != undefined
+      ? { tokenType: sr.tokenType }
+      : {}),
+    ...(sr.tokenURI != null && sr.tokenURI != undefined
+      ? { tokenURI: sr.tokenURI }
+      : {}),
+    ...(sr.items != null && sr.items != undefined ? { items: sr.items } : {}),
+    ...(sr.liked != null && sr.liked != undefined ? { liked: sr.liked } : {}),
+    ...(sr._id != null && sr._id != undefined ? { _id: sr._id } : {}),
+    ...(sr.holderSupply != null && sr.holderSupply != undefined
+      ? { holderSupply: sr.holderSupply }
+      : {}),
+    ...(sr.saleEndsAt != null && sr.saleEndsAt != undefined
+      ? { saleEndsAt: sr.saleEndsAt }
+      : {}),
+    ...(sr.lastSalePrice != null && sr.lastSalePrice != undefined
+      ? { lastSalePrice: sr.lastSalePrice }
+      : {}),
+    ...(sr.lastSalePricePaymentToken != null &&
+      sr.lastSalePricePaymentToken != undefined
+      ? { lastSalePricePaymentToken: sr.lastSalePricePaymentToken }
+      : {}),
+    ...(sr.lastSalePriceInUSD != null && sr.lastSalePriceInUSD != undefined
+      ? { lastSalePriceInUSD: sr.lastSalePriceInUSD }
+      : {}),
+    ...(sr.owner != null && sr.owner != undefined
+      ? { owner: sr.owner }
+      : {}),
+    ...(sr.isAppropriate != null && sr.isAppropriate != undefined
+      ? { isAppropriate: sr.isAppropriate }
+      : { isAppropriate: false }),
+    ownerAlias: await getAccountInfo(sr.owner),
+    
+  }));
+  const results = await Promise.all(searchResults);
+
+  console.log('cost 5 search', Date.now() - timestart);
+  console.log('results', results);
+
+  return res.json({
+    status: 'success',
+    data: {
+      tokens: results,
+      total: data.length
+    }
+  });
+});
+
 const parseAddress = (data) => {
   let length = data.length;
   return data.substring(0, 2) + data.substring(length - 40);
