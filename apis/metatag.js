@@ -50,6 +50,7 @@ router.get('/collection/:address/:tokenid', async (req, res) => {
   }
 
   return res.json({
+    status: 'success',
     data: {
       name: token.name,
       description: collection.description,
