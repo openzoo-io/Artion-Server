@@ -29,7 +29,7 @@ const { getPrice, getDecimals } = require('../services/price.feed');
 // Show total volume traded //
 
 router.get('/totalVolumeTraded', async (_, res) => {
-  let volumeTraded = await TradeHistory.aggregate([{$group:{ _id: null, sum: {$sum:"$price"}}}])
+  let volumeTraded = await TradeHistory.aggregate([{ $group: { _id: null, sum: { $sum: "$price" } } }])
   return res.json({
     status: 'success',
     data: volumeTraded
@@ -59,6 +59,53 @@ router.get('/getNewestAuctions', async (_, res) => {
     });
 });
 
+router.post('/getCollectionList', async (req, res) => {
+  let isVerified = req.body.isVerified;
+  let allCollections = [];
+  if (isVerified === true) {
+    allCollections = await Collection.find({
+      isAppropriate: true,
+      isVerified: true,
+    });
+  }
+  else {
+    allCollections = await Collection.find({
+      isAppropriate: true,
+    });
+  }
+
+  let searchResults = allCollections.map(async (collection) => ({
+
+    address: collection.erc721Address,
+    collectionName: collection.collectionName,
+    description: collection.description,
+    categories: collection.categories,
+    logoImageHash: collection.logoImageHash,
+    siteUrl: collection.siteUrl,
+    discord: collection.discord,
+    twitterHandle: collection.twitterHandle,
+    mediumHandle: collection.mediumHandle,
+    telegram: collection.telegram,
+    isVerified: collection.isVerified,
+    isVisible: true,
+    isInternal: collection.isInternal,
+    isOwnerble: collection.isOwnerble,
+    owner: collection.owner,
+    ownerAlias: await getAccountInfo(collection.owner),
+    item_count: await NFTITEM.countDocuments({ contractAddress: collection.erc721Address }),
+    owner_count: await getCollectionOwnerCount(collection.erc721Address),
+    collectionType: await NFTITEM.find({ contractAddress: collection.erc721Address }).select('tokenType').limit(1)
+  }));
+
+  const results = await Promise.all(searchResults);
+  return res.json({
+    status: 'success',
+    data: results
+  });
+});
+
+
+// TODO: Abandon this //
 router.get('/getCollectionList', async (_, res) => {
 
   let allCollections = await Collection.find({
