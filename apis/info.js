@@ -61,6 +61,7 @@ router.get('/getNewestAuctions', async (_, res) => {
 
 router.post('/getCollectionList', async (req, res) => {
   let isVerified = req.body.isVerified;
+  console.log(isVerified);
   let allCollections = [];
   if (isVerified === true) {
     allCollections = await Collection.find({
