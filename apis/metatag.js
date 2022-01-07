@@ -31,7 +31,7 @@ router.get('/collection/:address/:tokenid', async (req, res) => {
 
   if (!tokenid)
   {
-    return res.json({
+    return res.status(404).json({
       status: 'failed',
     });
   }
@@ -44,7 +44,7 @@ router.get('/collection/:address/:tokenid', async (req, res) => {
   });
   if (!token)
   {
-    return res.json({
+    return res.status(404).json({
       status: 'failed',
     });
   }
