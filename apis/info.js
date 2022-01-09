@@ -94,6 +94,7 @@ router.post('/getCollectionList', async (req, res) => {
     ownerAlias: await getAccountInfo(collection.owner),
     item_count: await NFTITEM.countDocuments({ contractAddress: collection.erc721Address }),
     owner_count: await getCollectionOwnerCount(collection.erc721Address),
+    floor_price: await getCollectionFloorPrice(collection.erc721Address),
     collectionType: await NFTITEM.find({ contractAddress: collection.erc721Address }).select('tokenType').limit(1)
   }));
 
@@ -133,7 +134,6 @@ router.get('/getCollectionList', async (_, res) => {
     ownerAlias: await getAccountInfo(collection.owner),
     item_count: await NFTITEM.countDocuments({ contractAddress: collection.erc721Address }),
     owner_count: await getCollectionOwnerCount(collection.erc721Address),
-    floor_price: 0,
     collectionType: await NFTITEM.find({ contractAddress: collection.erc721Address }).select('tokenType').limit(1)
   }));
 
