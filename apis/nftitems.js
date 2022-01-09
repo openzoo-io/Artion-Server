@@ -1188,9 +1188,15 @@ router.post('/getSingleItemDetails', async (req, res) => {
     let historyPromise = _history.map(async (hist) => {
       let sender = await getAccountInfo(hist.from);
       let receiver = await getAccountInfo(hist.to);
-
-      let finalPrice = hist.price * getPrice(hist.paymentToken);
-
+      let finalPrice = 0;
+      if (hist.isAuction === true)
+      {
+        finalPrice = hist.price * hist.priceInUSD;
+      }
+      else
+      {
+        finalPrice = hist.priceInUSD;
+      }
       history.push({
         from: hist.from,
         to: hist.to,
