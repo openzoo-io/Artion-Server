@@ -95,6 +95,7 @@ router.post('/getCollectionList', async (req, res) => {
     item_count: await NFTITEM.countDocuments({ contractAddress: collection.erc721Address }),
     owner_count: await getCollectionOwnerCount(collection.erc721Address),
     floor_price: await getCollectionFloorPrice(collection.erc721Address),
+    traded_volume: await getCollectionTradedVolume(collection.erc721Address),
     collectionType: await NFTITEM.find({ contractAddress: collection.erc721Address }).select('tokenType').limit(1)
   }));
 
@@ -679,6 +680,42 @@ const getAccountInfo = async (address) => {
     return null;
   }
 };
+
+
+const getCollectionTradedVolume = async (address) => {
+  try {
+    const TradeHistory = mongoose.model('TradeHistory');
+
+    let volumeTradedAuction = await TradeHistory.find({
+      collectionAddress: address,
+      isAuction: true,
+    });
+    let volumeTradedSold = await TradeHistory.aggregate([
+      {
+        $match: { collectionAddress: address, isAuction: false }
+      },
+      {
+        $group: {
+          _id: null, sum: { $sum: "$priceInUSD" }
+        },
+      }
+    ]);
+    let voltraded = 0;
+    if (volumeTradedAuction.length > 0) {
+
+      volumeTradedAuction.map(item => {
+        voltraded += item.priceInUSD * item.price;
+      });
+    }
+    if (volumeTradedSold.length > 0) {
+      voltraded += volumeTradedSold[0].sum;
+    }
+    return voltraded;
+  } catch (error) {
+    Logger.error(error);
+    return 0;
+  }
+}
 
 const getCollectionFloorPrice = async (address) => {
   try {
