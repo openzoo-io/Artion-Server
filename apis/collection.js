@@ -521,9 +521,19 @@ router.post('/getCollectionStatistic', async (req, res) => {
   // Vol traded //
   //db.tradehistories.aggregate([{$match:{collectionAddress:"0x35b0b5c350b62ddee9be102b7567c4dabe52cf4f"}},{$group:{_id:null,sum: {$sum:"$priceInUSD"}}}])
   const TradeHistory = mongoose.model('TradeHistory');
-  let volumeTraded = await TradeHistory.aggregate([
+  let volumeTradedAuction = await TradeHistory.aggregate([
     {
-      $match: { collectionAddress: address }
+      $match: { collectionAddress: address , isAuction: true }
+    },
+    {
+      $group: {
+        _id: null, sum: {$sum:"$priceInUSD"}
+      },
+    }
+  ]);
+  let volumeTradedSold = await TradeHistory.aggregate([
+    {
+      $match: { collectionAddress: address , isAuction: false }
     },
     {
       $group: {
@@ -532,9 +542,13 @@ router.post('/getCollectionStatistic', async (req, res) => {
     }
   ]);
   let voltraded=0;
-  if (volumeTraded.length > 0)
+  if (volumeTradedAuction.length > 0)
   {
-    voltraded = volumeTraded[0].sum;
+    voltraded += volumeTradedAuction[0].sum;
+  }
+  if (volumeTradedSold.length > 0)
+  {
+    voltraded += volumeTradedSold[0].sum;
   }
 
   //console.log(volumeTraded);
