@@ -133,6 +133,7 @@ router.get('/getCollectionList', async (_, res) => {
     ownerAlias: await getAccountInfo(collection.owner),
     item_count: await NFTITEM.countDocuments({ contractAddress: collection.erc721Address }),
     owner_count: await getCollectionOwnerCount(collection.erc721Address),
+    floor_price: await getCollectionFloorPrice(collection.erc721Address),
     collectionType: await NFTITEM.find({ contractAddress: collection.erc721Address }).select('tokenType').limit(1)
   }));
 
@@ -678,6 +679,22 @@ const getAccountInfo = async (address) => {
     return null;
   }
 };
+
+const getCollectionFloorPrice = async (address) => {
+  try {
+    // Floor Price //
+    let floorPriceNFT = await NFTITEM.find({ contractAddress: address, priceInUSD: { $gt: 0 } }).sort({ priceInUSD: 1 }).limit(1)
+    //console.log(floorPriceNFT[0].priceInUSD);
+    let floorPrice = 0;
+    if (floorPriceNFT.length > 0) {
+      floorPrice = floorPriceNFT[0].priceInUSD;
+    }
+    return floorPrice;
+  } catch (error) {
+    Logger.error(error);
+    return 0;
+  }
+}
 
 const getCollectionOwnerCount = async (address) => {
   try {
