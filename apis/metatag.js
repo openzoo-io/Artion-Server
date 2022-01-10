@@ -25,6 +25,33 @@ const service_auth = require('./middleware/auth.tracker');
 
 const { getPrice, getDecimals } = require('../services/price.feed');
 
+// Get Collection page //
+router.get('/collection/:address', async (req, res) => {
+  let address = toLowerCase(req.params.address);
+
+  let collection = await Collection.findOne({
+    erc721Address: address,
+  });
+  if (!collection)
+  {
+    return res.status(404).json({
+      status: 'failed',
+    });
+  }
+
+  return res.json({
+    status: 'success',
+    data: {
+      name: collection.collectionName,
+      description: collection.description,
+      image: collection.logoImageHash,
+    },
+  });
+
+});
+
+
+// Get NFT Page //
 router.get('/collection/:address/:tokenid', async (req, res) => {
   let address = toLowerCase(req.params.address);
   let tokenid = Math.floor(req.params.tokenid);
@@ -42,7 +69,7 @@ router.get('/collection/:address/:tokenid', async (req, res) => {
   let collection = await Collection.findOne({
     erc721Address: address,
   });
-  if (!token)
+  if (!token || !collection)
   {
     return res.status(404).json({
       status: 'failed',
