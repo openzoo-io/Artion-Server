@@ -44,7 +44,7 @@ router.get('/collection/:address', async (req, res) => {
     data: {
       name: collection.collectionName,
       description: collection.description,
-      image: 'https://openzoo2.mypinata.cloud/ipfs/'.collection.logoImageHash,
+      image: 'https://openzoo2.mypinata.cloud/ipfs/'+collection.logoImageHash,
     },
   });
 
