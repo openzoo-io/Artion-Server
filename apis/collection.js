@@ -96,7 +96,7 @@ router.post('/collectiondetails', auth, async (req, res) => {
   let twitterHandle = req.body.twitterHandle;
   let mediumHandle = req.body.mediumHandle;
   let telegram = req.body.telegram;
-  let instagram = req.body.instagram;
+  let instagram = req.body.instagramHandle;
   let email = req.body.email;
 
   let feeRecipient = req.body.feeRecipient
