@@ -25,6 +25,31 @@ const service_auth = require('./middleware/auth.tracker');
 
 const { getPrice, getDecimals } = require('../services/price.feed');
 
+// Get Account page //
+router.get('/account/:address', async (req, res) => {
+  let address = toLowerCase(req.params.address);
+
+  let account = await Account.findOne({ address: address });
+  if (account) {
+    return res.json({
+      status: "success",
+      data: {
+        name: account.alias ? account.alias : address,
+        description: account.bio ? account.bio : 'Global NFT MarketPlace Powered On Wanchain',
+        image: account.imageHash? 'https://openzoo2.mypinata.cloud/ipfs/'+account.imageHash : 'https://openzoo.io/icon.png',
+      },
+    });
+  } else {
+    return res.status(400).json({
+      status: "failed",
+    });
+  }
+
+  
+
+});
+
+
 // Get Collection page //
 router.get('/collection/:address', async (req, res) => {
   let address = toLowerCase(req.params.address);
