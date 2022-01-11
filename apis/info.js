@@ -705,6 +705,30 @@ const getAccountInfo = async (address) => {
   }
 };
 
+const getCollectionLiked = async (address) =>{
+  try {
+   
+    let likedSum = await NFTITEM.aggregate([
+      {
+        $match: { contractAddress: address }
+      },
+      {
+        $group: {
+          _id: null, sum: { $sum: "$liked" }
+        },
+      }
+    ]);
+    let liked = 0;
+    if (likedSum.length > 0) {
+      liked += likedSum[0].sum;
+    }
+
+    return liked;
+  } catch (error) {
+    Logger.error(error);
+    return 0;
+  }
+}
 
 const getCollectionTradedVolume = async (address) => {
   try {
