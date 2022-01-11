@@ -59,8 +59,102 @@ router.get('/getNewestAuctions', async (_, res) => {
     });
 });
 
+const sortItems = (_allTokens, sortby) => {
+  let tmp = [];
+  switch (sortby) {
+    case 'popularity' : {
+      tmp = orderBy(
+        _allTokens,
+        ({ traded_volume }) => traded_volume || 0,
+        ['desc']
+      );
+      break;
+    }
+    case 'createdAt': {
+      tmp = orderBy(
+        _allTokens,
+        ({ createdAt }) => createdAt || new Date(1970, 1, 1),
+        ['desc']
+      );
+      break;
+    }
+    case 'oldest': {
+      tmp = orderBy(
+        _allTokens,
+        ({ createdAt }) => createdAt || new Date(1970, 1, 1),
+        ['asc']
+      );
+      break;
+    }
+    case 'price': {
+      tmp = orderBy(
+        _allTokens,
+        ({ currentPriceInUSD }) => currentPriceInUSD || 0,
+        ['desc']
+      );
+      break;
+    }
+    case 'cheapest': {
+      tmp = orderBy(
+        _allTokens,
+        ({ currentPriceInUSD }) => currentPriceInUSD || MAX_INTEGER,
+        ['asc']
+      );
+      break;
+    }
+    case 'lastSalePrice': {
+      tmp = orderBy(
+        _allTokens,
+        ({ lastSalePriceInUSD }) => lastSalePriceInUSD || 0,
+        ['desc']
+      );
+      break;
+    }
+    case 'viewed': {
+      tmp = orderBy(_allTokens, ({ viewed }) => viewed || 0, ['desc']);
+      break;
+    }
+    case 'listedAt': {
+      tmp = orderBy(
+        _allTokens,
+        ({ listedAt }) => listedAt || new Date(1970, 1, 1),
+        ['desc']
+      );
+      break;
+    } 
+    /*
+    case 'listedAt': {
+      tmp = _allTokens.sort((a,b) => b.listedAt - a.listedAt);
+      break;
+    } */
+    case 'soldAt': {
+      tmp = orderBy(
+        _allTokens,
+        ({ soldAt }) => soldAt || new Date(1970, 1, 1),
+        ['desc']
+      );
+      break;
+    }
+    case 'saleEndsAt': {
+      tmp = orderBy(
+        _allTokens,
+        ({ saleEndsAt }) =>
+          saleEndsAt
+            ? saleEndsAt - new Date() >= 0
+              ? saleEndsAt - new Date()
+              : 1623424669
+            : 1623424670,
+        ['asc']
+      );
+      break;
+    }
+  }
+  return tmp;
+};
+
 router.post('/getCollectionList', async (req, res) => {
   let isVerified = req.body.isVerified;
+  let sortedBy = req.body.sortedBy;
   let allCollections = [];
   if (isVerified == true) {
     allCollections = await Collection.find({
@@ -100,6 +194,10 @@ router.post('/getCollectionList', async (req, res) => {
   }));
 
   const results = await Promise.all(searchResults);
+
+  // Do sorting //
+  results = sortItems(results, sortedBy);
+
   return res.json({
     status: 'success',
     data: {
