@@ -65,7 +65,31 @@ const sortItems = (_allTokens, sortby) => {
     case 'popularity' : {
       tmp = orderBy(
         _allTokens,
-        ({ traded_volume }) => traded_volume || 0,
+        ({ liked }) => liked || 0,
+        ['desc']
+      );
+      break;
+    }
+    case 'name' : {
+      tmp = orderBy(
+        _allTokens,
+        ({ collectionName }) => collectionName || 0,
+        ['asc']
+      );
+      break;
+    }
+    case 'item' : {
+      tmp = orderBy(
+        _allTokens,
+        ({ item_count }) => item_count || 0,
+        ['desc']
+      );
+      break;
+    }
+    case 'owner' : {
+      tmp = orderBy(
+        _allTokens,
+        ({ owner_count }) => owner_count || 0,
         ['desc']
       );
       break;
@@ -120,7 +144,14 @@ router.post('/getCollectionList', async (req, res) => {
   let results = await Promise.all(searchResults);
 
   // Do sorting //
-  results = sortItems(results, sortedBy);
+  if (sortedBy === 'created')
+  {
+    results = results.reverse();
+  }
+  else
+  {
+    results = sortItems(results, sortedBy);
+  }
 
   return res.json({
     status: 'success',
