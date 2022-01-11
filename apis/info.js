@@ -102,7 +102,10 @@ router.post('/getCollectionList', async (req, res) => {
   const results = await Promise.all(searchResults);
   return res.json({
     status: 'success',
-    data: results
+    data: {
+      collections: results,
+      total: data.length
+    }
   });
 });
 
