@@ -71,10 +71,9 @@ const sortItems = (_allTokens, sortby) => {
       break;
     }
     case 'name' : {
-      const nameSorter = v => v.collectionName.toLowerCase()
       tmp = orderBy(
         _allTokens,
-        [nameSorter]
+        ({ collectionName }) => collectionName.toLowerCase(),
         ['asc']
       );
       break;
