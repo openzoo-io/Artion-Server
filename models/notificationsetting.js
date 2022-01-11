@@ -3,14 +3,14 @@ const mongoose = require("mongoose");
 const NotificationSetting = mongoose.Schema({
   address: { type: String, required: true }, //wallet address
 
-  fNotification: { type: Boolean, default: true }, //listen for follower
-  fBundleCreation: { type: Boolean, default: true }, //bundle creation
-  fBundleList: { type: Boolean, default: true }, //bundle list
-  fBundlePrice: { type: Boolean, default: true }, //bundle price update
-  fNftAuctionPrice: { type: Boolean, default: true }, //nft auction price update
-  fNftList: { type: Boolean, default: true }, //nft list
-  fNftAuction: { type: Boolean, default: true }, //nft auction
-  fNftPrice: { type: Boolean, default: true }, //nft price update
+  fNotification: { type: Boolean, default: false }, //listen for follower
+  fBundleCreation: { type: Boolean, default: false }, //bundle creation
+  fBundleList: { type: Boolean, default: false }, //bundle list
+  fBundlePrice: { type: Boolean, default: false }, //bundle price update
+  fNftAuctionPrice: { type: Boolean, default: false }, //nft auction price update
+  fNftList: { type: Boolean, default: false }, //nft list
+  fNftAuction: { type: Boolean, default: false }, //nft auction
+  fNftPrice: { type: Boolean, default: false }, //nft price update
 
   sNotification: { type: Boolean, default: true }, //   self account activity
   sBundleBuy: { type: Boolean, default: true }, //bought a new bundle
