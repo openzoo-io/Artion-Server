@@ -113,6 +113,7 @@ router.post('/getCollectionList', async (req, res) => {
     owner_count: await getCollectionOwnerCount(collection.erc721Address),
     floor_price: await getCollectionFloorPrice(collection.erc721Address),
     traded_volume: await getCollectionTradedVolume(collection.erc721Address),
+    liked: await getCollectionLiked(collection.erc721Address),
     collectionType: await NFTITEM.find({ contractAddress: collection.erc721Address }).select('tokenType').limit(1)
   }));
 
