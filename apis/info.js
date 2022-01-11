@@ -193,7 +193,7 @@ router.post('/getCollectionList', async (req, res) => {
     collectionType: await NFTITEM.find({ contractAddress: collection.erc721Address }).select('tokenType').limit(1)
   }));
 
-  const results = await Promise.all(searchResults);
+  let results = await Promise.all(searchResults);
 
   // Do sorting //
   results = sortItems(results, sortedBy);
