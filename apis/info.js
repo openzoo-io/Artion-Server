@@ -73,7 +73,7 @@ const sortItems = (_allTokens, sortby) => {
     case 'name' : {
       tmp = orderBy(
         _allTokens,
-        [collectionName => collectionName.toLowerCase()]
+        [token => token.collectionName.toLowerCase()]
         ['asc']
       );
       break;
