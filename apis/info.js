@@ -104,7 +104,7 @@ router.post('/getCollectionList', async (req, res) => {
     status: 'success',
     data: {
       collections: results,
-      total: data.length
+      total: allCollections.length
     }
   });
 });
