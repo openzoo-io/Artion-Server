@@ -62,7 +62,7 @@ router.get('/getNewestAuctions', async (_, res) => {
 const sortItems = (_allTokens, sortby) => {
   let tmp = [];
   switch (sortby) {
-    case 'popularity' : {
+    case 'popularity': {
       tmp = orderBy(
         _allTokens,
         ({ liked }) => liked || 0,
@@ -70,7 +70,7 @@ const sortItems = (_allTokens, sortby) => {
       );
       break;
     }
-    case 'name' : {
+    case 'name': {
       tmp = orderBy(
         _allTokens,
         ({ collectionName }) => collectionName.toLowerCase(),
@@ -78,7 +78,7 @@ const sortItems = (_allTokens, sortby) => {
       );
       break;
     }
-    case 'item' : {
+    case 'item': {
       tmp = orderBy(
         _allTokens,
         ({ item_count }) => item_count || 0,
@@ -86,7 +86,7 @@ const sortItems = (_allTokens, sortby) => {
       );
       break;
     }
-    case 'owner' : {
+    case 'owner': {
       tmp = orderBy(
         _allTokens,
         ({ owner_count }) => owner_count || 0,
@@ -94,7 +94,7 @@ const sortItems = (_allTokens, sortby) => {
       );
       break;
     }
-    
+
   }
   return tmp;
 };
@@ -144,13 +144,13 @@ router.post('/getCollectionList', async (req, res) => {
   let results = await Promise.all(searchResults);
 
   // Do sorting //
-  if (sortedBy === 'created')
-  {
-    results = results.reverse();
-  }
-  else
-  {
-    results = sortItems(results, sortedBy);
+  if (sortedBy) {
+    if (sortedBy === 'created') {
+      results = results.reverse();
+    }
+    else {
+      results = sortItems(results, sortedBy);
+    }
   }
 
   return res.json({
@@ -737,9 +737,9 @@ const getAccountInfo = async (address) => {
   }
 };
 
-const getCollectionLiked = async (address) =>{
+const getCollectionLiked = async (address) => {
   try {
-   
+
     let likedSum = await NFTITEM.aggregate([
       {
         $match: { contractAddress: address }
