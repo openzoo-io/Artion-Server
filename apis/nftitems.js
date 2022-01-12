@@ -924,6 +924,10 @@ const selectBundles = async (req, res) => {
 
 
 router.post('/syncAttribute', async (req, res) => {
+  try {
+  let address = toLowerCase(req.body.address); //contract address
+  let tokenID = parseInt(req.body.tokenID); //tokenID
+  
   let erc721token = await NFTITEM.findOne({
     contractAddress: address,
     tokenID: tokenID,
@@ -931,6 +935,10 @@ router.post('/syncAttribute', async (req, res) => {
   });
 
   return erc721token;
+} catch (error) {
+  Logger.error(error);
+  return res.json({});
+}
 
 });
 
