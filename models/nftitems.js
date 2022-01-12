@@ -30,6 +30,7 @@ const NFTITEM = mongoose.Schema(
     isAppropriate: { type: Boolean, default: true },
     isFiltered: { type: Boolean, default: false },
     blockNumber: { type: Number, default: 0},
+    attributes: { type: Object },
   },
   {
     timestamps: true,
@@ -51,6 +52,7 @@ NFTITEM.index(
 NFTITEM.index(
   { contractAddress: 1, tokenID: -1, isAppropriate: 1},
 );
+
 
 NFTITEM.methods.toSimpleJson = function () {
   return {

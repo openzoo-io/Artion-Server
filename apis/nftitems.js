@@ -920,6 +920,20 @@ const selectBundles = async (req, res) => {
   }
 };
 
+
+
+
+router.post('/syncAttribute', async (req, res) => {
+  let erc721token = await NFTITEM.findOne({
+    contractAddress: address,
+    tokenID: tokenID,
+    attributes: {}
+  });
+
+  return erc721token;
+
+});
+
 router.post('/fetchTokens', async (req, res) => {
   let timestart = Date.now();
 
