@@ -930,7 +930,7 @@ router.post('/syncAttribute', async (req, res) => {
   
   let erc721token = await NFTITEM.findOne({
     contractAddress: address,
-    tokenID: tokenID,
+
     attributes: {}
   });
 
