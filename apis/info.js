@@ -115,6 +115,8 @@ router.post('/getCollectionList', async (req, res) => {
     });
   }
 
+
+
   let searchResults = allCollections.map(async (collection) => ({
 
     address: collection.erc721Address,
@@ -152,6 +154,9 @@ router.post('/getCollectionList', async (req, res) => {
       results = sortItems(results, sortedBy);
     }
   }
+
+  // Remove all zero NFT categories //
+  results = results.filter(i => i.item_count);
 
   return res.json({
     status: 'success',
