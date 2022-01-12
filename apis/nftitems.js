@@ -935,7 +935,7 @@ router.post('/syncAttribute', async (req, res) => {
     attributes: {}
   });
 
-  return erc721token;
+  return res.json(erc721token); 
 } catch (error) {
   Logger.error(error);
   return res.json({});
