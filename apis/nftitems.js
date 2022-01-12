@@ -925,7 +925,7 @@ const selectBundles = async (req, res) => {
 
 router.post('/syncAttribute', async (req, res) => {
   try {
-    console.log(res);
+  console.log(res.body);
   let address = toLowerCase(req.body.address); //contract address
   let tokenID = parseInt(req.body.tokenID); //tokenID
   
