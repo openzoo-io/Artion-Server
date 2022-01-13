@@ -115,9 +115,9 @@ router.post('/getCollectionList', async (req, res) => {
     });
   }
 
+  _searchResults = allCollections.slice(from, from + count);
 
-
-  let searchResults = allCollections.map(async (collection) => ({
+  let searchResults = _searchResults.map(async (collection) => ({
 
     address: collection.erc721Address,
     collectionName: collection.collectionName,
