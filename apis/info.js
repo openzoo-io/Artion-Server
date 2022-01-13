@@ -156,11 +156,13 @@ router.post('/getCollectionList', async (req, res) => {
     }
   }
 
-  // Before filter //
-  let countRersults = results;
+  
 
   // Remove all zero NFT categories //
   results = results.filter(i => i.item_count);
+
+  // Before filter //
+  let countRersults = results;
 
   results = results.slice(from, from + count);
 
