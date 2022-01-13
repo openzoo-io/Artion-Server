@@ -162,7 +162,7 @@ router.post('/getCollectionList', async (req, res) => {
   // Remove all zero NFT categories //
   results = results.filter(i => i.item_count);
 
-  results = results.slice(from, from + count);
+  //results = results.slice(from, from + count);
 
   return res.json({
     status: 'success',
