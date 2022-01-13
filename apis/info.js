@@ -102,6 +102,7 @@ const sortItems = (_allTokens, sortby) => {
 router.post('/getCollectionList', async (req, res) => {
   let isVerified = req.body.isVerified;
   let sortedBy = req.body.sortedBy;
+  let from = req.body.start;
   let allCollections = [];
   if (isVerified == true) {
     allCollections = await Collection.find({
