@@ -127,7 +127,7 @@ router.post('/getCollectionList', async (req, res) => {
 
   allCollections.map(item => {
     if (
-      stickylist.indexOf(item.address) !== -1
+      stickylist.indexOf(item.erc721Address) !== -1
     ) {
       official.push(item);
     } else {
