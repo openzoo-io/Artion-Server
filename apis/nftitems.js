@@ -1202,6 +1202,7 @@ router.post('/getSingleItemDetails', async (req, res) => {
         'paymentToken',
         'priceInUSD',
         'value',
+        'txHash',
         'createdAt',
         'isAuction'
       ])
@@ -1230,6 +1231,7 @@ router.post('/getSingleItemDetails', async (req, res) => {
         value: hist.value,
         createdAt: hist.createdAt,
         isAuction: hist.isAuction,
+        txHash: hist.txHash,
         fromAlias: sender ? sender[0] : null,
         fromImage: sender ? sender[1] : null,
         toAlias: receiver ? receiver[0] : null,
