@@ -117,9 +117,8 @@ router.post('/getCollectionList', async (req, res) => {
     });
   }
 
-  _searchResults = allCollections.slice(from, from + count);
 
-  let searchResults = _searchResults.map(async (collection) => ({
+  let searchResults = allCollections.map(async (collection) => ({
 
     address: collection.erc721Address,
     collectionName: collection.collectionName,
@@ -157,14 +156,19 @@ router.post('/getCollectionList', async (req, res) => {
     }
   }
 
+  // Before filter //
+  let countRersults = results;
+
   // Remove all zero NFT categories //
   results = results.filter(i => i.item_count);
+
+  results = results.slice(from, from + count);
 
   return res.json({
     status: 'success',
     data: {
       collections: results,
-      total: allCollections.length
+      total: countRersults.length
     }
   });
 });
