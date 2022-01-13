@@ -178,7 +178,7 @@ router.post('/getCollectionList', async (req, res) => {
 
   results = [...official, ...nonofficial];
 
-  
+  console.log(official);
 
   // Remove all zero NFT categories //
   results = results.filter(i => i.item_count);
