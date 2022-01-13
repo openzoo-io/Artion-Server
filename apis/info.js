@@ -117,28 +117,7 @@ router.post('/getCollectionList', async (req, res) => {
     });
   }
 
-  const stickylist = [
-    '0x992e4447f470ea47819d677b84d2459677bfdadf',
-    '0x38034b2e6ae3fb7fec5d895a9ff3474ba0c283f6',
-    '0xa67213608db9d4bffac75bad01ca5b1f4ad0724c',
-    '0x1bc6895f67456e98ee400e48bc285b750ff4e348'
-  ]
-  let official = [];
-  let nonofficial = [];
 
-  allCollections.map(item => {
-    if (
-      stickylist.indexOf(item.erc721Address) !== -1
-    ) {
-      official.push(item);
-    } else {
-      nonofficial.push(item);
-    }
-  });
-
-  console.log(official);
-
-  allCollections = [...official, ...nonofficial];
 
   let searchResults = allCollections.map(async (collection) => ({
 
@@ -177,6 +156,27 @@ router.post('/getCollectionList', async (req, res) => {
       results = sortItems(results, sortedBy);
     }
   }
+
+  const stickylist = [
+    '0x992e4447f470ea47819d677b84d2459677bfdadf',
+    '0x38034b2e6ae3fb7fec5d895a9ff3474ba0c283f6',
+    '0xa67213608db9d4bffac75bad01ca5b1f4ad0724c',
+    '0x1bc6895f67456e98ee400e48bc285b750ff4e348'
+  ]
+  let official = [];
+  let nonofficial = [];
+
+  results.map(item => {
+    if (
+      stickylist.indexOf(item.erc721Address) !== -1
+    ) {
+      official.push(item);
+    } else {
+      nonofficial.push(item);
+    }
+  });
+
+  results = [...official, ...nonofficial];
 
   
 
