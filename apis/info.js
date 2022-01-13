@@ -161,7 +161,7 @@ router.post('/getCollectionList', async (req, res) => {
     '0x992e4447f470ea47819d677b84d2459677bfdadf',
     '0x38034b2e6ae3fb7fec5d895a9ff3474ba0c283f6',
     '0xa67213608db9d4bffac75bad01ca5b1f4ad0724c',
-    '0x1bc6895f67456e98ee400e48bc285b750ff4e348'
+    '0x1bc6895f67456e98ee400e48bc285b750ff4e348' // Testnet Usagi
   ]
   let official = [];
   let nonofficial = [];
@@ -177,8 +177,6 @@ router.post('/getCollectionList', async (req, res) => {
   });
 
   results = [...official, ...nonofficial];
-
-  console.log(official);
 
   // Remove all zero NFT categories //
   results = results.filter(i => i.item_count);
