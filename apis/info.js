@@ -136,6 +136,8 @@ router.post('/getCollectionList', async (req, res) => {
     }
   });
 
+  console.log(official);
+
   allCollections = [...official, ...nonofficial];
 
   let searchResults = allCollections.map(async (collection) => ({
