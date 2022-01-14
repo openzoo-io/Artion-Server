@@ -1444,9 +1444,10 @@ const fetchTransferHistory1155 = async (address, id) => {
 const getIsAuction = async (address, tokenID) => {
   try {
     let auctionCount = await Auction.countDocuments({ minter: address, tokenID: tokenID });
-    return auctionCount;
+    if (auctionCount > 0) return true;
+    return false;
   } catch (error) {
-    return 0;
+    return false;
   }
 }
 
