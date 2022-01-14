@@ -91,7 +91,7 @@ router.post('/resyncThumbnailPath', async (req, res) => {
     let contractAddress = req.body.contractAddress;
     contractAddress = toLowerCase(contractAddress);
     let tokenID = parseInt(req.body.tokenID);
-    
+
     let token = await NFTITEM.findOne({
       contractAddress: contractAddress,
       tokenID: tokenID
@@ -204,7 +204,7 @@ const sortItems = (_allTokens, sortby) => {
         ['desc']
       );
       break;
-    } 
+    }
     /*
     case 'listedAt': {
       tmp = _allTokens.sort((a,b) => b.listedAt - a.listedAt);
@@ -302,15 +302,14 @@ const selectTokens = async (req, res) => {
     const getCategoryCollectionAddresses = async (category) => {
 
       let filterTmp = {}
-      if (onlyVerified)
-      {
+      if (onlyVerified) {
         filterTmp = {
           categories: category,
           isAppropriate: true,
           isVerified: true
         }
       }
-      else{
+      else {
         filterTmp = {
           categories: category,
           isAppropriate: true,
@@ -423,7 +422,7 @@ const selectTokens = async (req, res) => {
             : { contractAddress: { $in: [...collections2filter] } }),
           thumbnailPath: { $ne: nonImage },
           isAppropriate: true,
-          ...(mediaType ?  {contentType: mediaType}: {})
+          ...(mediaType ? { contentType: mediaType } : {})
         };
         return NFTITEM.find(collectionFilters).select(selectOption).lean();
       }
@@ -454,12 +453,10 @@ const selectTokens = async (req, res) => {
           const pipeline = [activeBidFilter, ...lookupNFTItemsAndMerge].filter(
             (part) => part !== undefined
           );
-          if (!mediaType)
-          {
-          pipeline.push({ $match: { isAppropriate: true } });
+          if (!mediaType) {
+            pipeline.push({ $match: { isAppropriate: true } });
           }
-          else
-          {
+          else {
             pipeline.push({ $match: { isAppropriate: true, contentType: mediaType } });
           }
           return Bid.aggregate(pipeline);
@@ -469,12 +466,10 @@ const selectTokens = async (req, res) => {
             collections2filter === null ? undefined : minterFilters,
             ...lookupNFTItemsAndMerge
           ].filter((part) => part !== undefined);
-          if (!mediaType)
-          {
-          pipeline.push({ $match: { isAppropriate: true } });
+          if (!mediaType) {
+            pipeline.push({ $match: { isAppropriate: true } });
           }
-          else
-          {
+          else {
             pipeline.push({ $match: { isAppropriate: true, contentType: mediaType } });
           }
           return Listing.aggregate(pipeline);
@@ -484,12 +479,10 @@ const selectTokens = async (req, res) => {
             collections2filter === null ? undefined : minterFilters,
             ...lookupNFTItemsAndMerge
           ].filter((part) => part !== undefined);
-          if (!mediaType)
-          {
-          pipeline.push({ $match: { isAppropriate: true } });
+          if (!mediaType) {
+            pipeline.push({ $match: { isAppropriate: true } });
           }
-          else
-          {
+          else {
             pipeline.push({ $match: { isAppropriate: true, contentType: mediaType } });
           }
           return Offer.aggregate(pipeline);
@@ -499,12 +492,10 @@ const selectTokens = async (req, res) => {
             collections2filter === null ? undefined : minterFilters,
             ...lookupNFTItemsAndMerge
           ].filter((part) => part !== undefined);
-          if (!mediaType)
-          {
-          pipeline.push({ $match: { isAppropriate: true } });
+          if (!mediaType) {
+            pipeline.push({ $match: { isAppropriate: true } });
           }
-          else
-          {
+          else {
             pipeline.push({ $match: { isAppropriate: true, contentType: mediaType } });
           }
           return Auction.aggregate(pipeline);
@@ -925,21 +916,21 @@ const selectBundles = async (req, res) => {
 
 router.post('/syncAttribute', async (req, res) => {
   try {
-  console.log(req.body);
-  let address = toLowerCase(req.body.address); //contract address
-  let tokenID = parseInt(req.body.tokenID); //tokenID
-  
-  let erc721token = await NFTITEM.findOne({
-    contractAddress: address,
-    tokenID: tokenID,
-  
-  });
+    console.log(req.body);
+    let address = toLowerCase(req.body.address); //contract address
+    let tokenID = parseInt(req.body.tokenID); //tokenID
 
-  return res.json(erc721token); 
-} catch (error) {
-  Logger.error(error);
-  return res.json({});
-}
+    let erc721token = await NFTITEM.findOne({
+      contractAddress: address,
+      tokenID: tokenID,
+
+    });
+
+    return res.json(erc721token);
+  } catch (error) {
+    Logger.error(error);
+    return res.json({});
+  }
 
 });
 
@@ -953,7 +944,7 @@ router.post('/fetchTokens', async (req, res) => {
   let isProfile = req.body.isProfile;
 
   console.log('cost 1', Date.now() - timestart);
-  
+
   let items = [];
   if (type === 'all') {
     let nfts = await selectTokens(req, res);
@@ -986,13 +977,12 @@ router.post('/fetchTokens', async (req, res) => {
   let updatedItems = [];
   let data = [];
   let _searchResults = [];
-  if (sortby === 'price' || sortby==='cheapest')
-  {
+  if (sortby === 'price' || sortby === 'cheapest') {
     updatedItems = updatePrices(items);
     data = sortItems(updatedItems, sortby);
     _searchResults = data.slice(from, from + count);
   }
-  else{
+  else {
     data = sortItems(items, sortby);
     _searchResults = data.slice(from, from + count);
     _searchResults = updatePrices(_searchResults);
@@ -1000,7 +990,7 @@ router.post('/fetchTokens', async (req, res) => {
   }
 
   console.log('cost 4 sort', Date.now() - timestart);
-  
+
 
   let searchResults = _searchResults.map(async (sr) => ({
     ...(sr.contractAddress != null && sr.contractAddress != undefined
@@ -1061,7 +1051,7 @@ router.post('/fetchTokens', async (req, res) => {
       ? { isAppropriate: sr.isAppropriate }
       : { isAppropriate: false }),
     ownerAlias: await getAccountInfo(sr.owner),
-    
+    isAuction: await getIsAuction(sr.contractAddress, sr.tokenID),
   }));
   const results = await Promise.all(searchResults);
 
@@ -1213,12 +1203,10 @@ router.post('/getSingleItemDetails', async (req, res) => {
       let sender = await getAccountInfo(hist.from);
       let receiver = await getAccountInfo(hist.to);
       let finalPrice = 0;
-      if (hist.isAuction === true)
-      {
+      if (hist.isAuction === true) {
         finalPrice = hist.price * hist.priceInUSD;
       }
-      else
-      {
+      else {
         finalPrice = hist.priceInUSD;
       }
       history.push({
@@ -1452,6 +1440,15 @@ const fetchTransferHistory1155 = async (address, id) => {
   let _history = orderBy(history, 'blockTime', 'asc');
   return _history;
 };
+
+const getIsAuction = async (address, tokenID) => {
+  try {
+    let auctionCount = await Auction.countDocuments({ minter: address, tokenID: tokenID });
+    return auctionCount;
+  } catch (error) {
+    return 0;
+  }
+}
 
 const getAccountInfo = async (address) => {
   try {
