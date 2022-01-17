@@ -100,7 +100,7 @@ const sortItems = (_allTokens, sortby) => {
 };
 
 
-router.get('/getProfileCollection', async (req, res) => {
+router.get('/getProfileCollectionList', async (req, res) => {
   let owner = toLowerCase(req.body.owner);
   allCollections = await Collection.find({
     isAppropriate: true,
