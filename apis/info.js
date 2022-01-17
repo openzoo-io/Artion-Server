@@ -99,6 +99,54 @@ const sortItems = (_allTokens, sortby) => {
   return tmp;
 };
 
+
+router.get('/getProfileCollection', async (req, res) => {
+  let owner = toLowerCase(req.body.owner);
+  allCollections = await Collection.find({
+    isAppropriate: true,
+    owner: owner,
+  });
+
+  let searchResults = allCollections.map(async (collection) => ({
+    address: collection.erc721Address,
+    collectionName: collection.collectionName,
+    description: collection.description,
+    categories: collection.categories,
+    logoImageHash: collection.logoImageHash,
+    siteUrl: collection.siteUrl,
+    discord: collection.discord,
+    twitterHandle: collection.twitterHandle,
+    mediumHandle: collection.mediumHandle,
+    telegram: collection.telegram,
+    isVerified: collection.isVerified,
+    isVisible: true,
+    isInternal: collection.isInternal,
+    isOwnerble: collection.isOwnerble,
+    owner: collection.owner,
+    ownerAlias: await getAccountInfo(collection.owner),
+    item_count: await NFTITEM.countDocuments({ contractAddress: collection.erc721Address }),
+    owner_count: await getCollectionOwnerCount(collection.erc721Address),
+    floor_price: await getCollectionFloorPrice(collection.erc721Address),
+    traded_volume: await getCollectionTradedVolume(collection.erc721Address),
+    liked: await getCollectionLiked(collection.erc721Address),
+    collectionType: await NFTITEM.find({ contractAddress: collection.erc721Address }).select('tokenType').limit(1)
+  }));
+
+  let results = await Promise.all(searchResults);
+
+  // Do sorting by Created at //
+  results = results.reverse();
+
+  return res.json({
+    status: 'success',
+    data: {
+      collections: results,
+      total: results.length
+    }
+  });
+
+});
+
 router.post('/getCollectionList', async (req, res) => {
   let isVerified = req.body.isVerified;
   let sortedBy = req.body.sortedBy;
@@ -197,42 +245,42 @@ router.post('/getCollectionList', async (req, res) => {
 
 
 // TODO: Abandon this //
-router.get('/getCollectionList', async (_, res) => {
+// router.get('/getCollectionList', async (_, res) => {
 
-  let allCollections = await Collection.find({
-    isAppropriate: true,
-    isVerified: true,
-  });
+//   let allCollections = await Collection.find({
+//     isAppropriate: true,
+//     isVerified: true,
+//   });
 
-  let searchResults = allCollections.map(async (collection) => ({
+//   let searchResults = allCollections.map(async (collection) => ({
 
-    address: collection.erc721Address,
-    collectionName: collection.collectionName,
-    description: collection.description,
-    categories: collection.categories,
-    logoImageHash: collection.logoImageHash,
-    siteUrl: collection.siteUrl,
-    discord: collection.discord,
-    twitterHandle: collection.twitterHandle,
-    mediumHandle: collection.mediumHandle,
-    telegram: collection.telegram,
-    isVerified: collection.isVerified,
-    isVisible: true,
-    isInternal: collection.isInternal,
-    isOwnerble: collection.isOwnerble,
-    owner: collection.owner,
-    ownerAlias: await getAccountInfo(collection.owner),
-    item_count: await NFTITEM.countDocuments({ contractAddress: collection.erc721Address }),
-    owner_count: await getCollectionOwnerCount(collection.erc721Address),
-    collectionType: await NFTITEM.find({ contractAddress: collection.erc721Address }).select('tokenType').limit(1)
-  }));
+//     address: collection.erc721Address,
+//     collectionName: collection.collectionName,
+//     description: collection.description,
+//     categories: collection.categories,
+//     logoImageHash: collection.logoImageHash,
+//     siteUrl: collection.siteUrl,
+//     discord: collection.discord,
+//     twitterHandle: collection.twitterHandle,
+//     mediumHandle: collection.mediumHandle,
+//     telegram: collection.telegram,
+//     isVerified: collection.isVerified,
+//     isVisible: true,
+//     isInternal: collection.isInternal,
+//     isOwnerble: collection.isOwnerble,
+//     owner: collection.owner,
+//     ownerAlias: await getAccountInfo(collection.owner),
+//     item_count: await NFTITEM.countDocuments({ contractAddress: collection.erc721Address }),
+//     owner_count: await getCollectionOwnerCount(collection.erc721Address),
+//     collectionType: await NFTITEM.find({ contractAddress: collection.erc721Address }).select('tokenType').limit(1)
+//   }));
 
-  const results = await Promise.all(searchResults);
-  return res.json({
-    status: 'success',
-    data: results
-  });
-});
+//   const results = await Promise.all(searchResults);
+//   return res.json({
+//     status: 'success',
+//     data: results
+//   });
+// });
 
 router.get('/getCollections', async (_, res) => {
   let collections_721 = await ERC721CONTRACT.find({ isAppropriate: true });
