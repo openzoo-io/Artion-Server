@@ -859,9 +859,10 @@ const getCollectionLiked = async (address) => {
       }
 
       myCache.set('collectionLiked_' + address, liked);
+      return liked;
     }
-
     return liked;
+    
   } catch (error) {
     Logger.error(error);
     return 0;
@@ -901,6 +902,7 @@ const getCollectionTradedVolume = async (address) => {
         voltraded += volumeTradedSold[0].sum;
       }
       myCache.set('collectionVolume_' + address, voltraded, 600); // 10 mins
+      return voltraded;
     }
     return voltraded;
 
