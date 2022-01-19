@@ -25,7 +25,7 @@ const service_auth = require('./middleware/auth.tracker');
 
 const { getPrice, getDecimals } = require('../services/price.feed');
 const NodeCache = require("node-cache");
-const myCache = new NodeCache({ stdTTL: 120, checkperiod: 600 });
+const myCache = new NodeCache({ stdTTL: 120, checkperiod: 0 });
 
 // Show total volume traded //
 
