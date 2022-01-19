@@ -862,33 +862,40 @@ const getCollectionLiked = async (address) => {
 
 const getCollectionTradedVolume = async (address) => {
   try {
-    const TradeHistory = mongoose.model('TradeHistory');
+    let voltraded = myCache.get('collectionVolume_' + address);
 
-    let volumeTradedAuction = await TradeHistory.find({
-      collectionAddress: address,
-      isAuction: true,
-    });
-    let volumeTradedSold = await TradeHistory.aggregate([
-      {
-        $match: { collectionAddress: address, isAuction: false }
-      },
-      {
-        $group: {
-          _id: null, sum: { $sum: "$priceInUSD" }
-        },
-      }
-    ]);
-    let voltraded = 0;
-    if (volumeTradedAuction.length > 0) {
+    if (voltraded == undefined) {
+      console.log('retrived voltraded...');
+      const TradeHistory = mongoose.model('TradeHistory');
 
-      volumeTradedAuction.map(item => {
-        voltraded += item.priceInUSD * item.price;
+      let volumeTradedAuction = await TradeHistory.find({
+        collectionAddress: address,
+        isAuction: true,
       });
-    }
-    if (volumeTradedSold.length > 0) {
-      voltraded += volumeTradedSold[0].sum;
+      let volumeTradedSold = await TradeHistory.aggregate([
+        {
+          $match: { collectionAddress: address, isAuction: false }
+        },
+        {
+          $group: {
+            _id: null, sum: { $sum: "$priceInUSD" }
+          },
+        }
+      ]);
+      let voltraded = 0;
+      if (volumeTradedAuction.length > 0) {
+
+        volumeTradedAuction.map(item => {
+          voltraded += item.priceInUSD * item.price;
+        });
+      }
+      if (volumeTradedSold.length > 0) {
+        voltraded += volumeTradedSold[0].sum;
+      }
+      myCache.set('collectionVolume_' + address, voltraded);
     }
     return voltraded;
+
   } catch (error) {
     Logger.error(error);
     return 0;
