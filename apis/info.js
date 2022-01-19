@@ -290,7 +290,7 @@ router.get('/getCollections', async (_, res) => {
   let allContracts = myCache.get("allContracts");
 
   if (allContracts == undefined) {
-    console.log('retriving... collections');
+    console.log('retriving... all collections');
     let collections_721 = await ERC721CONTRACT.find({ isAppropriate: true });
     let collections_1155 = await ERC1155CONTRACT.find({ isAppropriate: true });
 
@@ -339,13 +339,9 @@ router.get('/getCollections', async (_, res) => {
         });
       }
     });
-    myCache.set( "allContracts", allContracts,120 );
-    console.log('save...cache');
+    myCache.set( "allContracts", allContracts );
   }
-  else
-  {
-    console.log('using... cache');
-  }
+  
 
   return res.json({
     status: 'success',
