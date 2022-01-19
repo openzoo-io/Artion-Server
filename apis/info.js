@@ -283,54 +283,67 @@ router.post('/getCollectionList', async (req, res) => {
 // });
 
 router.get('/getCollections', async (_, res) => {
-  let collections_721 = await ERC721CONTRACT.find({ isAppropriate: true });
-  let collections_1155 = await ERC1155CONTRACT.find({ isAppropriate: true });
 
-  let all = new Array();
-  all.push(...collections_721);
-  all.push(...collections_1155);
-  all = sortBy(all, 'name', 'desc');
-  let allCollections = await Collection.find({
-    status: true,
-    isAppropriate: true
-  });
+  const NodeCache = require("node-cache");
+  const myCache = new NodeCache({ stdTTL: 120, checkperiod: 120 });
 
-  let savedAddresses = [];
-  let allContracts = new Array();
+  let allContracts = myCache.get("allContracts");
 
-  allCollections.map((collection) => {
-    savedAddresses.push(collection.erc721Address);
-    allContracts.push({
-      address: collection.erc721Address,
-      collectionName: collection.collectionName,
-      description: collection.description,
-      categories: collection.categories,
-      logoImageHash: collection.logoImageHash,
-      siteUrl: collection.siteUrl,
-      discord: collection.discord,
-      twitterHandle: collection.twitterHandle,
-      mediumHandle: collection.mediumHandle,
-      telegram: collection.telegram,
-      isVerified: collection.isVerified,
-      isVisible: true,
-      isInternal: collection.isInternal,
-      isOwnerble: collection.isOwnerble
+  if (allContracts == undefined) {
+    console.log('retriving... collections');
+    let collections_721 = await ERC721CONTRACT.find({ isAppropriate: true });
+    let collections_1155 = await ERC1155CONTRACT.find({ isAppropriate: true });
+
+    let all = new Array();
+    all.push(...collections_721);
+    all.push(...collections_1155);
+    all = sortBy(all, 'name', 'desc');
+    let allCollections = await Collection.find({
+      status: true,
+      isAppropriate: true
     });
-  });
 
-  all.map((contract) => {
-    if (!savedAddresses.includes(contract.address)) {
-      savedAddresses.push(contract.address);
+    let savedAddresses = [];
+
+    allCollections.map((collection) => {
+      savedAddresses.push(collection.erc721Address);
       allContracts.push({
-        address: contract.address,
-        name: contract.name != 'name' ? contract.name : '',
-        symbol: contract.symbol != 'symbol' ? contract.symbol : '',
-        logoImageHash: contract.logoImageHash,
-        isVerified: contract.isVerified,
-        isVisible: contract.isVerified
+        address: collection.erc721Address,
+        collectionName: collection.collectionName,
+        description: collection.description,
+        categories: collection.categories,
+        logoImageHash: collection.logoImageHash,
+        siteUrl: collection.siteUrl,
+        discord: collection.discord,
+        twitterHandle: collection.twitterHandle,
+        mediumHandle: collection.mediumHandle,
+        telegram: collection.telegram,
+        isVerified: collection.isVerified,
+        isVisible: true,
+        isInternal: collection.isInternal,
+        isOwnerble: collection.isOwnerble
       });
-    }
-  });
+    });
+
+    all.map((contract) => {
+      if (!savedAddresses.includes(contract.address)) {
+        savedAddresses.push(contract.address);
+        allContracts.push({
+          address: contract.address,
+          name: contract.name != 'name' ? contract.name : '',
+          symbol: contract.symbol != 'symbol' ? contract.symbol : '',
+          logoImageHash: contract.logoImageHash,
+          isVerified: contract.isVerified,
+          isVisible: contract.isVerified
+        });
+      }
+    });
+    myCache.set( "allContracts", allContracts );
+  }
+  else
+  {
+    console.log('using... cache');
+  }
 
   return res.json({
     status: 'success',
