@@ -340,6 +340,7 @@ router.get('/getCollections', async (_, res) => {
       }
     });
     myCache.set( "allContracts", allContracts );
+    console.log('save...cache');
   }
   else
   {
