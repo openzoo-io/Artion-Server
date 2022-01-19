@@ -24,7 +24,8 @@ const Logger = require('../services/logger');
 const service_auth = require('./middleware/auth.tracker');
 
 const { getPrice, getDecimals } = require('../services/price.feed');
-
+const NodeCache = require("node-cache");
+const myCache = new NodeCache({ stdTTL: 120, checkperiod: 120 });
 
 // Show total volume traded //
 
@@ -284,8 +285,7 @@ router.post('/getCollectionList', async (req, res) => {
 
 router.get('/getCollections', async (_, res) => {
 
-  const NodeCache = require("node-cache");
-  const myCache = new NodeCache({ stdTTL: 120, checkperiod: 120 });
+
 
   let allContracts = myCache.get("allContracts");
 
