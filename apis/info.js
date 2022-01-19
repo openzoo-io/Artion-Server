@@ -834,7 +834,7 @@ const getCollectionLiked = async (address) => {
     let liked = myCache.get('collectionLiked_' + address);
 
     if (liked == undefined) {
-      console.log('retrived liked...');
+      //console.log('retrived liked...');
       let likedSum = await NFTITEM.aggregate([
         {
           $match: { contractAddress: address }
@@ -865,7 +865,7 @@ const getCollectionTradedVolume = async (address) => {
     let voltraded = myCache.get('collectionVolume_' + address);
 
     if (voltraded == undefined) {
-      console.log('retrived voltraded...');
+      //console.log('retrived voltraded...');
       const TradeHistory = mongoose.model('TradeHistory');
 
       let volumeTradedAuction = await TradeHistory.find({
@@ -892,7 +892,7 @@ const getCollectionTradedVolume = async (address) => {
       if (volumeTradedSold.length > 0) {
         voltraded += volumeTradedSold[0].sum;
       }
-      myCache.set('collectionVolume_' + address, voltraded);
+      myCache.set('collectionVolume_' + address, voltraded, 600); // 10 mins
     }
     return voltraded;
 
