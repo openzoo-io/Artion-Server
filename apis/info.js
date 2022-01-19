@@ -95,6 +95,14 @@ const sortItems = (_allTokens, sortby) => {
       );
       break;
     }
+    case 'volume': {
+      tmp = orderBy(
+        _allTokens,
+        ({ traded_volume }) => traded_volume || 0,
+        ['desc']
+      );
+      break;
+    }
 
   }
   return tmp;
