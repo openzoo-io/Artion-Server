@@ -295,6 +295,7 @@ router.get('/getCollections', async (_, res) => {
     let collections_1155 = await ERC1155CONTRACT.find({ isAppropriate: true });
 
     let all = new Array();
+    allContracts = new Array();
     all.push(...collections_721);
     all.push(...collections_1155);
     all = sortBy(all, 'name', 'desc');
