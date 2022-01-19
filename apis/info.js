@@ -339,7 +339,7 @@ router.get('/getCollections', async (_, res) => {
         });
       }
     });
-    myCache.set( "allContracts", allContracts );
+    myCache.set( "allContracts", allContracts,120 );
     console.log('save...cache');
   }
   else
