@@ -253,43 +253,24 @@ router.post('/getCollectionList', async (req, res) => {
 });
 
 
-// TODO: Abandon this //
-// router.get('/getCollectionList', async (_, res) => {
-
-//   let allCollections = await Collection.find({
-//     isAppropriate: true,
-//     isVerified: true,
-//   });
-
-//   let searchResults = allCollections.map(async (collection) => ({
-
-//     address: collection.erc721Address,
-//     collectionName: collection.collectionName,
-//     description: collection.description,
-//     categories: collection.categories,
-//     logoImageHash: collection.logoImageHash,
-//     siteUrl: collection.siteUrl,
-//     discord: collection.discord,
-//     twitterHandle: collection.twitterHandle,
-//     mediumHandle: collection.mediumHandle,
-//     telegram: collection.telegram,
-//     isVerified: collection.isVerified,
-//     isVisible: true,
-//     isInternal: collection.isInternal,
-//     isOwnerble: collection.isOwnerble,
-//     owner: collection.owner,
-//     ownerAlias: await getAccountInfo(collection.owner),
-//     item_count: await NFTITEM.countDocuments({ contractAddress: collection.erc721Address }),
-//     owner_count: await getCollectionOwnerCount(collection.erc721Address),
-//     collectionType: await NFTITEM.find({ contractAddress: collection.erc721Address }).select('tokenType').limit(1)
-//   }));
-
-//   const results = await Promise.all(searchResults);
-//   return res.json({
-//     status: 'success',
-//     data: results
-//   });
-// });
+router.get('/sitemap', async (res) => {
+  let tokens = await NFTITEM.find({
+    isAppropriate: true
+  })
+    .select([
+      'contractAddress',
+      'tokenID',
+      'tokenURI',
+      'name',
+      'thumbnailPath',
+      'imageURL'
+    ]);
+  let result = ''
+  tokens.map(v => {
+    result += '<url><loc>https://openzoo.io/'+v.contractAddress+'/'+v.tokenID+'</loc></url>';
+  });
+  return res.send(result);
+});
 
 router.get('/getCollections', async (_, res) => {
 
