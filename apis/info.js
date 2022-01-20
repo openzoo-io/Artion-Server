@@ -253,7 +253,7 @@ router.post('/getCollectionList', async (req, res) => {
 });
 
 
-router.get('/sitemap', async (res) => {
+router.get('/sitemap', async (_,res) => {
   let tokens = await NFTITEM.find({
     isAppropriate: true
   })
