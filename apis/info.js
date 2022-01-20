@@ -269,6 +269,7 @@ router.get('/sitemap', async (_,res) => {
   tokens.map(v => {
     result += '<url><loc>https://openzoo.io/'+v.contractAddress+'/'+v.tokenID+'</loc></url>';
   });
+  res.set('Content-Type', 'text/xml');
   return res.send(result);
 });
 
