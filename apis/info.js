@@ -260,15 +260,23 @@ router.get('/sitemap', async (_,res) => {
     .select([
       'contractAddress',
       'tokenID',
-      'tokenURI',
-      'name',
-      'thumbnailPath',
-      'imageURL'
     ]);
   let result = ''
   tokens.map(v => {
-    result += '<url><loc>https://openzoo.io/'+v.contractAddress+'/'+v.tokenID+'</loc></url>';
+    result += '<url><loc>https://openzoo.io/collection/'+v.contractAddress+'/'+v.tokenID+'</loc></url>';
   });
+
+  let allCollections = await Collection.find({
+    status: true,
+    isAppropriate: true
+  }).select([
+    'erc721Address',
+    
+  ]);
+  allCollections.map(v => {
+    result += '<url><loc>https://openzoo.io/collection/'+v.erc721Address+'</loc></url>';
+  });
+
   res.set('Content-Type', 'text/xml');
   return res.send(result);
 });
