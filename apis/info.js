@@ -262,6 +262,11 @@ router.get('/sitemap', async (_,res) => {
       'tokenID',
     ]);
   let result = "<?xml version='1.0' encoding='UTF-8'?><urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>";
+
+  result += '<url><loc>https://openzoo.io/</loc></url>';
+  result += '<url><loc>https://openzoo.io/explore</loc></url>';
+  result += '<url><loc>https://openzoo.io/collections</loc></url>';
+
   tokens.map(v => {
     result += '<url><loc>https://openzoo.io/collection/'+v.contractAddress+'/'+v.tokenID+'</loc></url>';
   });
