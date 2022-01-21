@@ -643,14 +643,14 @@ const selectTokens = async (req, res) => {
         }
         if (filters.includes('hasOffers')) {
           const pipeline = [
-            accountAndMintFilter('creator'),
+            accountAndMintFilter('owner'),
             ...lookupNFTItemsAndMerge
           ];
           return Offer.aggregate(pipeline);
         }
         if (filters.includes('onAuction')) {
           const pipeline = [
-            accountAndMintFilter('bidder'),
+            accountAndMintFilter('owner'),
             ...lookupNFTItemsAndMerge
           ];
           return Auction.aggregate(pipeline);
