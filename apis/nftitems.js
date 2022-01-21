@@ -478,7 +478,7 @@ const selectTokens = async (req, res) => {
         }
         if (filters.includes('hasOffers')) {
           const activeOfferFilter = {
-            $match: {deadline: {$gte: now.getTime()}}
+            $match: {deadline: {$gte: new Date().getTime()}}
           };
           const pipeline = [
             collections2filter === null ? undefined : minterFilters,
@@ -656,7 +656,7 @@ const selectTokens = async (req, res) => {
         }
         if (filters.includes('hasOffers')) {
           const activeOfferFilter = {
-            $match: {deadline: {$gte: now.getTime()}}
+            $match: {deadline: {$gte: new Date().getTime()}}
           };
           const pipeline = [activeOfferFilter, ...lookupNFTItemsAndMerge].filter(
             (part) => part !== undefined
