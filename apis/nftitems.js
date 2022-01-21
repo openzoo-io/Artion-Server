@@ -477,10 +477,16 @@ const selectTokens = async (req, res) => {
           return Listing.aggregate(pipeline);
         }
         if (filters.includes('hasOffers')) {
+          const activeOfferFilter = {
+            $match: {deadline: {$gte: now.getTime()}}
+          };
           const pipeline = [
             collections2filter === null ? undefined : minterFilters,
+            activeOfferFilter,
             ...lookupNFTItemsAndMerge
           ].filter((part) => part !== undefined);
+
+
           if (!mediaType) {
             pipeline.push({ $match: { isAppropriate: true } });
           }
@@ -649,8 +655,10 @@ const selectTokens = async (req, res) => {
           return Listing.aggregate(pipeline);
         }
         if (filters.includes('hasOffers')) {
-          
-          const pipeline = [...lookupNFTItemsAndMerge].filter(
+          const activeOfferFilter = {
+            $match: {deadline: {$gte: now.getTime()}}
+          };
+          const pipeline = [activeOfferFilter, ...lookupNFTItemsAndMerge].filter(
             (part) => part !== undefined
           );
           pipeline.push({ $match: { owner: wallet } });
