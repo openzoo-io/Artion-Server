@@ -408,51 +408,6 @@ const selectTokens = async (req, res) => {
     ];
 
 
-    const lookupNFTItemsAndMergeOwner = (owner) => [
-      {
-        $lookup: {
-          from: 'nftitems',
-          let: {
-            id: '$tokenID',
-            contract: '$minter'
-          },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $and: [
-                    {
-                      $eq: ['$tokenID', '$$id']
-                    },
-                    {
-                      $eq: ['$contractAddress', '$$contract']
-                    },
-                    {
-                      $eq: ['$owner', owner]
-                    }
-                  ]
-                }
-              }
-            }
-          ],
-          as: 'result'
-        }
-      },
-      {
-        $replaceRoot: {
-          newRoot: {
-            $mergeObjects: [
-              {
-                $arrayElemAt: ['$result', 0]
-              },
-              {
-                listing: '$$ROOT._id'
-              }
-            ]
-          }
-        }
-      }
-    ];
 
     /*
     for global search
@@ -677,7 +632,14 @@ const selectTokens = async (req, res) => {
             }
           };
 
-          const pipeline = [activeBidAccountFilter, ...lookupNFTItemsAndMergeOwner(wallet)];
+          const pipeline = [activeBidAccountFilter, ...lookupNFTItemsAndMerge].filter(
+            (part) => part !== undefined
+          );
+          
+            pipeline.push({ $match: { owner: wallet } });
+          
+
+          //const pipeline = [activeBidAccountFilter, ...lookupNFTItemsAndMerge];
           return Bid.aggregate(pipeline);
         }
 
