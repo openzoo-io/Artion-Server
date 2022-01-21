@@ -624,7 +624,7 @@ const selectTokens = async (req, res) => {
                   collections2filter === null
                     ? undefined
                     : { $in: ['$minter', collections2filter] },
-                  { $eq: ['$bidder', wallet] }
+                  { $eq: ['$owner', wallet] }
                 ].filter((action) => action !== undefined)
               }
             }
@@ -643,14 +643,14 @@ const selectTokens = async (req, res) => {
         }
         if (filters.includes('hasOffers')) {
           const pipeline = [
-            accountAndMintFilter('owner'),
+            accountAndMintFilter('creator'),
             ...lookupNFTItemsAndMerge
           ];
           return Offer.aggregate(pipeline);
         }
         if (filters.includes('onAuction')) {
           const pipeline = [
-            accountAndMintFilter('owner'),
+            accountAndMintFilter('bidder'),
             ...lookupNFTItemsAndMerge
           ];
           return Auction.aggregate(pipeline);
