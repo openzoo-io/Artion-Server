@@ -638,8 +638,6 @@ const selectTokens = async (req, res) => {
           
           pipeline.push({ $match: { owner: wallet } });
           
-
-          //const pipeline = [activeBidAccountFilter, ...lookupNFTItemsAndMerge];
           return Bid.aggregate(pipeline);
         }
 
@@ -651,17 +649,18 @@ const selectTokens = async (req, res) => {
           return Listing.aggregate(pipeline);
         }
         if (filters.includes('hasOffers')) {
-          const pipeline = [
-            accountAndMintFilter('creator'),
-            ...lookupNFTItemsAndMerge
-          ];
+          
+          const pipeline = [...lookupNFTItemsAndMerge].filter(
+            (part) => part !== undefined
+          );
+          pipeline.push({ $match: { owner: wallet } });
           return Offer.aggregate(pipeline);
         }
         if (filters.includes('onAuction')) {
-          const pipeline = [
-            accountAndMintFilter('bidder'),
-            ...lookupNFTItemsAndMerge
-          ];
+          const pipeline = [...lookupNFTItemsAndMerge].filter(
+            (part) => part !== undefined
+          );
+          pipeline.push({ $match: { owner: wallet } });
           return Auction.aggregate(pipeline);
         }
       }
