@@ -636,7 +636,7 @@ const selectTokens = async (req, res) => {
             (part) => part !== undefined
           );
           
-            //pipeline.push({ $match: { owner: wallet } });
+          pipeline.push({ $match: { owner: wallet } });
           
 
           //const pipeline = [activeBidAccountFilter, ...lookupNFTItemsAndMerge];
