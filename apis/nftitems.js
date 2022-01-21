@@ -624,7 +624,7 @@ const selectTokens = async (req, res) => {
                   collections2filter === null
                     ? undefined
                     : { $in: ['$minter', collections2filter] },
-                  { $eq: ['$owner', wallet] }
+                  
                 ].filter((action) => action !== undefined)
               }
             }
