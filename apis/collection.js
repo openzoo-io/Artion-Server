@@ -277,6 +277,7 @@ router.post('/getMintableCollections', auth, async (req, res) => {
       collectionName: collection.collectionName,
       erc721Address: collection.erc721Address,
       logoImageHash: collection.logoImageHash,
+      attribute_template: collection.attribute_template,
       type: tokenTypeMap.get(collection.erc721Address)
     }));
     return res.json({
