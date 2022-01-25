@@ -98,6 +98,7 @@ router.post('/collectiondetails', auth, async (req, res) => {
   let telegram = req.body.telegram;
   let instagram = req.body.instagramHandle;
   let email = req.body.email;
+  let attribute_template= req.body.attribute_template;
 
   let feeRecipient = req.body.feeRecipient
     ? toLowerCase(req.body.feeRecipient)
@@ -204,6 +205,7 @@ router.post('/collectiondetails', auth, async (req, res) => {
     _collection.owner = owner;
     _collection.collectionName = collectionName;
     _collection.description = description;
+    _collection.attribute_template = attribute_template;
     _collection.categories = categories;
     _collection.logoImageHash = logoImageHash;
     _collection.siteUrl = siteUrl;

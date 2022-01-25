@@ -6,6 +6,7 @@ const Collection = mongoose.Schema({
   email: { type: String },
   collectionName: { type: String, required: true },
   description: { type: String, required: true },
+  attribute_template: { type: Array, default: [] },
   categories: [{ type: String }],
   logoImageHash: { type: String, required: true },
   siteUrl: { type: String },
