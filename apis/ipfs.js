@@ -358,7 +358,11 @@ router.post("/uploadImage2Server", auth, async (req, res) => {
             
             if (attributes)
             {
-              metaData.attributes = JSON.parse(attributes.replace('"text"','"string"'));
+              let parsed = JSON.parse(attributes.replace('"text"','"string"'));
+              if (parsed.length > 0)
+              {
+                metaData.attributes = parsed;
+              }
             }
 
             let jsonPinStatus = await pinJsonToIPFS(metaData);
