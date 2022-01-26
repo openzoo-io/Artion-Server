@@ -293,7 +293,7 @@ router.post("/uploadImage2Server", auth, async (req, res) => {
             status: "failed",
           });
         }
-
+        let attributes= fields.attributes;
         let extension = imgData.substring(
           "data:image/".length,
           imgData.indexOf(";base64")
@@ -355,7 +355,7 @@ router.post("/uploadImage2Server", auth, async (req, res) => {
             };
 
             // Attributes //
-            let attributes= req.body.attributes;
+            
             if (attributes)
             {
               metaData.attributes = attributes.replace('"text"','"string"');
