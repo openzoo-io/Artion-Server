@@ -354,6 +354,13 @@ router.post("/uploadImage2Server", auth, async (req, res) => {
               },
             };
 
+            // Attributes //
+            let attribute_template= req.body.attribute_template.replace('"text"',"string");
+            if (attribute_template)
+            {
+              metaData.attributes = attribute_template;
+            }
+
             let jsonPinStatus = await pinJsonToIPFS(metaData);
             if (!jsonPinStatus.IpfsHash) {
               return res.json({
