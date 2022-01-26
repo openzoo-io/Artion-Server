@@ -358,7 +358,7 @@ router.post("/uploadImage2Server", auth, async (req, res) => {
             
             if (attributes)
             {
-              let parsed = JSON.parse(attributes.replace('"text"','"string"'));
+              let parsed = JSON.parse(attributes.replace('"text"','"string"').replace('"trait_value"','"value"'));
               if (parsed.length > 0)
               {
                 metaData.attributes = parsed;
