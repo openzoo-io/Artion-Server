@@ -358,10 +358,9 @@ router.post("/uploadImage2Server", auth, async (req, res) => {
             
             if (attributes)
             {
-              attributes = attributes.replace('"text"','"string"');
-              console.log(attributes);
-              attributes = attributes.replace('trait_value','value');
-              console.log(attributes);
+              attributes = attributes.replaceAll('"text"','"string"');
+              attributes = attributes.replaceAll('trait_value','value');
+
               let parsed = JSON.parse(attributes);
               if (parsed.length > 0)
               {
