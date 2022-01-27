@@ -41,6 +41,7 @@ require("./models/follow");
 require("./models/like");
 require("./models/bundlelike");
 require("./models/factorycollection");
+require("./models/nftAttribute");
 require("./models/notificationsetting");
 require("./models/moderator");
 require("./models/turkwork");

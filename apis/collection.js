@@ -27,6 +27,7 @@ const ftmScanApiKey = process.env.FTM_SCAN_API_KEY;
 
 const Logger = require('../services/logger');
 const { getSymbol } = require('../services/price.feed');
+const Utils = require('../utils/utilsv2');
 // to sign txs
 const provider = new ethers.providers.JsonRpcProvider(
   process.env.NETWORK_RPC,
@@ -623,6 +624,46 @@ router.post('/isValidated', auth, async (req, res) => {
   } catch (error) {
     return res.json({
       status: 'failed'
+    });
+  }
+});
+
+router.get("/attributeFilter/:contractAddress", auth, async (req, res) => {
+  try {
+    const contractAddress = req.params.contractAddress;
+    if (!contractAddress) throw "Empty parameter: collectionAddress";
+    let records = await NFTAttribute.find(
+      {
+        contractAddress: contractAddress,
+      },
+      { attributes: 1, _id: 0 }
+    ).lean();
+
+    records = records.map((r) => r.attributes).flat();
+    records = Utils.groupObjectArrayByProperty(records, "trait_type");
+
+    const result = { numerics: {}, options: {} };
+    for (const [traitType, values] of Object.entries(records)) {
+      const valueArray = [...new Set(values.map((x) => x.value))];
+      const isNumericType = valueArray.every(Utils.isNumeric);
+
+      if (isNumericType) {
+        result.numerics[traitType] = {
+          min: Utils.minValueOfArray(valueArray),
+          max: Utils.maxValueOfArray(valueArray),
+        };
+      } else {
+        result.options[traitType] = Utils.sortArrayAlphabetically(valueArray);
+      }
+    }
+
+    return res.json({
+      status: "success",
+      data: result,
+    });
+  } catch (error) {
+    return res.json({
+      status: "failed",
     });
   }
 });
