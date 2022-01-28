@@ -630,7 +630,7 @@ router.post('/warnCollection', auth, async (req, res) => {
       if (is_warned.length) {
         return res.json({
           status: 'failed',
-          data: 'Already verified'
+          data: 'Already warned'
         });
       }
     } catch (error) {
