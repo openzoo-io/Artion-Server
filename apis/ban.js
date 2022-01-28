@@ -539,8 +539,6 @@ router.post('/verifyCollection', auth, async (req, res) => {
 
 // Warn / unwarn collection //
 router.post('/unwarnCollection', auth, async (req, res) => {
-  const NodeCache = require("node-cache");
-  const myCache = new NodeCache(); 
   myCache.del("allWarnedContracts");
   try {
     let adminAddress = extractAddress(req, res);
@@ -601,7 +599,6 @@ router.post('/unwarnCollection', auth, async (req, res) => {
 });
 
 router.post('/warnCollection', auth, async (req, res) => {
-  
   myCache.del("allWarnedContracts");
   try {
     let adminAddress = extractAddress(req, res);
