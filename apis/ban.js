@@ -533,4 +533,124 @@ router.post('/verifyCollection', auth, async (req, res) => {
   }
 });
 
+// Warn / unwarn collection //
+router.post('/unverifyCollection', auth, async (req, res) => {
+  try {
+    let adminAddress = extractAddress(req, res);
+    let isModOrAdmin = await isAllowedToBan(adminAddress);
+    if (!isModOrAdmin)
+      return res.json({
+        status: 'failed',
+        data: 'Only Admin or Mods can un-warn Collections!'
+      });
+    let signature = req.body.signature;
+    let retrievedAddr = req.body.signatureAddress;
+    let isValidsignature = validateSignature(
+      adminAddress,
+      signature,
+      retrievedAddr
+    );
+    if (!isValidsignature)
+      return res.json({
+        status: 'failed',
+        data: 'Invalid Signature'
+      });
+
+    let contractAddress = toLowerCase(req.body.address);
+
+    // Check already warn //
+    try {
+      let is_warned = await Collection.find(
+        { erc721Address: contractAddress, isWarned: true }
+      );
+      if (!is_warned.length)
+        return res.json({
+          status: 'failed',
+          data: 'Not Warned yet'
+        });
+    } catch (error) {
+      Logger.error(error);
+    }
+
+    try {
+      await Collection.updateOne(
+        { erc721Address: contractAddress },
+        { $set: { isWarned: false } }
+      );
+    } catch (error) {
+      Logger.error(error);
+    }
+    return res.json({
+      status: 'success',
+      data: 'unwarned'
+    });
+  } catch (error) {
+    Logger.error(error);
+    return res.json({
+      status: 'Failed to unwarn a collection!'
+    });
+  }
+});
+
+router.post('/warnCollection', auth, async (req, res) => {
+  try {
+    let adminAddress = extractAddress(req, res);
+    let isModOrAdmin = await isAllowedToBan(adminAddress);
+    if (!isModOrAdmin)
+      return res.json({
+        status: 'failed',
+        data: 'Only Admin or Mods can Warn Collections!'
+      });
+    let signature = req.body.signature;
+    let retrievedAddr = req.body.signatureAddress;
+    let isValidsignature = validateSignature(
+      adminAddress,
+      signature,
+      retrievedAddr
+    );
+    if (!isValidsignature)
+      return res.json({
+        status: 'failed',
+        data: 'Invalid Signature'
+      });
+
+    let contractAddress = toLowerCase(req.body.address);
+
+    // Check already Warned //
+    try {
+      let is_warned = await Collection.find(
+        { erc721Address: contractAddress, isWarned:true }
+      );
+      
+      if (is_warned.length) {
+        return res.json({
+          status: 'failed',
+          data: 'Already verified'
+        });
+      }
+    } catch (error) {
+      Logger.error(error);
+    }
+
+    try {
+      await Collection.updateOne(
+        { erc721Address: contractAddress },
+        { $set: { isWarned:true } }
+      );
+    } catch (error) {
+      Logger.error(error);
+    }
+
+    return res.json({
+      status: 'success',
+      data: 'warned'
+    });
+  } catch (error) {
+    Logger.error(error);
+    return res.json({
+      status: 'Failed to warn a collection!'
+    });
+  }
+});
+
 module.exports = router;
