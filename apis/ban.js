@@ -535,6 +535,8 @@ router.post('/verifyCollection', auth, async (req, res) => {
 
 // Warn / unwarn collection //
 router.post('/unverifyCollection', auth, async (req, res) => {
+  const NodeCache = require("node-cache");
+  const myCache = new NodeCache(); 
   try {
     let adminAddress = extractAddress(req, res);
     let isModOrAdmin = await isAllowedToBan(adminAddress);
@@ -577,6 +579,7 @@ router.post('/unverifyCollection', auth, async (req, res) => {
         { erc721Address: contractAddress },
         { $set: { isWarned: false } }
       );
+      myCache.del("allWarnedContracts");
     } catch (error) {
       Logger.error(error);
     }
@@ -593,6 +596,8 @@ router.post('/unverifyCollection', auth, async (req, res) => {
 });
 
 router.post('/warnCollection', auth, async (req, res) => {
+  const NodeCache = require("node-cache");
+  const myCache = new NodeCache(); 
   try {
     let adminAddress = extractAddress(req, res);
     let isModOrAdmin = await isAllowedToBan(adminAddress);
@@ -637,6 +642,7 @@ router.post('/warnCollection', auth, async (req, res) => {
         { erc721Address: contractAddress },
         { $set: { isWarned:true } }
       );
+      myCache.del("allWarnedContracts");
     } catch (error) {
       Logger.error(error);
     }
