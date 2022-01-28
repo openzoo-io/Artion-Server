@@ -253,7 +253,7 @@ router.post('/getCollectionList', async (req, res) => {
 });
 
 
-router.get('/sitemap', async (_,res) => {
+router.get('/sitemap', async (_, res) => {
   let tokens = await NFTITEM.find({
     isAppropriate: true
   })
@@ -268,7 +268,7 @@ router.get('/sitemap', async (_,res) => {
   result += '<url><loc>https://openzoo.io/collections</loc></url>';
 
   tokens.map(v => {
-    result += '<url><loc>https://openzoo.io/collection/'+v.contractAddress+'/'+v.tokenID+'</loc></url>';
+    result += '<url><loc>https://openzoo.io/collection/' + v.contractAddress + '/' + v.tokenID + '</loc></url>';
   });
 
   let allCollections = await Collection.find({
@@ -276,19 +276,39 @@ router.get('/sitemap', async (_,res) => {
     isAppropriate: true
   }).select([
     'erc721Address',
-    
+
   ]);
   allCollections.map(v => {
-    result += '<url><loc>https://openzoo.io/collection/'+v.erc721Address+'</loc></url>';
+    result += '<url><loc>https://openzoo.io/collection/' + v.erc721Address + '</loc></url>';
   });
   result += "</urlset>";
   res.set('Content-Type', 'text/xml');
   return res.send(result);
 });
 
+
+router.get('/getWarnedCollections', async (_, res) => {
+  let allWarnedContracts = myCache.get("allWarnedContracts");
+  if (allWarnedContracts == undefined) {
+    console.log('retriving... all warned collections');
+    let allWarnedCollections = await Collection.find({
+      isWarned: true,
+    });
+
+    allWarnedCollections.map(item => {
+      allWarnedContracts.push({
+        address: item.address,
+      });
+    });
+    myCache.set("allWarnedContracts", allWarnedContracts);
+  }
+  return res.json({
+    status: 'success',
+    data: allWarnedContracts
+  });
+})
+
 router.get('/getCollections', async (_, res) => {
-
-
 
   let allContracts = myCache.get("allContracts");
 
@@ -857,7 +877,7 @@ const getCollectionLiked = async (address) => {
       return liked;
     }
     return liked;
-    
+
   } catch (error) {
     Logger.error(error);
     return 0;
