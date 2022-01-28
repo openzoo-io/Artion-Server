@@ -599,7 +599,8 @@ router.post('/unwarnCollection', auth, async (req, res) => {
 });
 
 router.post('/warnCollection', auth, async (req, res) => {
-  myCache.del("allWarnedContracts");
+  let cache = myCache.del("allWarnedContracts");
+  console.log('Delete allWarnedContracts',cache);
   try {
     let adminAddress = extractAddress(req, res);
     let isModOrAdmin = await isAllowedToBan(adminAddress);
