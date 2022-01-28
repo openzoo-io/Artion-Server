@@ -537,6 +537,7 @@ router.post('/verifyCollection', auth, async (req, res) => {
 router.post('/unwarnCollection', auth, async (req, res) => {
   const NodeCache = require("node-cache");
   const myCache = new NodeCache(); 
+  myCache.del("allWarnedContracts");
   try {
     let adminAddress = extractAddress(req, res);
     let isModOrAdmin = await isAllowedToBan(adminAddress);
@@ -579,7 +580,7 @@ router.post('/unwarnCollection', auth, async (req, res) => {
         { erc721Address: contractAddress },
         { $set: { isWarned: false } }
       );
-      myCache.del("allWarnedContracts");
+      
     } catch (error) {
       Logger.error(error);
     }
