@@ -16,7 +16,11 @@ const auth = require('./middleware/auth');
 const toLowerCase = require('../utils/utils');
 const validateSignature = require('../apis/middleware/auth.sign');
 
+const NodeCache = require("node-cache");
+const myCache = new NodeCache({ stdTTL: 120, checkperiod: 0 });
+
 const adminAddress = process.env.ADMINADDRESS;
+
 
 const extractAddress = require('../services/address.utils');
 
@@ -597,8 +601,7 @@ router.post('/unwarnCollection', auth, async (req, res) => {
 });
 
 router.post('/warnCollection', auth, async (req, res) => {
-  const NodeCache = require("node-cache");
-  const myCache = new NodeCache(); 
+  
   myCache.del("allWarnedContracts");
   try {
     let adminAddress = extractAddress(req, res);
