@@ -534,7 +534,7 @@ router.post('/verifyCollection', auth, async (req, res) => {
 });
 
 // Warn / unwarn collection //
-router.post('/unverifyCollection', auth, async (req, res) => {
+router.post('/unwarnCollection', auth, async (req, res) => {
   const NodeCache = require("node-cache");
   const myCache = new NodeCache(); 
   try {
