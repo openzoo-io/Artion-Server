@@ -296,9 +296,9 @@ router.get('/getWarnedCollections', async (_, res) => {
     }).select("erc721Address");
     allWarnedContracts = [];
     allWarnedCollections.map(item => {
-      allWarnedContracts.push({
-        address: item.erc721Address,
-      });
+      allWarnedContracts.push(
+        item.erc721Address,
+      );
     });
     myCache.set("allWarnedContracts", allWarnedContracts);
   }
