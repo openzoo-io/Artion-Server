@@ -599,6 +599,7 @@ router.post('/unwarnCollection', auth, async (req, res) => {
 });
 
 router.post('/warnCollection', auth, async (req, res) => {
+  console.log(myCache.has("allWarnedContracts"));
   let cache = myCache.del("allWarnedContracts");
   console.log('Delete allWarnedContracts',cache);
   try {
