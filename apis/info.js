@@ -294,7 +294,7 @@ router.get('/getWarnedCollections', async (_, res) => {
     let allWarnedCollections = await Collection.find({
       isWarned: true,
     }).select("erc721Address");
-
+    allWarnedContracts = [];
     allWarnedCollections.map(item => {
       allWarnedContracts.push({
         address: item.erc721Address,
