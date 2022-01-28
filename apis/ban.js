@@ -16,9 +16,6 @@ const auth = require('./middleware/auth');
 const toLowerCase = require('../utils/utils');
 const validateSignature = require('../apis/middleware/auth.sign');
 
-const NodeCache = require("node-cache");
-const myCache = new NodeCache({ stdTTL: 120, checkperiod: 0 });
-
 const adminAddress = process.env.ADMINADDRESS;
 
 
@@ -539,7 +536,7 @@ router.post('/verifyCollection', auth, async (req, res) => {
 
 // Warn / unwarn collection //
 router.post('/unwarnCollection', auth, async (req, res) => {
-  myCache.del("allWarnedContracts");
+
   try {
     let adminAddress = extractAddress(req, res);
     let isModOrAdmin = await isAllowedToBan(adminAddress);
@@ -599,9 +596,7 @@ router.post('/unwarnCollection', auth, async (req, res) => {
 });
 
 router.post('/warnCollection', auth, async (req, res) => {
-  console.log(myCache.has("allWarnedContracts"));
-  let cache = myCache.del("allWarnedContracts");
-  console.log('Delete allWarnedContracts',cache);
+
   try {
     let adminAddress = extractAddress(req, res);
     let isModOrAdmin = await isAllowedToBan(adminAddress);
