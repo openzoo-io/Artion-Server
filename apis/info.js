@@ -293,11 +293,11 @@ router.get('/getWarnedCollections', async (_, res) => {
     console.log('retriving... all warned collections');
     let allWarnedCollections = await Collection.find({
       isWarned: true,
-    });
+    }).select("erc721Address");
 
     allWarnedCollections.map(item => {
       allWarnedContracts.push({
-        address: item.address,
+        address: item.erc721Address,
       });
     });
     myCache.set("allWarnedContracts", allWarnedContracts);
