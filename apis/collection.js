@@ -628,40 +628,64 @@ router.post('/isValidated', auth, async (req, res) => {
   }
 });
 
-router.get("/attributeFilter/:contractAddress", auth, async (req, res) => {
+router.get("/:contractAddress/attributeFilter", auth, async (req, res) => {
   try {
-    const contractAddress = req.params.contractAddress;
-    if (!contractAddress) throw "Empty parameter: collectionAddress";
-    let records = await NFTAttribute.find(
+    const { contractAddress } = req.params;
+    const attributes = await NFTAttribute.aggregate([
+      { $match: { contractAddress } },
       {
-        contractAddress: contractAddress,
+        $project: { "attributes.trait_type": 1, "attributes.value": 1, _id: 0 },
       },
-      { attributes: 1, _id: 0 }
-    ).lean();
-
-    records = records.map((r) => r.attributes).flat();
-    records = Utils.groupObjectArrayByProperty(records, "trait_type");
-
-    const result = { numerics: {}, options: {} };
-    for (const [traitType, values] of Object.entries(records)) {
-      const valueArray = [...new Set(values.map((x) => x.value))];
-      const isNumericType = valueArray.every(Utils.isNumeric);
-
-      if (isNumericType) {
-        result.numerics[traitType] = {
-          min: Utils.minValueOfArray(valueArray),
-          max: Utils.maxValueOfArray(valueArray),
-        };
-      } else {
-        result.options[traitType] = Utils.sortArrayAlphabetically(valueArray);
-      }
-    }
+      { $unwind: "$attributes" },
+      {
+        $group: {
+          _id: {
+            trait_type: "$attributes.trait_type",
+            value: "$attributes.value",
+          },
+          count: { $count: {} },
+        },
+      },
+      { $sort: { "_id.value": 1 } },
+      {
+        $group: {
+          _id: "$_id.trait_type",
+          value: {
+            $push: { value: "$_id.value", count: "$count" },
+          },
+        },
+      },
+      { $sort: { _id: 1 } },
+      {
+        $project: {
+          _id: 1,
+          isNumeric: {
+            $cond: {
+              if: { $isNumber: { $first: "$value.value" } },
+              then: true,
+              else: false,
+            },
+          },
+          value: {
+            $cond: {
+              if: { $isNumber: { $first: "$value.value" } },
+              then: {
+                min: { $min: "$value.value" },
+                max: { $max: "$value.value" },
+              },
+              else: "$value",
+            },
+          },
+        },
+      },
+    ]);
 
     return res.json({
       status: "success",
-      data: result,
+      data: attributes,
     });
   } catch (error) {
+    console.log(error);
     return res.json({
       status: "failed",
     });
