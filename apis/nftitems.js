@@ -148,7 +148,7 @@ router.post('/resyncMetajson', async (req, res) => {
       let sc = new ethers.Contract(contractAddress, SimplifiedERC721ABI, provider);
       let tokenURI = await sc.tokenURI(tokenID);
       let metadata;
-
+      let metadataURI = tokenURI;
       // now check if token uri is base64
       if (tokenURI.startsWith('data:application/json;base64,')) {
         tokenURI = tokenURI.split(',');
@@ -167,7 +167,7 @@ router.post('/resyncMetajson', async (req, res) => {
           }
         }
       } else {
-        let metadataURI = tokenURI;
+        
         if (tokenURI.includes('ipfs://')) {
           let uri = tokenURI.split('ipfs://')[1].replace(/([^:]\/)\/+/g, "$1");
           metadataURI = `${randomIPFS()}${uri}`;
