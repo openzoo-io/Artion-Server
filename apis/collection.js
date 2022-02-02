@@ -10,6 +10,7 @@ const Category = mongoose.model('Category');
 const ERC1155CONTRACT = mongoose.model('ERC1155CONTRACT');
 const ERC721CONTRACT = mongoose.model('ERC721CONTRACT');
 const ERC1155HOLDING = mongoose.model('ERC1155HOLDING');
+const NFTAttribute = mongoose.model('NFTAttribute');
 const auth = require('./middleware/auth');
 const admin_auth = require('./middleware/auth.admin');
 const toLowerCase = require('../utils/utils');
@@ -685,10 +686,19 @@ router.get("/:contractAddress/attributeFilter", auth, async (req, res) => {
       data: attributes,
     });
   } catch (error) {
-    console.log(error);
     return res.json({
       status: "failed",
     });
+  }
+});
+
+router.get("/:contractAddress/attributeFilter/exists", auth, async (req, res) => {
+  try {
+    const {contractAddress} = req.params;
+    const exists = await NFTAttribute.find({ contractAddress }).limit(1).count(true);
+    return res.sendStatus(exists ? 200 : 404);
+  } catch (error) {
+    return res.sendStatus(500);
   }
 });
 
