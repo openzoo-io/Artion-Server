@@ -1362,13 +1362,13 @@ const parseSingleTrasferData = (data) => {
 };
 
 const fetchTransferHistory1155 = async (address, id) => {
-  console.log(address);
+  
   let singleTransferEvts = await provider.getLogs({
     address: address,
     fromBlock: 0,
     topics: [
       ethers.utils.id(
-        'TransferSingle(address,address,address,uint256,uint256)'
+        'URI(string,uint256)'
       ),
       null,
       null,
