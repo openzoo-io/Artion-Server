@@ -1368,16 +1368,15 @@ const fetchTransferHistory1155 = async (address, id) => {
     fromBlock: 0,
     topics: [
       ethers.utils.id(
-        'URI(string,uint256)'
+        'TransferSingle(address,address,address,uint256,uint256)'
       ),
       null,
       null,
-
+      null,
+      null,
+      null
     ]
   });
-
-  console.log(singleTransferEvts);
-
   let batchTransferEvts = await provider.getLogs({
     address: address,
     fromBlock: 0,
