@@ -150,6 +150,13 @@ router.post('/resyncMetajson', async (req, res) => {
       let metadata;
       let metadataURI = tokenURI;
       let contentType = 'image';
+      if (tokenURI == token.tokenURI)
+      {
+        return res.json({
+          status: 'success',
+          data: -1
+        });
+      }
       // now check if token uri is base64
       if (tokenURI.startsWith('data:application/json;base64,')) {
         tokenURI = tokenURI.split(',');
