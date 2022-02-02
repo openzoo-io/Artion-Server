@@ -168,6 +168,9 @@ router.post('/resyncMetajson', async (req, res) => {
         }
 
         metadata = await axios.get(metadataURI);
+
+
+
         try {
           tokenName = metadata.data.name;
           imageURL = metadata.data.image;
@@ -188,6 +191,10 @@ router.post('/resyncMetajson', async (req, res) => {
           });
         }
       }
+
+      console.log('New Token URI',tokenURI)
+      console.log('New Meta URI',metadataURI)
+
       // Update new Data //
 
       token.name = tokenName;
