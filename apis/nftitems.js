@@ -144,6 +144,7 @@ router.post('/resyncMetajson', async (req, res) => {
     });
     if (token) {
       const SimplifiedERC721ABI = require('../constants/simplifiederc721abi');
+      const axios = require('axios');
       let sc = new ethers.Contract(contractAddress, SimplifiedERC721ABI, provider);
       let tokenURI = await sc.tokenURI(tokenID);
       let metadata;
