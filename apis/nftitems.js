@@ -1372,11 +1372,12 @@ const fetchTransferHistory1155 = async (address, id) => {
       ),
       null,
       null,
-      null,
-      null,
-      null
+
     ]
   });
+
+  console.log(singleTransferEvts);
+
   let batchTransferEvts = await provider.getLogs({
     address: address,
     fromBlock: 0,
