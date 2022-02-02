@@ -1394,6 +1394,8 @@ const fetchTransferHistory1155 = async (address, id) => {
     ]
   });
 
+  console.log(batchTransferEvts)
+
   let history = [];
 
   // process single transfer event logs
