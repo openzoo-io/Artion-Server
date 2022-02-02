@@ -1364,7 +1364,7 @@ const parseSingleTrasferData = (data) => {
 const fetchTransferHistory1155 = async (address, id) => {
   let singleTransferEvts = await provider.getLogs({
     address: address,
-    fromBlock: 0,
+    fromBlock: 	17350934,
     topics: [
       ethers.utils.id(
         'TransferSingle(address,address,address,uint256,uint256)'
