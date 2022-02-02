@@ -56,6 +56,8 @@ const updatePrices = (items) => {
   return items;
 };
 
+
+
 router.post('/increaseViews', async (req, res) => {
   try {
     let contractAddress = req.body.contractAddress;
@@ -117,6 +119,8 @@ router.post('/resyncThumbnailPath', async (req, res) => {
   }
 });
 
+
+
 router.post('/resyncMetajson', async (req, res) => {
   try {
     let contractAddress = req.body.contractAddress;
@@ -128,8 +132,8 @@ router.post('/resyncMetajson', async (req, res) => {
       tokenID: tokenID
     });
     if (token) {
-
-      let sc = loadContract(address, 721);
+      const SimplifiedERC721ABI = require('../constants/simplifiederc721abi');
+      let sc = ethers.Contract(contractAddress, SimplifiedERC721ABI, provider);
       let tokenURI = await sc.tokenURI(tokenID);
       let metadata;
 
