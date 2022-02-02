@@ -248,7 +248,7 @@ const handle1155SingleTransfer = async (
             } else {
               let metadataURI = tokenURI;
               if (tokenURI.includes('ipfs://')) {
-                let uri = tokenURI.split('//')[1];
+                let uri = tokenURI.split('ipfs://')[1].replace(/([^:]\/)\/+/g, "$1");
                 metadataURI = `https://openzoo.mypinata.cloud/ipfs/${uri}`;
               }
               metadata = await axios.get(metadataURI);
@@ -448,11 +448,16 @@ router.post(
         } else {
           let metadataURI = tokenURI;
           if (tokenURI.includes('ipfs://')) {
-            let uri = tokenURI.split('//')[1];
+            let uri = tokenURI.split('ipfs://')[1].replace(/([^:]\/)\/+/g, "$1");
             metadataURI = `${randomIPFS()}${uri}`;
           }
 
-          if (tokenURI.includes('https://openzoo.mypinata.cloud/ipfs/')) {
+          if (
+            tokenURI.includes('pinata.cloud') ||
+            tokenURI.includes('cloudflare') ||
+            tokenURI.includes('ipfs.io') ||
+            tokenURI.includes('ipfs.infura.io')
+          ) {
             let uri = tokenURI.split('/ipfs/')[1];
             metadataURI = `${randomIPFS()}${uri}`;
           }

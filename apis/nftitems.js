@@ -57,6 +57,8 @@ const updatePrices = (items) => {
   return items;
 };
 
+
+
 router.post('/increaseViews', async (req, res) => {
   try {
     let contractAddress = req.body.contractAddress;
@@ -103,6 +105,136 @@ router.post('/resyncThumbnailPath', async (req, res) => {
       return res.json({
         status: 'success',
         data: _token.thumbnailPath
+      });
+    } else {
+      return res.json({
+        status: 'success',
+        data: 0
+      });
+    }
+  } catch (error) {
+    Logger.error(error);
+    return res.status(400).json({
+      status: 'failed'
+    });
+  }
+});
+
+
+const randomIPFS = () => {
+  const IPFSUris = [
+    'https://openzoo.mypinata.cloud/ipfs/',
+    'https://openzoo2.mypinata.cloud/ipfs/',
+    'https://openzoo3.mypinata.cloud/ipfs/',
+    
+  ];
+
+  let random = Math.floor(Math.random() * IPFSUris.length);
+
+  return `${IPFSUris[random]}`;
+};
+router.post('/resyncMetajson', async (req, res) => {
+  try {
+    let contractAddress = req.body.contractAddress;
+    contractAddress = toLowerCase(contractAddress);
+    let tokenID = parseInt(req.body.tokenID);
+
+    let token = await NFTITEM.findOne({
+      contractAddress: contractAddress,
+      tokenID: tokenID
+    });
+    if (token) {
+      const SimplifiedERC721ABI = require('../constants/simplifiederc721abi');
+      const axios = require('axios');
+      let sc = new ethers.Contract(contractAddress, SimplifiedERC721ABI, provider);
+      let tokenURI = await sc.tokenURI(tokenID);
+      let metadata;
+      let metadataURI = tokenURI;
+      let contentType = 'image';
+      if (tokenURI == token.tokenURI)
+      {
+        return res.json({
+          status: 'success',
+          data: -1
+        });
+      }
+      // now check if token uri is base64
+      if (tokenURI.startsWith('data:application/json;base64,')) {
+        tokenURI = tokenURI.split(',');
+        tokenURI = tokenURI[1];
+        let isBased64Encoded = isBase64(tokenURI);
+        if (isBased64Encoded) {
+          try {
+            metadata = Buffer.from(tokenURI, 'base64').toString('utf8');
+            metadata = JSON.parse(metadata);
+            tokenName = metadata.name;
+            imageURL = metadata.image;
+          } catch (error) {
+            return res.status(400).json({
+              status: 'failed'
+            });
+          }
+        }
+      } else {
+        
+        if (tokenURI.includes('ipfs://')) {
+          let uri = tokenURI.split('ipfs://')[1].replace(/([^:]\/)\/+/g, "$1");
+          metadataURI = `${randomIPFS()}${uri}`;
+        }
+
+        if (
+          tokenURI.includes('pinata.cloud') ||
+          tokenURI.includes('cloudflare') ||
+          tokenURI.includes('ipfs.io') ||
+          tokenURI.includes('ipfs.infura.io')
+        ) {
+          let uri = tokenURI.split('/ipfs/')[1];
+          metadataURI = `${randomIPFS()}${uri}`;
+        }
+
+        metadata = await axios.get(metadataURI);
+
+
+
+        try {
+          tokenName = metadata.data.name;
+          imageURL = metadata.data.image;
+
+          // Get content Type //
+          if (metadata.data.animation_url) {
+            let ext = metadata.data.animation_url ? metadata.data.animation_url.split('.').pop() : '';
+            switch (ext) {
+              case 'mp4': contentType = "video"; break;
+              case 'mp3': contentType = "sound"; break;
+              case 'glb': contentType = "model"; break;
+            }
+          }
+
+        } catch (error) {
+          return res.status(400).json({
+            status: 'failed'
+          });
+        }
+      }
+
+      console.log('New Token URI',tokenURI)
+      console.log('New Meta URI',metadataURI)
+
+      // Update new Data //
+
+      token.name = tokenName;
+      token.tokenURI = tokenURI;
+      token.imageURL = imageURL;
+
+      token.createdAt = Date.now();
+      token.contentType = contentType;
+
+      // Clear Thumbnail //
+      token.thumbnailPath = '-';
+      let _token = await token.save();
+      return res.json({
+        status: 'success',
+        data: _token
       });
     } else {
       return res.json({
@@ -479,7 +611,7 @@ const selectTokens = async (req, res) => {
         }
         if (filters.includes('hasOffers')) {
           const activeOfferFilter = {
-            $match: {deadline: {$gte: new Date().getTime()}}
+            $match: { deadline: { $gte: new Date().getTime() } }
           };
           const pipeline = [
             collections2filter === null ? undefined : minterFilters,
@@ -633,7 +765,7 @@ const selectTokens = async (req, res) => {
                   collections2filter === null
                     ? undefined
                     : { $in: ['$minter', collections2filter] },
-                  
+
                 ].filter((action) => action !== undefined)
               }
             }
@@ -642,9 +774,9 @@ const selectTokens = async (req, res) => {
           const pipeline = [activeBidAccountFilter, ...lookupNFTItemsAndMerge].filter(
             (part) => part !== undefined
           );
-          
+
           pipeline.push({ $match: { owner: wallet } });
-          
+
           return Bid.aggregate(pipeline);
         }
 
@@ -657,7 +789,7 @@ const selectTokens = async (req, res) => {
         }
         if (filters.includes('hasOffers')) {
           const activeOfferFilter = {
-            $match: {deadline: {$gte: new Date().getTime()}}
+            $match: { deadline: { $gte: new Date().getTime() } }
           };
           const pipeline = [activeOfferFilter, ...lookupNFTItemsAndMerge].filter(
             (part) => part !== undefined
@@ -1366,6 +1498,7 @@ const parseSingleTrasferData = (data) => {
 };
 
 const fetchTransferHistory1155 = async (address, id) => {
+
   let singleTransferEvts = await provider.getLogs({
     address: address,
     fromBlock: 0,
