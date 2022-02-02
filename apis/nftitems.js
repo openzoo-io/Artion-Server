@@ -120,7 +120,18 @@ router.post('/resyncThumbnailPath', async (req, res) => {
 });
 
 
+const randomIPFS = () => {
+  const IPFSUris = [
+    'https://openzoo.mypinata.cloud/ipfs/',
+    'https://openzoo2.mypinata.cloud/ipfs/',
+    'https://openzoo3.mypinata.cloud/ipfs/',
+    
+  ];
 
+  let random = Math.floor(Math.random() * IPFSUris.length);
+
+  return `${IPFSUris[random]}`;
+};
 router.post('/resyncMetajson', async (req, res) => {
   try {
     let contractAddress = req.body.contractAddress;
