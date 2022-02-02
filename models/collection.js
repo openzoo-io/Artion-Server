@@ -20,6 +20,7 @@ const Collection = mongoose.Schema({
   isOwnerble: { type: Boolean, default: false },
   isAppropriate: { type: Boolean, default: true },
   isVerified: { type: Boolean, default: false },
+  isWarned: {type: Boolean, default: false},
   feeRecipient: { type: String },
   signature: { type: String },
   signatureAddress: { type: String },
