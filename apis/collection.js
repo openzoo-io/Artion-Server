@@ -28,7 +28,6 @@ const ftmScanApiKey = process.env.FTM_SCAN_API_KEY;
 
 const Logger = require('../services/logger');
 const { getSymbol } = require('../services/price.feed');
-const Utils = require('../utils/utilsv2');
 // to sign txs
 const provider = new ethers.providers.JsonRpcProvider(
   process.env.NETWORK_RPC,
