@@ -19,6 +19,7 @@ const BundleOffer = mongoose.model('BundleOffer');
 const TradeHistory = mongoose.model('TradeHistory');
 const UnlockableContents = mongoose.model('UnlockableContents');
 const DisabledExplorerCollection = mongoose.model('DisabledExplorerCollection');
+const NFTAttribute = mongoose.model('NFTAttribute');
 
 const orderBy = require('lodash.orderby');
 const toLowerCase = require('../utils/utils');
@@ -407,8 +408,6 @@ const selectTokens = async (req, res) => {
       }
     ];
 
-
-
     /*
     for global search
      */
@@ -433,6 +432,8 @@ const selectTokens = async (req, res) => {
         const minterFilters = {
           $match: { $expr: { $in: ['$minter', collections2filter] } }
         };
+
+
         if (filters.includes('hasBids')) {
           const activeBidFilter = {
             $match: {
@@ -958,6 +959,7 @@ router.post('/fetchTokens', async (req, res) => {
   let from = parseInt(req.body.from);
   let count = parseInt(req.body.count);
   let isProfile = req.body.isProfile;
+  let attributes = req.body.attributes;
 
   console.log('cost 1', Date.now() - timestart);
 
@@ -996,10 +998,12 @@ router.post('/fetchTokens', async (req, res) => {
   if (sortby === 'price' || sortby === 'cheapest') {
     updatedItems = updatePrices(items);
     data = sortItems(updatedItems, sortby);
+    data = await applyAttributeFilter(attributes, req.body.collectionAddresses?.[0], data);
     _searchResults = data.slice(from, from + count);
   }
   else {
     data = sortItems(items, sortby);
+    data = await applyAttributeFilter(attributes, req.body.collectionAddresses?.[0], data);
     _searchResults = data.slice(from, from + count);
     _searchResults = updatePrices(_searchResults);
 
@@ -1481,5 +1485,49 @@ const getAccountInfo = async (address) => {
     return null;
   }
 };
+
+const applyAttributeFilter = async (attributes, collectionAddress, data) => {
+
+  if(!attributes || !Object.keys(attributes).length || !collectionAddress || !data || !data.length)
+    return data;
+  
+  const attributeMatchFilter = 
+    Object.keys(attributes)
+          .reduce((acc,key) => {
+            acc[`attributes.${key}`] = attributes[key].isNumeric ?
+              { $exists: true, $gte: attributes[key].value[0] , $lte: attributes[key].value[1] } :
+              { $exists: true, $in: attributes[key].value.map(x => x.value) };
+            return acc;
+          }, {});
+    
+    const pipeline = [
+      { $match: { contractAddress: collectionAddress, _nftItemId: { $in: data.map(x => x._id) } }},
+      { $project: {
+          _id: 0,
+          _nftItemId: 1,
+          attributes: {
+            $arrayToObject: {
+              $map: {
+                input: '$attributes',
+                as: 'el',
+                in: {
+                  k: '$$el.trait_type',
+                  v: '$$el.value'
+                }
+              }
+            }
+          }
+       }
+     }, 
+     { $match: { ...attributeMatchFilter } },
+     { $project: {
+       _nftItemId: 1
+       }
+     }
+    ];
+
+    let results = (await NFTAttribute.aggregate(pipeline)).map(x => x._nftItemId.toString());
+    return data.filter(x => results.includes(x._id.toString()));
+}
 
 module.exports = router;
