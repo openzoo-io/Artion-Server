@@ -174,36 +174,33 @@ router.post('/getCollectionList', async (req, res) => {
     });
   }
 
-
-
   let searchResults = allCollections.map(async (collection) => {
     let item_count = await NFTITEM.countDocuments({ contractAddress: collection.erc721Address });
     return ({
-
-    address: collection.erc721Address,
-    collectionName: collection.collectionName,
-    description: collection.description,
-    categories: collection.categories,
-    logoImageHash: collection.logoImageHash,
-    siteUrl: collection.siteUrl,
-    discord: collection.discord,
-    twitterHandle: collection.twitterHandle,
-    mediumHandle: collection.mediumHandle,
-    telegram: collection.telegram,
-    isVerified: collection.isVerified,
-    isVisible: true,
-    isInternal: collection.isInternal,
-    isOwnerble: collection.isOwnerble,
-    owner: collection.owner,
-    ownerAlias: await getAccountInfo(collection.owner),
-    item_count: item_count,
-    owner_count: await getCollectionOwnerCount(collection.erc721Address),
-    floor_price: await getCollectionFloorPrice(collection.erc721Address),
-    traded_volume: await getCollectionTradedVolume(collection.erc721Address),
-    liked: await getCollectionLiked(collection.erc721Address, item_count),
-    collectionType: await NFTITEM.find({ contractAddress: collection.erc721Address }).select('tokenType').limit(1)
-  })
-});
+      address: collection.erc721Address,
+      collectionName: collection.collectionName,
+      description: collection.description,
+      categories: collection.categories,
+      logoImageHash: collection.logoImageHash,
+      siteUrl: collection.siteUrl,
+      discord: collection.discord,
+      twitterHandle: collection.twitterHandle,
+      mediumHandle: collection.mediumHandle,
+      telegram: collection.telegram,
+      isVerified: collection.isVerified,
+      isVisible: true,
+      isInternal: collection.isInternal,
+      isOwnerble: collection.isOwnerble,
+      owner: collection.owner,
+      ownerAlias: await getAccountInfo(collection.owner),
+      item_count: item_count,
+      owner_count: await getCollectionOwnerCount(collection.erc721Address),
+      floor_price: await getCollectionFloorPrice(collection.erc721Address),
+      traded_volume: await getCollectionTradedVolume(collection.erc721Address),
+      liked: await getCollectionLiked(collection.erc721Address, item_count),
+      collectionType: await NFTITEM.find({ contractAddress: collection.erc721Address }).select('tokenType').limit(1)
+    })
+  });
 
   let results = await Promise.all(searchResults);
 
@@ -881,17 +878,16 @@ const getCollectionLiked = async (address, totalCount) => {
         },
         {
           $group: { _id: { foll: "$follower" }, sum: { $sum: 1 } }
-        }, 
+        },
         {
           $match:
           {
-            sum: {$lte: Math.ciel(totalCount/2)}
+            sum: { $lte: Math.floor(totalCount / 2.5) }
           }
         },
         { $count: "sum" }
       ]);
       let liked = 0;
-      
       if (likedSum.length > 0) {
         liked += likedSum[0].sum;
       }
