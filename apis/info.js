@@ -882,9 +882,9 @@ const getCollectionLiked = async (address) => {
         { $count: "sum" }
       ]);
       let liked = 0;
-      console.log(likedSum.sum);
+      console.log(likedSum);
       if (likedSum.length > 0) {
-        liked += likedSum.sum;
+        liked += likedSum[0].sum;
       }
 
       myCache.set('collectionLiked_' + address, liked);
