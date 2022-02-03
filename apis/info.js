@@ -858,17 +858,31 @@ const getCollectionLiked = async (address) => {
 
     if (liked == undefined) {
       //console.log('retrived liked...');
-      let likedSum = await NFTITEM.aggregate([
+      // let likedSum = await NFTITEM.aggregate([
+      //   {
+      //     $match: { contractAddress: address }
+      //   },
+      //   {
+      //     $group: {
+      //       _id: null, sum: { $sum: "$liked" }
+      //     },
+      //   }
+      // ]);
+
+      let likedSum = await Like.aggregate([
         {
-          $match: { contractAddress: address }
+          $match:
+          {
+            contractAddress: address
+          }
         },
         {
-          $group: {
-            _id: null, sum: { $sum: "$liked" }
-          },
-        }
+          $group: { _id: { foll: "$follower" }, sum: { $sum: 1 } }
+        }, 
+        { $count: "sum" }
       ]);
       let liked = 0;
+      
       if (likedSum.length > 0) {
         liked += likedSum[0].sum;
       }
