@@ -853,7 +853,7 @@ const getAccountInfo = async (address) => {
   }
 };
 
-const getCollectionLiked = async (address) => {
+const getCollectionLiked = async (address, totalCount) => {
   try {
     let liked = myCache.get('collectionLiked_' + address);
 
@@ -880,6 +880,12 @@ const getCollectionLiked = async (address) => {
         {
           $group: { _id: { foll: "$follower" }, sum: { $sum: 1 } }
         }, 
+        {
+          $match:
+          {
+            sum: {$lte: Math.ciel(totalCount/2)}
+          }
+        },
         { $count: "sum" }
       ]);
       let liked = 0;
