@@ -883,7 +883,7 @@ const getCollectionLiked = async (address, totalCount) => {
         {
           $match:
           {
-            sum: { $lte: Math.ceil(totalCount / 2.5) }
+            sum: { $lte: Math.floor(totalCount / 2.5) }
           }
         },
         { $count: "sum" }
