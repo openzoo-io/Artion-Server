@@ -879,17 +879,17 @@ const getCollectionLiked = async (address, totalCount) => {
         },
         {
           $group: { _id: { foll: "$follower" }, sum: { $sum: 1 } }
-        }, 
+        },
         {
           $match:
           {
-            sum: {$lte: Math.ciel(totalCount/2)}
+            sum: { $lte: Math.ciel(totalCount / 2) }
           }
         },
         { $count: "sum" }
       ]);
       let liked = 0;
-      
+
       if (likedSum.length > 0) {
         liked += likedSum[0].sum;
       }
