@@ -176,7 +176,9 @@ router.post('/getCollectionList', async (req, res) => {
 
 
 
-  let searchResults = allCollections.map(async (collection) => ({
+  let searchResults = allCollections.map(async (collection) => {
+    let item_count = await NFTITEM.countDocuments({ contractAddress: collection.erc721Address });
+    return ({
 
     address: collection.erc721Address,
     collectionName: collection.collectionName,
@@ -194,13 +196,14 @@ router.post('/getCollectionList', async (req, res) => {
     isOwnerble: collection.isOwnerble,
     owner: collection.owner,
     ownerAlias: await getAccountInfo(collection.owner),
-    item_count: await NFTITEM.countDocuments({ contractAddress: collection.erc721Address }),
+    item_count: item_count,
     owner_count: await getCollectionOwnerCount(collection.erc721Address),
     floor_price: await getCollectionFloorPrice(collection.erc721Address),
     traded_volume: await getCollectionTradedVolume(collection.erc721Address),
-    liked: await getCollectionLiked(collection.erc721Address),
+    liked: await getCollectionLiked(collection.erc721Address, item_count),
     collectionType: await NFTITEM.find({ contractAddress: collection.erc721Address }).select('tokenType').limit(1)
-  }));
+  })
+});
 
   let results = await Promise.all(searchResults);
 
@@ -852,7 +855,7 @@ const getAccountInfo = async (address) => {
   }
 };
 
-const getCollectionLiked = async (address) => {
+const getCollectionLiked = async (address, totalCount) => {
   try {
     let liked = myCache.get('collectionLiked_' + address);
 
@@ -879,6 +882,12 @@ const getCollectionLiked = async (address) => {
         {
           $group: { _id: { foll: "$follower" }, sum: { $sum: 1 } }
         }, 
+        {
+          $match:
+          {
+            sum: {$lte: Math.floor(totalCount/2)}
+          }
+        },
         { $count: "sum" }
       ]);
       let liked = 0;
