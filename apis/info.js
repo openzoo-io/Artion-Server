@@ -869,7 +869,7 @@ const getCollectionLiked = async (address) => {
       //   }
       // ]);
 
-      let likedSum = await NFTITEM.aggregate([
+      let likedSum = await Like.aggregate([
         {
           $match:
           {
