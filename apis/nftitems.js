@@ -633,10 +633,10 @@ const selectTokens = async (req, res) => {
             ...lookupNFTItemsAndMerge
           ].filter((part) => part !== undefined);
           if (!mediaType) {
-            pipeline.push({ $match: { isAppropriate: true , $gte: {saleEndsAt: new Date()} } });
+            pipeline.push({ $match: { isAppropriate: true , saleEndsAt: {$gte: new Date()} } });
           }
           else {
-            pipeline.push({ $match: { isAppropriate: true, contentType: mediaType, $gte: {saleEndsAt: new Date()} } });
+            pipeline.push({ $match: { isAppropriate: true, contentType: mediaType, saleEndsAt: {$gte: new Date()} } });
           }
           return Auction.aggregate(pipeline);
         }
