@@ -675,7 +675,8 @@ router.get("/:contractAddress/:tokenID/updateAttributes", auth, async (req,res) 
     if(attribute) {
       await attribute.set({
         errorCode: error?.response?.status ?? 1,
-        errorMessage: JSON.stringify(error.stack)
+        errorMessage: JSON.stringify(error.stack),
+        updatedAt: Date.now()
       }).save();
     }
 
