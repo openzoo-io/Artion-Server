@@ -11,6 +11,7 @@ const ERC1155CONTRACT = mongoose.model('ERC1155CONTRACT');
 const ERC721CONTRACT = mongoose.model('ERC721CONTRACT');
 const ERC1155HOLDING = mongoose.model('ERC1155HOLDING');
 const NFTAttribute = mongoose.model('NFTAttribute');
+const NFTItem = mongoose.model('NFTITEM');
 const auth = require('./middleware/auth');
 const admin_auth = require('./middleware/auth.admin');
 const toLowerCase = require('../utils/utils');
@@ -628,6 +629,60 @@ router.post('/isValidated', auth, async (req, res) => {
   }
 });
 
+router.get("/:contractAddress/:tokenID/updateAttributes", auth, async (req,res) => {
+
+  const randomIpfsEndpoint = (tokenURI) => {
+
+    if(!['ipfs://', '/ipfs/'].some(x => tokenURI.includes(x)))
+      return tokenURI;
+
+    const endpoints = [ 
+      'openzoo',
+      'openzoo2',
+      'openzoo3'
+    ];
+
+    const endpoint = `https://${endpoints[Math.floor(Math.random() * endpoints.length)]}.mypinata.cloud/ipfs/`;
+    const path = tokenURI.split(tokenURI.includes('ipfs://') ? 'ipfs://' : '/ipfs/')[1];
+    return `${endpoint}${path}`;
+  }
+
+  let attribute = null;
+
+  try {
+    const {contractAddress, tokenID} = req.params;
+    const { _id, tokenURI } = await NFTItem.findOne({contractAddress, tokenID}).exec();
+    const { attributes, ...ipfsRecord} = await axios.get(randomIpfsEndpoint(tokenURI)).then(response => response.data);
+
+    attribute = await NFTAttribute.findOne({ contractAddress, tokenID }).exec();
+    attribute = attribute ?? new NFTAttribute({
+      contractAddress,
+      tokenID,
+      tokenURI,
+      _nftItemId: _id,
+    });
+
+    await attribute.set({
+      attributes,
+      ipfsRecord,
+      updatedAt: Date.now(),
+      isRemoteHasAttributes: !!attributes,
+    })
+    .save();
+
+    return res.sendStatus(200);
+  } catch (error) {
+    if(attribute) {
+      await attribute.set({
+        errorCode: error?.response?.status ?? 1,
+        errorMessage: JSON.stringify(error.stack)
+      }).save();
+    }
+
+    return res.sendStatus(500);
+  }
+});
+
 router.get("/:contractAddress/attributeFilter", auth, async (req, res) => {
   try {
     const { contractAddress } = req.params;
@@ -700,6 +755,7 @@ router.get("/:contractAddress/attributeFilter/exists", auth, async (req, res) =>
     return res.sendStatus(500);
   }
 });
+
 
 const minifyCollection = (collection) => {
   return {
