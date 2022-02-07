@@ -5,11 +5,14 @@ const NFTAttribute = mongoose.Schema({
   contractAddress: { type: String, required: true },
   tokenURI: { type: String, required: true },
   tokenID: { type: Number, required: true },
-  name: { type: String, required: true },
-  image: { type: String, required: true },
-  description: { type: String, required: true },
   attributes: { type: [], required: true },
+  ipfsRecord: { type: mongoose.Schema.Types.Mixed, required: true },
+  errorCode: { type: mongoose.Schema.Types.Number, default: 0 },
+  errorMessage: { type: mongoose.Schema.Types.String },
+  isRemoteHasAttributes: { type: mongoose.Schema.Types.Boolean, default: true },
+  updatedAt: { type: mongoose.Schema.Types.Date },
 });
 
 NFTAttribute.index({ _nftItemId: 1, contractAddress: 1 }, { unique: true });
-mongoose.model("NFTAttribute", NFTAttribute);
+
+module.exports = mongoose.model("NFTAttribute", NFTAttribute);
