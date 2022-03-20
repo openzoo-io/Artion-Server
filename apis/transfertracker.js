@@ -423,6 +423,10 @@ router.post(
           return res.json({});
         }
       } else {
+        if (to == '0x000000000000000000000000000000000000000f')
+        {
+          return res.json({});
+        }
         console.log('[NewNFT] Transferred to ',to);
         let sc = loadContract(address, 721);
         let tokenURI = await sc.tokenURI(tokenID);
