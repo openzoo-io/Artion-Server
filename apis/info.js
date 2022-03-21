@@ -28,12 +28,20 @@ const NodeCache = require("node-cache");
 const myCache = new NodeCache({ stdTTL: 120, checkperiod: 0 });
 
 // Show total volume traded //
-
 router.get('/totalVolumeTraded', async (_, res) => {
   let volumeTraded = await TradeHistory.aggregate([{ $group: { _id: null, sum: { $sum: "$price" } } }])
   return res.json({
     status: 'success',
     data: volumeTraded
+  });
+});
+
+// Show verified Collections //
+router.get('/totalCollections', async (_, res) => {
+  let collections = await Collection.aggregate([{$group:{_id:null, n:{$sum:1}}}]) // {$match:{isVerified:true}},
+  return res.json({
+    status: 'success',
+    data: collections
   });
 });
 
