@@ -735,7 +735,15 @@ router.get('/getActivityFromOthers/:address', async (req, res) => {
         minter: hold[1],
         tokenID: hold[0],
         deadline: { $gte: new Date().getTime() }
-      }).sort({pricePerItem:-1});
+      }).select([
+        'creator',
+        'tokenID',
+        'quantity',
+        'pricePerItem',
+        'paymentToken',
+        'deadline',
+        'minter'
+      ]).sort({pricePerItem:-1});
 
       // Back to normal mode //
       // if (!offer)
