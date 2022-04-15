@@ -731,11 +731,11 @@ router.get('/getActivityFromOthers/:address', async (req, res) => {
     let promise = holdings.map(async (hold) => {
 
       // Find the higest price + Not expired //
-      let offer = await Offer.find({
+      let offer = await Offer.findOne({
         minter: hold[1],
         tokenID: hold[0],
         deadline: { $gte: new Date().getTime() }
-      }).sort({pricePerItem:-1}).limit(1);
+      }).sort({pricePerItem:-1});
 
       // Back to normal mode //
       // if (!offer)
