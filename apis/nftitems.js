@@ -1248,7 +1248,7 @@ router.post('/transfer721History', async (req, res) => {
       if (nft)
       {
         nft.owner = history[0].to;
-        console.log('update latest owner', to);
+        console.log('update latest owner', history[0].to);
         await nft.save();
       }
     }
