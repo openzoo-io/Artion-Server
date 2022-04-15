@@ -1229,14 +1229,14 @@ router.post('/transfer721History', async (req, res) => {
     let address = toLowerCase(req.body.address);
     let history = await fetchTransferHistory721(address, tokenID);
 
-    console.log(history);
+    
     if (history)
     {
       history = history.sort((a,b) => {
         a.createdAt < b.createdAt ? 1 : -1
       });
     }
-
+    console.log(history);
 
     return res.json({
       status: 'success',
