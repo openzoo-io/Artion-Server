@@ -1236,7 +1236,22 @@ router.post('/transfer721History', async (req, res) => {
         return dateA < dateB ? 1 : -1; // ? -1 : 1 for ascending/increasing order
       });
     }
-    console.log(history);
+    
+    // Update Owner //
+    if (history[0])
+    {
+      let nft = await NFTITEM.findOne({
+        contractAddress: address,
+        tokenID: tokenID,
+        isAppropriate: true
+      });
+      if (nft)
+      {
+        nft.owner = history[0].to;
+        console.log('update latest owner', to);
+        await nft.save();
+      }
+    }
 
     return res.json({
       status: 'success',
