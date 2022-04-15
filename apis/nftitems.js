@@ -1233,7 +1233,7 @@ router.post('/transfer721History', async (req, res) => {
     if (history)
     {
       history = history.sort((a,b) => {
-        Date.parse(a.createdAt) < Date.parse(b.createdAt) ? 1 : -1
+        new Date(a.createdAt).getTime() < new Date(b.createdAt).getTime() ? 1 : -1
       });
     }
     console.log(history);
