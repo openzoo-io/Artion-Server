@@ -744,10 +744,12 @@ router.get('/getActivityFromOthers/:address', async (req, res) => {
       if (offer) {
         if (offer.creator != address) {
           let account = await getAccountInfo(offer.creator);
-          let token = await NFTITEM.findOne({
+          let token = await NFTITEM.find({
             contractAddress: offer.minter,
-            tokenID: offer.tokenID
-          });
+            tokenID: offer.tokenID,
+            deadline: { $gte: new Date().getTime() }
+          }).sort({pricePerItem:-1}).limit(1);
+
           offers.push({
             creator: offer.creator,
             contractAddress: offer.minter,
