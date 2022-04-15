@@ -748,7 +748,7 @@ router.get('/getActivityFromOthers/:address', async (req, res) => {
       // Back to normal mode //
       if (!offer)
       {
-        let offer = await Offer.findOne({
+        offer = await Offer.findOne({
           minter: hold[1],
           tokenID: hold[0],
         }).select([
