@@ -729,9 +729,12 @@ router.get('/getActivityFromOthers/:address', async (req, res) => {
     });
 
     let promise = holdings.map(async (hold) => {
-      let offer = await Offer.findOne({
+
+      // Find the higest price + Not expired //
+      let offer = await Offer.find({
         minter: hold[1],
-        tokenID: hold[0]
+        tokenID: hold[0],
+        deadline: { $gte: new Date().getTime() }
       }).select([
         'creator',
         'tokenID',
@@ -740,16 +743,33 @@ router.get('/getActivityFromOthers/:address', async (req, res) => {
         'paymentToken',
         'deadline',
         'minter'
-      ]);
+      ]).sort({pricePerItem:-1}).limit(1);
+
+      // Back to normal mode //
+      if (!offer)
+      {
+        let offer = await Offer.findOne({
+          minter: hold[1],
+          tokenID: hold[0],
+        }).select([
+          'creator',
+          'tokenID',
+          'quantity',
+          'pricePerItem',
+          'paymentToken',
+          'deadline',
+          'minter'
+        ]);
+      }
+
+
       if (offer) {
         if (offer.creator != address) {
           let account = await getAccountInfo(offer.creator);
-          let token = await NFTITEM.find({
+          let token = await NFTITEM.findOne({
             contractAddress: offer.minter,
-            tokenID: offer.tokenID,
-            deadline: { $gte: new Date().getTime() }
-          }).sort({pricePerItem:-1}).limit(1);
-
+            tokenID: offer.tokenID
+          });
           offers.push({
             creator: offer.creator,
             contractAddress: offer.minter,
