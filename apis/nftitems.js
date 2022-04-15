@@ -126,7 +126,7 @@ const randomIPFS = () => {
     'https://openzoo.mypinata.cloud/ipfs/',
     'https://openzoo2.mypinata.cloud/ipfs/',
     'https://openzoo3.mypinata.cloud/ipfs/',
-    
+
   ];
 
   let random = Math.floor(Math.random() * IPFSUris.length);
@@ -151,8 +151,7 @@ router.post('/resyncMetajson', async (req, res) => {
       let metadata;
       let metadataURI = tokenURI;
       let contentType = 'image';
-      if (tokenURI == token.tokenURI)
-      {
+      if (tokenURI == token.tokenURI) {
         return res.json({
           status: 'success',
           data: -1
@@ -176,7 +175,7 @@ router.post('/resyncMetajson', async (req, res) => {
           }
         }
       } else {
-        
+
         if (tokenURI.includes('ipfs://')) {
           let uri = tokenURI.split('ipfs://')[1].replace(/([^:]\/)\/+/g, "$1");
           metadataURI = `${randomIPFS()}${uri}`;
@@ -217,8 +216,8 @@ router.post('/resyncMetajson', async (req, res) => {
         }
       }
 
-      console.log('New Token URI',tokenURI)
-      console.log('New Meta URI',metadataURI)
+      console.log('New Token URI', tokenURI)
+      console.log('New Meta URI', metadataURI)
 
       // Update new Data //
 
@@ -634,10 +633,10 @@ const selectTokens = async (req, res) => {
             ...lookupNFTItemsAndMerge
           ].filter((part) => part !== undefined);
           if (!mediaType) {
-            pipeline.push({ $match: { isAppropriate: true , saleEndsAt: {$gte: new Date()} } });
+            pipeline.push({ $match: { isAppropriate: true, saleEndsAt: { $gte: new Date() } } });
           }
           else {
-            pipeline.push({ $match: { isAppropriate: true, contentType: mediaType, saleEndsAt: {$gte: new Date()} } });
+            pipeline.push({ $match: { isAppropriate: true, contentType: mediaType, saleEndsAt: { $gte: new Date() } } });
           }
           return Auction.aggregate(pipeline);
         }
@@ -1229,11 +1228,12 @@ router.post('/transfer721History', async (req, res) => {
     let address = toLowerCase(req.body.address);
     let history = await fetchTransferHistory721(address, tokenID);
 
-    
-    if (history)
-    {
-      history = history.sort((a,b) => {
-        new Date(a.createdAt).getTime() < new Date(b.createdAt).getTime() ? 1 : -1
+
+    if (history) {
+      history = history.sort((a, b) => {
+        var dateA = new Date(a.createdAt).getTime();
+        var dateB = new Date(b.createdAt).getTime();
+        return dateA < dateB ? 1 : -1; // ? -1 : 1 for ascending/increasing order
       });
     }
     console.log(history);
@@ -1631,46 +1631,48 @@ const getAccountInfo = async (address) => {
 
 const applyAttributeFilter = async (attributes, collectionAddress, data) => {
 
-  if(!attributes || !Object.keys(attributes).length || !collectionAddress || !data || !data.length)
+  if (!attributes || !Object.keys(attributes).length || !collectionAddress || !data || !data.length)
     return data;
-  
-  const attributeMatchFilter = 
+
+  const attributeMatchFilter =
     Object.keys(attributes)
-          .reduce((acc,key) => {
-            acc[`attributes.${key}`] = attributes[key].isNumeric ?
-              { $exists: true, $gte: attributes[key].value[0] , $lte: attributes[key].value[1] } :
-              { $exists: true, $in: attributes[key].value.map(x => x.value) };
-            return acc;
-          }, {});
-    
-    const pipeline = [
-      { $match: { contractAddress: collectionAddress, _nftItemId: { $in: data.map(x => x._id) } }},
-      { $project: {
-          _id: 0,
-          _nftItemId: 1,
-          attributes: {
-            $arrayToObject: {
-              $map: {
-                input: '$attributes',
-                as: 'el',
-                in: {
-                  k: '$$el.trait_type',
-                  v: '$$el.value'
-                }
+      .reduce((acc, key) => {
+        acc[`attributes.${key}`] = attributes[key].isNumeric ?
+          { $exists: true, $gte: attributes[key].value[0], $lte: attributes[key].value[1] } :
+          { $exists: true, $in: attributes[key].value.map(x => x.value) };
+        return acc;
+      }, {});
+
+  const pipeline = [
+    { $match: { contractAddress: collectionAddress, _nftItemId: { $in: data.map(x => x._id) } } },
+    {
+      $project: {
+        _id: 0,
+        _nftItemId: 1,
+        attributes: {
+          $arrayToObject: {
+            $map: {
+              input: '$attributes',
+              as: 'el',
+              in: {
+                k: '$$el.trait_type',
+                v: '$$el.value'
               }
             }
           }
-       }
-     }, 
-     { $match: { ...attributeMatchFilter } },
-     { $project: {
-       _nftItemId: 1
-       }
-     }
-    ];
+        }
+      }
+    },
+    { $match: { ...attributeMatchFilter } },
+    {
+      $project: {
+        _nftItemId: 1
+      }
+    }
+  ];
 
-    let results = (await NFTAttribute.aggregate(pipeline)).map(x => x._nftItemId.toString());
-    return data.filter(x => results.includes(x._id.toString()));
+  let results = (await NFTAttribute.aggregate(pipeline)).map(x => x._nftItemId.toString());
+  return data.filter(x => results.includes(x._id.toString()));
 }
 
 module.exports = router;
