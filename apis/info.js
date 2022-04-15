@@ -746,21 +746,21 @@ router.get('/getActivityFromOthers/:address', async (req, res) => {
       ]).sort({pricePerItem:-1}).limit(1);
 
       // Back to normal mode //
-      if (!offer)
-      {
-        offer = await Offer.findOne({
-          minter: hold[1],
-          tokenID: hold[0],
-        }).select([
-          'creator',
-          'tokenID',
-          'quantity',
-          'pricePerItem',
-          'paymentToken',
-          'deadline',
-          'minter'
-        ]);
-      }
+      // if (!offer)
+      // {
+      //   offer = await Offer.findOne({
+      //     minter: hold[1],
+      //     tokenID: hold[0],
+      //   }).select([
+      //     'creator',
+      //     'tokenID',
+      //     'quantity',
+      //     'pricePerItem',
+      //     'paymentToken',
+      //     'deadline',
+      //     'minter'
+      //   ]);
+      // }
 
 
       if (offer) {
