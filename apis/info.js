@@ -38,7 +38,7 @@ router.get('/totalVolumeTraded', async (_, res) => {
 
 // Show verified Collections //
 router.get('/totalCollections', async (_, res) => {
-  let collections = await Collection.aggregate([{$group:{_id:null, n:{$sum:1}}}]) // {$match:{isVerified:true}},
+  let collections = await Collection.aggregate([{ $group: { _id: null, n: { $sum: 1 } } }]) // {$match:{isVerified:true}},
   return res.json({
     status: 'success',
     data: collections
@@ -743,25 +743,24 @@ router.get('/getActivityFromOthers/:address', async (req, res) => {
         'paymentToken',
         'deadline',
         'minter'
-      ]).sort({pricePerItem:-1});
+      ]).sort({ pricePerItem: -1 });
 
-      // Back to normal mode //
-      // if (!offer)
-      // {
-      //   offer = await Offer.findOne({
-      //     minter: hold[1],
-      //     tokenID: hold[0],
-      //   }).select([
-      //     'creator',
-      //     'tokenID',
-      //     'quantity',
-      //     'pricePerItem',
-      //     'paymentToken',
-      //     'deadline',
-      //     'minter'
-      //   ]);
-      // }
-
+      // Back to Normal mode just select //
+      if (!offer) {
+        offer = await Offer.findOne({
+          minter: hold[1],
+          tokenID: hold[0],
+        }).select([
+          'creator',
+          'tokenID',
+          'quantity',
+          'pricePerItem',
+          'paymentToken',
+          'deadline',
+          'minter'
+        ]);
+      }
+      
 
       if (offer) {
         if (offer.creator != address) {
