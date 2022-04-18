@@ -758,7 +758,7 @@ router.get('/getActivityFromOthers/:address', async (req, res) => {
           'paymentToken',
           'deadline',
           'minter'
-        ]);
+        ]).sort({_id: -1});
       }
       
 
