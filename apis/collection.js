@@ -781,9 +781,19 @@ router.post("/update", async function (req, res) {
       return res.sendStatus(404);
     }
 
-    delete collection.erc721Address;
+    const values = {
+      description: collection.description,
+      siteUrl: collection.siteUrl,
+      twitterHandle: collection.twitterHandle,
+      discord: collection.discord,
+      instagramHandle: collection.instagramHandle,
+      mediumHandle: collection.mediumHandle,
+      telegram: collection.telegram,
+      logoImageHash: collection.logoImageHash,
+      categories: collection.categories,
+    };
 
-    const result = await Collection.findOneAndUpdate({ erc721Address: collection.erc721Address }, { $set: collection });
+    const result = await Collection.findOneAndUpdate({ erc721Address: collection.erc721Address }, { $set: values });
     return res.sendStatus(!!result ? 200 : 500);
   } catch (err) {
     return res.sendStatus(500);
