@@ -100,7 +100,7 @@ router.post('/collectiondetails', auth, async (req, res) => {
   let telegram = req.body.telegram;
   let instagram = req.body.instagramHandle;
   let email = req.body.email;
-  let attribute_template= req.body.attribute_template;
+  let attribute_template = req.body.attribute_template;
 
   let feeRecipient = req.body.feeRecipient
     ? toLowerCase(req.body.feeRecipient)
@@ -478,11 +478,11 @@ router.post('/getCollectionStatistic', async (req, res) => {
       data: 'NFT Contract Address Invalid'
     });
 
-  
+
   const NFTITEM = mongoose.model('NFTITEM');
   // Count NFT //
   let countNFT = await NFTITEM.countDocuments({ contractAddress: address })
-// Count Owner //
+  // Count Owner //
   let countOwner = await NFTITEM.aggregate([
     {
       $match: { contractAddress: address }
@@ -496,30 +496,26 @@ router.post('/getCollectionStatistic', async (req, res) => {
       $facet: { totalCount: [{ $count: 'ownerCount' }] }
     }
   ]);
-  if (countOwner.length > 0 && countOwner[0].totalCount[0]?.ownerCount)
-  {
+  if (countOwner.length > 0 && countOwner[0].totalCount[0]?.ownerCount) {
     countOwner = countOwner[0].totalCount[0].ownerCount;
   }
-  else
-  {
+  else {
     countOwner = 0;
   }
 
   // Count Owner from 1155 //
   //let countOwner1155 = await ERC1155HOLDING.countDocuments({ contractAddress: address });
-  let countOwner1155 = await ERC1155HOLDING.aggregate([{$match: {contractAddress:address}},{"$group":{_id:"$holderAddress"}}])
-  if (countOwner1155.length > 0)
-  {
+  let countOwner1155 = await ERC1155HOLDING.aggregate([{ $match: { contractAddress: address } }, { "$group": { _id: "$holderAddress" } }])
+  if (countOwner1155.length > 0) {
     countOwner = countOwner1155.length;
   }
 
 
   // Floor Price //
-  let floorPriceNFT = await NFTITEM.find({contractAddress:address,priceInUSD:{$gt:0}}).sort({priceInUSD:1}).limit(1)
+  let floorPriceNFT = await NFTITEM.find({ contractAddress: address, priceInUSD: { $gt: 0 } }).sort({ priceInUSD: 1 }).limit(1)
   //console.log(floorPriceNFT[0].priceInUSD);
-  let floorPrice=0;
-  if (floorPriceNFT.length > 0)
-  {
+  let floorPrice = 0;
+  if (floorPriceNFT.length > 0) {
     floorPrice = floorPriceNFT[0].priceInUSD;
   }
 
@@ -529,28 +525,26 @@ router.post('/getCollectionStatistic', async (req, res) => {
 
   let volumeTradedAuction = await TradeHistory.find({
     collectionAddress: address,
-    isAuction:true,
+    isAuction: true,
   });
   let volumeTradedSold = await TradeHistory.aggregate([
     {
-      $match: { collectionAddress: address , isAuction: false }
+      $match: { collectionAddress: address, isAuction: false }
     },
     {
       $group: {
-        _id: null, sum: {$sum:"$priceInUSD"}
+        _id: null, sum: { $sum: "$priceInUSD" }
       },
     }
   ]);
-  let voltraded=0;
-  if (volumeTradedAuction.length > 0)
-  {
-    
+  let voltraded = 0;
+  if (volumeTradedAuction.length > 0) {
+
     volumeTradedAuction.map(item => {
       voltraded += item.priceInUSD * item.price;
     });
   }
-  if (volumeTradedSold.length > 0)
-  {
+  if (volumeTradedSold.length > 0) {
     voltraded += volumeTradedSold[0].sum;
   }
 
@@ -559,7 +553,8 @@ router.post('/getCollectionStatistic', async (req, res) => {
   //console.log(countOwner[0].totalCount[0].ownerCount);
   return res.json({
     status: 'success',
-    data: {countNFT:countNFT, 
+    data: {
+      countNFT: countNFT,
       countOwner: countOwner,
       floorPrice: floorPrice,
       volumeTraded: voltraded
@@ -580,7 +575,7 @@ router.post('/getCollectionInfo', async (req, res) => {
       status: 'success',
       data: { ...minifyCollection(collection) }//, isVerified: true }
     });
-    
+
   collection = await ERC721CONTRACT.findOne({
     address: address
   });
@@ -629,14 +624,14 @@ router.post('/isValidated', auth, async (req, res) => {
   }
 });
 
-router.get("/:contractAddress/:tokenID/updateAttributes", auth, async (req,res) => {
+router.get("/:contractAddress/:tokenID/updateAttributes", auth, async (req, res) => {
 
   const randomIpfsEndpoint = (tokenURI) => {
 
-    if(!['ipfs://', '/ipfs/'].some(x => tokenURI.includes(x)))
+    if (!['ipfs://', '/ipfs/'].some(x => tokenURI.includes(x)))
       return tokenURI;
 
-    const endpoints = [ 
+    const endpoints = [
       'openzoo',
       'openzoo2',
       'openzoo3'
@@ -650,9 +645,9 @@ router.get("/:contractAddress/:tokenID/updateAttributes", auth, async (req,res) 
   let attribute = null;
 
   try {
-    const {contractAddress, tokenID} = req.params;
-    const { _id, tokenURI } = await NFTItem.findOne({contractAddress, tokenID}).exec();
-    const { attributes, ...ipfsRecord} = await axios.get(randomIpfsEndpoint(tokenURI)).then(response => response.data);
+    const { contractAddress, tokenID } = req.params;
+    const { _id, tokenURI } = await NFTItem.findOne({ contractAddress, tokenID }).exec();
+    const { attributes, ...ipfsRecord } = await axios.get(randomIpfsEndpoint(tokenURI)).then(response => response.data);
 
     attribute = await NFTAttribute.findOne({ contractAddress, tokenID }).exec();
     attribute = attribute ?? new NFTAttribute({
@@ -668,11 +663,11 @@ router.get("/:contractAddress/:tokenID/updateAttributes", auth, async (req,res) 
       updatedAt: Date.now(),
       isRemoteHasAttributes: !!attributes,
     })
-    .save();
+      .save();
 
     return res.sendStatus(200);
   } catch (error) {
-    if(attribute) {
+    if (attribute) {
       await attribute.set({
         errorCode: error?.response?.status ?? 1,
         errorMessage: JSON.stringify(error.stack),
@@ -749,10 +744,58 @@ router.get("/:contractAddress/attributeFilter", auth, async (req, res) => {
 
 router.get("/:contractAddress/attributeFilter/exists", auth, async (req, res) => {
   try {
-    const {contractAddress} = req.params;
+    const { contractAddress } = req.params;
     const exists = await NFTAttribute.find({ contractAddress }).limit(1).count(true);
     return res.sendStatus(exists ? 200 : 404);
   } catch (error) {
+    return res.sendStatus(500);
+  }
+});
+
+router.post("/update", async function (req, res) {
+  const collection = req.body.collection;
+  try {
+    let owner = extractAddress(req, res);
+    let signature = req.body.signature;
+    let retrievedAddr = req.body.signatureAddress;
+
+    if (!ethers.utils.isAddress(collection.erc721Address))
+      return res.json({
+        status: 'failed',
+        data: 'NFT Contract Address invalid'
+      });
+
+    let isValidsignature = await validateSignature(
+      owner,
+      signature,
+      retrievedAddr
+    );
+    if (!isValidsignature)
+      return res.status(400).json({
+        status: 'failed',
+        data: 'Invalid signature from user'
+      });
+
+    const exists = await Collection.exists({ erc721Address: collection.erc721Address });
+    if (!exists) {
+      return res.sendStatus(404);
+    }
+
+    const values = {
+      description: collection.description,
+      siteUrl: collection.siteUrl,
+      twitterHandle: collection.twitterHandle,
+      discord: collection.discord,
+      instagramHandle: collection.instagramHandle,
+      mediumHandle: collection.mediumHandle,
+      telegram: collection.telegram,
+      logoImageHash: collection.logoImageHash,
+      categories: collection.categories,
+    };
+
+    const result = await Collection.findOneAndUpdate({ erc721Address: collection.erc721Address }, { $set: values });
+    return res.sendStatus(!!result ? 200 : 500);
+  } catch (err) {
     return res.sendStatus(500);
   }
 });
