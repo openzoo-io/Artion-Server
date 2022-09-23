@@ -378,6 +378,9 @@ router.post(
       let to = toLowerCase(req.body.to); // transferred to
       let tokenID = parseInt(req.body.tokenID); //tokenID
       console.log('Transffered to: ', to);
+      if (address === undefined || to === undefined || tokenID === undefined) {
+        throw new Error('Some parameters are missing');
+      }
       // remove existing listing(s)
       await Listing.deleteMany({
         minter: address,
