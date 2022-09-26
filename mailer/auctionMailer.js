@@ -7,8 +7,8 @@ const messageUtils = require("./message.utils");
 const toLowerCase = require("../utils/utils");
 const app_url = process.env.APP_URL;
 const storage_url = process.env.RUNTIME
-  ? "https://api-mainnet.openzoo.io/image/"
-  : "https://api.openzoo.io/image/";
+  ? "https://api.openzoo.io/image/"
+  : "https://api-mainnet.openzoo.io/image/"; // mainnet
 
   const getNFTThumbnailPath = async (nft, tokenID) => {
     try {
