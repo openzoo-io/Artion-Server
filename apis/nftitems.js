@@ -1203,6 +1203,7 @@ router.post('/fetchTokens', async (req, res) => {
       : { isAppropriate: false }),
     ownerAlias: await getAccountInfo(sr.owner),
     isAuction: await getIsAuction(sr.contractAddress, sr.tokenID),
+    listedAt: sr.listedAt
   }));
   const results = await Promise.all(searchResults);
 
