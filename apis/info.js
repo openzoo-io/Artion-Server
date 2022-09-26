@@ -978,7 +978,7 @@ const getCollectionTradedVolume = async (address) => {
 const getCollectionFloorPrice = async (address) => {
   try {
     // Floor Price //
-    let floorPriceNFT = await NFTITEM.find({ contractAddress: address, priceInUSD: { $gt: 0 } }).sort({ priceInUSD: 1 }).limit(1)
+    let floorPriceNFT = await NFTITEM.find({ contractAddress: address, priceInUSD: { $gt: 0 }, listedAt: {$gte:  new Date(new Date().setDate(new Date().getDate() - 150))} }).sort({ priceInUSD: 1 }).limit(1)
     //console.log(floorPriceNFT[0].priceInUSD);
     let floorPrice = 0;
     if (floorPriceNFT.length > 0) {
