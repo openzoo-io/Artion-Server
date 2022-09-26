@@ -8,7 +8,7 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const app_url = process.env.APP_URL;
 const storage_url = process.env.RUNTIME
-  ? "https://api.openzoo.io/image/"
+  ? "https://api-mainnet.openzoo.io/image/"
   : "https://api.openzoo.io/image/";
 
 const getNFTThumbnailPath = async (nft, tokenID) => {
