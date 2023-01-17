@@ -566,6 +566,8 @@ const selectTokens = async (req, res) => {
           let ret = NFTITEM.find(collectionFilters).select(selectOption).lean();
 
           myCache.set(JSON.stringify(collectionFilters), ret);
+
+          return ret;
         }
 
         return nftListCache;
