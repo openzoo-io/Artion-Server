@@ -560,13 +560,11 @@ const selectTokens = async (req, res) => {
           isAppropriate: true,
           ...(mediaType ? { contentType: mediaType } : {})
         };
-       // let nftListCache = myCache.get(JSON.stringify(collectionFilters));
+        let nftListCache = myCache.get(JSON.stringify(collectionFilters));
        // console.log('nftListCache',nftListCache)
-        //let ret = NFTITEM.find(collectionFilters).select(selectOption).lean();
-        //myCache.set(JSON.stringify(collectionFilters), ret);
-        
-        
-        return NFTITEM.find(collectionFilters).select(selectOption).lean();
+        let ret = NFTITEM.find(collectionFilters).select(selectOption);
+        myCache.set(JSON.stringify(collectionFilters), ret);
+        return ret;
         // let nftListCache = myCache.get(JSON.stringify(collectionFilters));
         // if (nftListCache === undefined) {
         //   let ret = NFTITEM.find(collectionFilters).select(selectOption).lean();
