@@ -1094,6 +1094,7 @@ router.post('/fetchTokens', async (req, res) => {
 
   if (count > 80) count = 80;
 
+  console.log('[fetchTokens]', req.body);
   console.log('cost 1', Date.now() - timestart);
 
   let items = [];
