@@ -1092,6 +1092,8 @@ router.post('/fetchTokens', async (req, res) => {
   let isProfile = req.body.isProfile;
   let attributes = req.body.attributes;
 
+  if (count > 80) count = 80;
+
   console.log('cost 1', Date.now() - timestart);
 
   let items = [];
