@@ -1133,6 +1133,8 @@ router.post('/fetchTokens', async (req, res) => {
     } else if (type === 'bundle') {
       items = await selectBundles(req, res);
     }
+
+    myCache.set(cacheKey, items);
   }
 
   console.log('cost 2 selectTokens', Date.now() - timestart);
