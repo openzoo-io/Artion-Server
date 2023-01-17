@@ -1117,12 +1117,12 @@ router.post('/fetchTokens', async (req, res) => {
   console.log('[fetchTokens]', req.body);
   console.log('cost 1', Date.now() - timestart);
 
-  let cacheKey = JSON.stringify(req.body);
-  let items = myCache.get(cacheKey);
+  //let cacheKey = JSON.stringify(req.body);
+  //let items = myCache.get(cacheKey);
   
   //key//
-  if (items === undefined)
-  {
+  //if (items === undefined)
+  //{
     if (type === 'all') {
       let nfts = await selectTokens(req, res);
       //let bundles = await selectBundles(req, res);
@@ -1134,8 +1134,8 @@ router.post('/fetchTokens', async (req, res) => {
       items = await selectBundles(req, res);
     }
 
-    myCache.set(cacheKey, items, 60);
-  }
+    //myCache.set(cacheKey, items, 60);
+  //}
 
   console.log('cost 2 selectTokens', Date.now() - timestart);
 
