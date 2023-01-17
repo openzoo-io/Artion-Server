@@ -561,16 +561,17 @@ const selectTokens = async (req, res) => {
           ...(mediaType ? { contentType: mediaType } : {})
         };
 
-        let nftListCache = myCache.get(JSON.stringify(collectionFilters));
-        if (nftListCache === undefined) {
-          let ret = NFTITEM.find(collectionFilters).select(selectOption).lean();
+        return NFTITEM.find(collectionFilters).select(selectOption).lean();
+        // let nftListCache = myCache.get(JSON.stringify(collectionFilters));
+        // if (nftListCache === undefined) {
+        //   let ret = NFTITEM.find(collectionFilters).select(selectOption).lean();
 
-          myCache.set(JSON.stringify(collectionFilters), ret);
+        //   myCache.set(JSON.stringify(collectionFilters), ret);
 
-          return ret;
-        }
+        //   return ret;
+        // }
 
-        return nftListCache;
+        // return nftListCache;
       }
 
       if (filters) {
