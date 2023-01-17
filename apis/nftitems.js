@@ -560,7 +560,8 @@ const selectTokens = async (req, res) => {
           isAppropriate: true,
           ...(mediaType ? { contentType: mediaType } : {})
         };
-
+        let nftListCache = myCache.get(JSON.stringify(collectionFilters));
+        console.log('nftListCache',nftListCache)
         return NFTITEM.find(collectionFilters).select(selectOption).lean();
         // let nftListCache = myCache.get(JSON.stringify(collectionFilters));
         // if (nftListCache === undefined) {
