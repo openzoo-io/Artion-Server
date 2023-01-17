@@ -1117,16 +1117,22 @@ router.post('/fetchTokens', async (req, res) => {
   console.log('[fetchTokens]', req.body);
   console.log('cost 1', Date.now() - timestart);
 
-  let items = [];
-  if (type === 'all') {
-    let nfts = await selectTokens(req, res);
-    //let bundles = await selectBundles(req, res);
-    //items = [...nfts, ...bundles]; // Todo for Bundle pack
-    items = [...nfts];
-  } else if (type === 'single') {
-    items = await selectTokens(req, res);
-  } else if (type === 'bundle') {
-    items = await selectBundles(req, res);
+  let cacheKey = JSON.stringify(req.body);
+  let items = myCache.get(cacheKey);
+  
+  //key//
+  if (items === undefined)
+  {
+    if (type === 'all') {
+      let nfts = await selectTokens(req, res);
+      //let bundles = await selectBundles(req, res);
+      //items = [...nfts, ...bundles]; // Todo for Bundle pack
+      items = [...nfts];
+    } else if (type === 'single') {
+      items = await selectTokens(req, res);
+    } else if (type === 'bundle') {
+      items = await selectBundles(req, res);
+    }
   }
 
   console.log('cost 2 selectTokens', Date.now() - timestart);
