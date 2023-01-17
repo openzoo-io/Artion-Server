@@ -1134,7 +1134,7 @@ router.post('/fetchTokens', async (req, res) => {
       items = await selectBundles(req, res);
     }
 
-    myCache.set(cacheKey, items);
+    myCache.set(cacheKey, items, 60);
   }
 
   console.log('cost 2 selectTokens', Date.now() - timestart);
