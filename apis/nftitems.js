@@ -29,7 +29,7 @@ const sortBy = require('lodash.sortby');
 const Logger = require('../services/logger');
 const { MAX_INTEGER } = require('ethereumjs-util');
 
-var crypto = require('crypto');
+
 const NodeCache = require("node-cache");
 const myCache = new NodeCache({ stdTTL: 15, checkperiod: 0 });
 
@@ -561,12 +561,11 @@ const selectTokens = async (req, res) => {
           ...(mediaType ? { contentType: mediaType } : {})
         };
 
-        let key = crypto.createHash('md5').update(JSON.stringify(collectionFilters)).digest('hex');
-        let nftListCache = myCache.get(key);
+        let nftListCache = myCache.get(JSON.stringify(collectionFilters));
         if (nftListCache === undefined) {
           let ret = NFTITEM.find(collectionFilters).select(selectOption).lean();
 
-          myCache.set(key, ret);
+          myCache.set(JSON.stringify(collectionFilters), ret);
         }
 
         return nftListCache;
