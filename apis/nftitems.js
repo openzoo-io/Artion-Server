@@ -29,6 +29,9 @@ const sortBy = require('lodash.sortby');
 const Logger = require('../services/logger');
 const { MAX_INTEGER } = require('ethereumjs-util');
 
+const NodeCache = require("node-cache");
+const myCache = new NodeCache({ stdTTL: 15, checkperiod: 0 });
+
 const provider = new ethers.providers.JsonRpcProvider(
   process.env.NETWORK_RPC,
   parseInt(process.env.NETWORK_CHAINID)
@@ -556,7 +559,15 @@ const selectTokens = async (req, res) => {
           isAppropriate: true,
           ...(mediaType ? { contentType: mediaType } : {})
         };
-        return NFTITEM.find(collectionFilters).select(selectOption).lean();
+
+        let nftListCache = myCache.get(JSON.stringify(collectionFilters));
+        if (nftListCache === undefined) {
+          let ret = NFTITEM.find(collectionFilters).select(selectOption).lean();
+
+          myCache.set(JSON.stringify(collectionFilters), ret);
+        }
+
+        return nftListCache;
       }
 
       if (filters) {
