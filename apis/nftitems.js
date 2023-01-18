@@ -1112,7 +1112,7 @@ router.post('/fetchTokens', async (req, res) => {
   let isProfile = req.body.isProfile;
   let attributes = req.body.attributes;
 
-  if (count > 80)
+  if (count > 80 || count === 0)
   {
     return res.json({
       status: 'failed',
