@@ -1112,7 +1112,7 @@ router.post('/fetchTokens', async (req, res) => {
   let isProfile = req.body.isProfile;
   let attributes = req.body.attributes;
 
-  if (count === 0)
+  if (count > 80 || count === 0)
   {
     return res.json({
       status: 'failed',
@@ -1122,8 +1122,6 @@ router.post('/fetchTokens', async (req, res) => {
       }
     });
   }
-
-  if (count > 80) count = 80;
 
   console.log('[fetchTokens]', req.body);
   console.log('cost 1', Date.now() - timestart);
