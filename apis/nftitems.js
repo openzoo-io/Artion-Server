@@ -29,7 +29,7 @@ const sortBy = require('lodash.sortby');
 const Logger = require('../services/logger');
 const { MAX_INTEGER } = require('ethereumjs-util');
 
-
+const requestIP = require("request-ip");
 const NodeCache = require("node-cache");
 const myCache = new NodeCache({ stdTTL: 15, checkperiod: 0 });
 
@@ -1112,6 +1112,11 @@ router.post('/fetchTokens', async (req, res) => {
   let isProfile = req.body.isProfile;
   let attributes = req.body.attributes;
 
+  
+
+  console.log('[fetchTokens]', req.body);
+  let request_ip = requestIP.getClientIp(req);
+  console.log('request_ip',request_ip);
   if (count > 80 || count === 0)
   {
     return res.json({
@@ -1123,7 +1128,6 @@ router.post('/fetchTokens', async (req, res) => {
     });
   }
 
-  console.log('[fetchTokens]', req.body);
   console.log('cost 1', Date.now() - timestart);
 
   //let cacheKey = JSON.stringify(req.body);
