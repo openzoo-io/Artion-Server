@@ -1117,7 +1117,7 @@ router.post('/fetchTokens', async (req, res) => {
   console.log('[fetchTokens]', req.body);
   let request_ip = requestIP.getClientIp(req);
   console.log('request_ip',request_ip);
-  if (count > 80 || count === 0)
+  /*if (count > 80 || count === 0)
   {
     return res.json({
       status: 'failed',
@@ -1126,7 +1126,7 @@ router.post('/fetchTokens', async (req, res) => {
         total: 0
       }
     });
-  }
+  }*/
 
   console.log('cost 1', Date.now() - timestart);
 
