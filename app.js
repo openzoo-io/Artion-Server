@@ -67,6 +67,7 @@ app.use(require("./apis"));
 app.get('/image/:id', function(req, res){
   if (!process.env.RUNTIME)
   {
+    res.set('Cache-Control', 'public, max-age=31557600'); // one year
     res.sendFile(`/root/open-zoo-thumbnail-Indexer/thumb-image/${req.params.id}`);
   }
   else
