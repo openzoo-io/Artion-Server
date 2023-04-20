@@ -29,7 +29,7 @@ const myCache = new NodeCache({ stdTTL: 120, checkperiod: 0 });
 
 // Show total volume traded //
 router.get('/totalVolumeTraded', async (_, res) => {
-  let volumeTraded = await TradeHistory.aggregate([{ $group: { _id: null, sum: { $sum: "$price" } } }])
+  let volumeTraded = await TradeHistory.aggregate([{ $group: { _id: null, sum: { $sum: "$priceInUSD" } } }])
   return res.json({
     status: 'success',
     data: volumeTraded
