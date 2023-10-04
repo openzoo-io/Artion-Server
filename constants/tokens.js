@@ -22,7 +22,14 @@ const PAYTOKENS = process.env.NETWORK_CHAINID === "888" ? [
       name: 'ZOO',
       symbol: 'ZOO',
       decimals: 18,
+    },
+    {
+      address: '0xdabd997ae5e4799be47d6e69d9431615cba28f48',
+      name: 'WWAN',
+      symbol: 'WWAN',
+      decimals: 18,
     }
+    
   ] :
   [
     {
