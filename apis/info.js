@@ -236,6 +236,7 @@ router.post('/getCollectionList', async (req, res) => {
     if (
       stickylist.indexOf(item.address) !== -1
     ) {
+      item.isSticky = true;
       official.push(item);
     } else {
       nonofficial.push(item);
