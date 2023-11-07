@@ -197,6 +197,7 @@ router.post('/getCollectionList', async (req, res) => {
       telegram: collection.telegram,
       isVerified: collection.isVerified,
       isVisible: true,
+      isSticky: false,
       isInternal: collection.isInternal,
       isOwnerble: collection.isOwnerble,
       owner: collection.owner,
