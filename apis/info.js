@@ -197,7 +197,7 @@ router.post('/getCollectionList', async (req, res) => {
       telegram: collection.telegram,
       isVerified: collection.isVerified,
       isVisible: true,
-      isSticky: false,
+      //isSticky: false,
       isInternal: collection.isInternal,
       isOwnerble: collection.isOwnerble,
       owner: collection.owner,
@@ -234,20 +234,21 @@ router.post('/getCollectionList', async (req, res) => {
     '0xbcf9f4fae90da7c4bb05da6f9e9a9a39dc5ce979', // Testnet ZooBboosters
   ]
   let official = [];
-  let nonofficial = [];
+  //let nonofficial = [];
 
   results.map(item => {
     if (
       stickylist.indexOf(item.address) !== -1
     ) {
-      item.isSticky = true;
+      //item.isSticky = true;
       official.push(item);
-    } else {
-      nonofficial.push(item);
     }
+    // Push all to here //
+    //nonofficial.push(item);
+
   });
 
-  results = [...official, ...nonofficial];
+  //results = [...nonofficial]; // [...official, ...nonofficial];
 
   // Remove all zero NFT categories //
   results = results.filter(i => i.item_count);
@@ -261,6 +262,7 @@ router.post('/getCollectionList', async (req, res) => {
     status: 'success',
     data: {
       collections: results,
+      official_collections: official,
       total: countRersults.length
     }
   });
@@ -764,9 +766,9 @@ router.get('/getActivityFromOthers/:address', async (req, res) => {
           'paymentToken',
           'deadline',
           'minter'
-        ]).sort({_id: -1});
+        ]).sort({ _id: -1 });
       }
-      
+
 
       if (offer) {
         if (offer.creator != address) {
@@ -984,7 +986,7 @@ const getCollectionTradedVolume = async (address) => {
 const getCollectionFloorPrice = async (address) => {
   try {
     // Floor Price //
-    let floorPriceNFT = await NFTITEM.find({ contractAddress: address, priceInUSD: { $gt: 0 }, listedAt: {$gte:  new Date(new Date().setDate(new Date().getDate() - 150))} }).sort({ priceInUSD: 1 }).limit(1)
+    let floorPriceNFT = await NFTITEM.find({ contractAddress: address, priceInUSD: { $gt: 0 }, listedAt: { $gte: new Date(new Date().setDate(new Date().getDate() - 150)) } }).sort({ priceInUSD: 1 }).limit(1)
     //console.log(floorPriceNFT[0].priceInUSD);
     let floorPrice = 0;
     if (floorPriceNFT.length > 0) {
