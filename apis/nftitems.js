@@ -560,12 +560,12 @@ const selectTokens = async (req, res) => {
           isAppropriate: true,
           ...(mediaType ? { contentType: mediaType } : {})
         };
-       // let nftListCache = myCache.get(JSON.stringify(collectionFilters));
-       // console.log('nftListCache',nftListCache)
+        // let nftListCache = myCache.get(JSON.stringify(collectionFilters));
+        // console.log('nftListCache',nftListCache)
         //let ret = NFTITEM.find(collectionFilters).select(selectOption).lean();
         //myCache.set(JSON.stringify(collectionFilters), ret);
-        
-        
+
+
         return NFTITEM.find(collectionFilters).select(selectOption).lean();
         // let nftListCache = myCache.get(JSON.stringify(collectionFilters));
         // if (nftListCache === undefined) {
@@ -1112,11 +1112,11 @@ router.post('/fetchTokens', async (req, res) => {
   let isProfile = req.body.isProfile;
   let attributes = req.body.attributes;
 
-  
+
 
   console.log('[fetchTokens]', req.body);
   let request_ip = requestIP.getClientIp(req);
-  console.log('request_ip',request_ip);
+  console.log('request_ip', request_ip);
   /*if (count > 80 || count === 0)
   {
     return res.json({
@@ -1130,12 +1130,18 @@ router.post('/fetchTokens', async (req, res) => {
 
   console.log('cost 1', Date.now() - timestart);
 
-  //let cacheKey = JSON.stringify(req.body);
-  //let items = myCache.get(cacheKey);
-  
+  let items = myCache.get('explore_cache');
+
+  if (isProfile === true || req.body.collectionAddress.length > 0) {
+    items = undefined;
+  }
+  else
+  {
+    console.log('Explore Page to Cache')
+  }
+
   //key//
-  //if (items === undefined)
-  //{
+  if (items === undefined) {
     if (type === 'all') {
       let nfts = await selectTokens(req, res);
       //let bundles = await selectBundles(req, res);
@@ -1147,8 +1153,12 @@ router.post('/fetchTokens', async (req, res) => {
       items = await selectBundles(req, res);
     }
 
-    //myCache.set(cacheKey, items, 60);
-  //}
+    if (isProfile !== true && req.body.collectionAddress.length === 0) {
+      myCache.set('explore_cache', items, 15);
+      console.log('Explore Page cached')
+    }
+    
+  }
 
   console.log('cost 2 selectTokens', Date.now() - timestart);
 
@@ -1282,17 +1292,15 @@ router.post('/transfer721History', async (req, res) => {
         return dateA < dateB ? 1 : -1; // ? -1 : 1 for ascending/increasing order
       });
     }
-    
+
     // Update Owner //
-    if (history[0])
-    {
+    if (history[0]) {
       let nft = await NFTITEM.findOne({
         contractAddress: address,
         tokenID: tokenID,
         isAppropriate: true
       });
-      if (nft)
-      {
+      if (nft) {
         nft.owner = history[0].to;
         console.log('update latest owner', history[0].to);
         await nft.save();
