@@ -560,12 +560,12 @@ const selectTokens = async (req, res) => {
           isAppropriate: true,
           ...(mediaType ? { contentType: mediaType } : {})
         };
-       // let nftListCache = myCache.get(JSON.stringify(collectionFilters));
-       // console.log('nftListCache',nftListCache)
+        // let nftListCache = myCache.get(JSON.stringify(collectionFilters));
+        // console.log('nftListCache',nftListCache)
         //let ret = NFTITEM.find(collectionFilters).select(selectOption).lean();
         //myCache.set(JSON.stringify(collectionFilters), ret);
-        
-        
+
+
         return NFTITEM.find(collectionFilters).select(selectOption).lean();
         // let nftListCache = myCache.get(JSON.stringify(collectionFilters));
         // if (nftListCache === undefined) {
@@ -1112,11 +1112,11 @@ router.post('/fetchTokens', async (req, res) => {
   let isProfile = req.body.isProfile;
   let attributes = req.body.attributes;
 
-  
+
 
   console.log('[fetchTokens]', req.body);
   let request_ip = requestIP.getClientIp(req);
-  console.log('request_ip',request_ip);
+  console.log('request_ip', request_ip);
   /*if (count > 80 || count === 0)
   {
     return res.json({
@@ -1132,22 +1132,22 @@ router.post('/fetchTokens', async (req, res) => {
 
   //let cacheKey = JSON.stringify(req.body);
   //let items = myCache.get(cacheKey);
-  
+
   //key//
   //if (items === undefined)
   //{
-    if (type === 'all') {
-      let nfts = await selectTokens(req, res);
-      //let bundles = await selectBundles(req, res);
-      //items = [...nfts, ...bundles]; // Todo for Bundle pack
-      items = [...nfts];
-    } else if (type === 'single') {
-      items = await selectTokens(req, res);
-    } else if (type === 'bundle') {
-      items = await selectBundles(req, res);
-    }
+  if (type === 'all') {
+    let nfts = await selectTokens(req, res);
+    //let bundles = await selectBundles(req, res);
+    //items = [...nfts, ...bundles]; // Todo for Bundle pack
+    items = [...nfts];
+  } else if (type === 'single') {
+    items = await selectTokens(req, res);
+  } else if (type === 'bundle') {
+    items = await selectBundles(req, res);
+  }
 
-    //myCache.set(cacheKey, items, 60);
+  //myCache.set(cacheKey, items, 60);
   //}
 
   console.log('cost 2 selectTokens', Date.now() - timestart);
@@ -1173,12 +1173,16 @@ router.post('/fetchTokens', async (req, res) => {
   if (sortby === 'price' || sortby === 'cheapest') {
     updatedItems = updatePrices(items);
     data = sortItems(updatedItems, sortby);
-    data = await applyAttributeFilter(attributes, req.body.collectionAddresses?.[0], data);
+    if (req.body.collectionAddresses) {
+      data = await applyAttributeFilter(attributes, req.body.collectionAddresses?.[0], data);
+    }
     _searchResults = data.slice(from, from + count);
   }
   else {
     data = sortItems(items, sortby);
-    data = await applyAttributeFilter(attributes, req.body.collectionAddresses?.[0], data);
+    if (req.body.collectionAddresses) {
+      data = await applyAttributeFilter(attributes, req.body.collectionAddresses?.[0], data);
+    }
     _searchResults = data.slice(from, from + count);
     _searchResults = updatePrices(_searchResults);
 
@@ -1282,17 +1286,15 @@ router.post('/transfer721History', async (req, res) => {
         return dateA < dateB ? 1 : -1; // ? -1 : 1 for ascending/increasing order
       });
     }
-    
+
     // Update Owner //
-    if (history[0])
-    {
+    if (history[0]) {
       let nft = await NFTITEM.findOne({
         contractAddress: address,
         tokenID: tokenID,
         isAppropriate: true
       });
-      if (nft)
-      {
+      if (nft) {
         nft.owner = history[0].to;
         console.log('update latest owner', history[0].to);
         await nft.save();
