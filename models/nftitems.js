@@ -44,6 +44,9 @@ NFTITEM.index(
   { thumbnailPath: 1, isAppropriate: 1 },
 );
 NFTITEM.index(
+  { thumbnailPath: 1, isAppropriate: 1, contentType: 1 },
+);
+NFTITEM.index(
   { contractAddress: 1, thumbnailPath: 1, isAppropriate: 1 },
 );
 NFTITEM.index(
