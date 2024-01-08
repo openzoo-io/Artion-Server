@@ -556,9 +556,9 @@ const selectTokens = async (req, res) => {
           ...(collections2filter === null
             ? {}
             : { contractAddress: { $in: [...collections2filter] } }),
-          //thumbnailPath: { $ne: nonImage },
+          thumbnailPath: { $ne: nonImage },
           isAppropriate: true,
-          //...(mediaType ? { contentType: mediaType } : {})
+          ...(mediaType ? { contentType: mediaType } : {})
         };
        // let nftListCache = myCache.get(JSON.stringify(collectionFilters));
        // console.log('nftListCache',nftListCache)
