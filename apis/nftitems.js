@@ -1131,17 +1131,19 @@ router.post('/fetchTokens', async (req, res) => {
   console.log('cost 1', Date.now() - timestart);
 
   let items = myCache.get('explore_cache');
-
+  let doRecache = false;
   if (isProfile === true || req.body?.collectionAddresses?.length > 0 || !req.body?.filterby?.includes('onlyVerified')) {
     items = undefined;
   }
   else
   {
-    console.log('Explore Page to Cache')
+    console.log('Explore Page to Cache');
+    doRecache = true;
   }
 
   //key//
   if (items === undefined) {
+    doRecache = true;
     if (type === 'all') {
       let nfts = await selectTokens(req, res);
       //let bundles = await selectBundles(req, res);
@@ -1153,7 +1155,7 @@ router.post('/fetchTokens', async (req, res) => {
       items = await selectBundles(req, res);
     }
 
-    if (isProfile === false && !req.body?.collectionAddresses?.length && req.body?.filterby?.includes('onlyVerified')) {
+    if (doRecache) {
       myCache.set('explore_cache', items, 15);
       console.log('Explore Page cached')
     }
