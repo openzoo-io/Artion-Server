@@ -1132,7 +1132,7 @@ router.post('/fetchTokens', async (req, res) => {
 
   let items = myCache.get('explore_cache');
 
-  if (isProfile === true || req.body?.collectionAddresses?.length > 0 || req.body?.filterby?.includes('onlyVerified')) {
+  if (isProfile === true || req.body?.collectionAddresses?.length > 0 || !req.body?.filterby?.includes('onlyVerified')) {
     items = undefined;
   }
   else
@@ -1153,7 +1153,7 @@ router.post('/fetchTokens', async (req, res) => {
       items = await selectBundles(req, res);
     }
 
-    if (isProfile === false && req.body?.collectionAddresses?.length === 0 && !req.body?.filterby?.includes('onlyVerified')) {
+    if (isProfile === false && req.body?.collectionAddresses?.length === 0 && req.body?.filterby?.includes('onlyVerified')) {
       myCache.set('explore_cache', items, 15);
       console.log('Explore Page cached')
     }
