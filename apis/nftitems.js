@@ -1173,12 +1173,12 @@ router.post('/fetchTokens', async (req, res) => {
   if (sortby === 'price' || sortby === 'cheapest') {
     updatedItems = updatePrices(items);
     data = sortItems(updatedItems, sortby);
-    data = await applyAttributeFilter(attributes, req.body.collectionAddresses?.[0], data);
+    //data = await applyAttributeFilter(attributes, req.body.collectionAddresses?.[0], data);
     _searchResults = data.slice(from, from + count);
   }
   else {
     data = sortItems(items, sortby);
-    data = await applyAttributeFilter(attributes, req.body.collectionAddresses?.[0], data);
+    //data = await applyAttributeFilter(attributes, req.body.collectionAddresses?.[0], data);
     _searchResults = data.slice(from, from + count);
     _searchResults = updatePrices(_searchResults);
 
