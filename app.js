@@ -55,9 +55,9 @@ require("./models/disabledExplorerCollection");
 app.use(express.urlencoded({limit: '50mb', extended: true})); 
 app.use(express.json());
 app.use(
-  cors()
+ // cors()
 );
-//app.options("*", cors()); // include before other routes
+app.options("*", cors()); // include before other routes
 
 app.use(morganMiddleware);
 
