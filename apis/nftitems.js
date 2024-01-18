@@ -1117,16 +1117,12 @@ router.post('/fetchTokens', async (req, res) => {
   console.log('[fetchTokens]', req.body);
   let request_ip = requestIP.getClientIp(req);
   console.log('request_ip', request_ip);
-  /*if (count > 80 || count === 0)
+
+  let noSearchMore = false;
+  if (count > 80 || count === 0)
   {
-    return res.json({
-      status: 'failed',
-      data: {
-        tokens: [],
-        total: 0
-      }
-    });
-  }*/
+    noSearchMore = true;
+  }
 
   console.log('cost 1', Date.now() - timestart);
 
@@ -1249,8 +1245,8 @@ router.post('/fetchTokens', async (req, res) => {
     ...(sr.isAppropriate != null && sr.isAppropriate != undefined
       ? { isAppropriate: sr.isAppropriate }
       : { isAppropriate: false }),
-    ownerAlias: await getAccountInfo(sr.owner),
-    isAuction: await getIsAuction(sr.contractAddress, sr.tokenID),
+    ownerAlias: noSearchMore ? null : await getAccountInfo(sr.owner),
+    isAuction: noSearchMore ? null : await getIsAuction(sr.contractAddress, sr.tokenID),
     listedAt: sr.listedAt,
     soldAt: sr.soldAt
   }));
