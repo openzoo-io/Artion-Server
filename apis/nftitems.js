@@ -1122,6 +1122,7 @@ router.post('/fetchTokens', async (req, res) => {
   if (count > 80 || count === 0)
   {
     noSearchMore = true;
+    count = 80;
   }
 
   console.log('cost 1', Date.now() - timestart);
